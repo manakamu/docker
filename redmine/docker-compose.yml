@@ -9,7 +9,7 @@ services:
       dockerfile: dockerfile_redmine
     restart: always
     ports:
-      - 8080:3000
+      - 8000:3000
     environment:
       REDMINE_DB_MYSQL: db
       REDMINE_DB_PASSWORD: redmine
