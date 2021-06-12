@@ -1,0 +1,47 @@
+version: '3.1'
+
+services:
+
+  redmine:
+    image: redmine:4.2
+    build:
+      context: .
+      dockerfile: dockerfile_redmine
+    restart: always
+    ports:
+      - 8080:3000
+    environment:
+      REDMINE_DB_MYSQL: db
+      REDMINE_DB_PASSWORD: redmine
+      REDMINE_SECRET_KEY_BASE: supersecretkey
+    links:
+      - "db:mysql"
+    volumes:
+      - ./:/share_dir
+    container_name: my-redmine
+
+  db:
+    image: mysql:5.7
+    build:
+      context: .
+      dockerfile: dockerfile_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: redmine
+      MYSQL_DATABASE: redmine
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./:/share_dir
+    container_name: redmine-mysql
+
+  phpmyadmin:
+    image: phpmyadmin:5.1
+    restart: always
+    ports:
+      - 8081:80
+    environment:
+      - PMA_ARBITRARY=1
+    container_name:
+      redmine-phpmyadmin
+    links:
+      - db

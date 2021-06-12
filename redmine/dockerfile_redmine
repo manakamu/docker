@@ -1,0 +1,11 @@
+FROM redmine
+
+COPY ./configuration.yml /usr/src/redmine/config/
+COPY ./reminder.sh /usr/src/redmine/
+COPY ./data.yml /usr/src/redmine/db
+COPY ./migrate_db.sh /usr/src/redmine
+
+RUN chmod +x /usr/src/redmine/migrate_db.sh
+RUN apt-get update
+RUN apt-get install -y less emacs
+

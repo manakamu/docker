@@ -1,0 +1,2186 @@
+
+---
+ar_internal_metadata:
+  columns:
+  - key
+  - value
+  - created_at
+  - updated_at
+  records: 
+  - - environment
+    - production
+    - '2021-05-26 13:24:08.455704'
+    - '2021-05-26 13:24:08.455704'
+
+---
+email_addresses:
+  columns:
+  - id
+  - user_id
+  - address
+  - is_default
+  - notify
+  - created_on
+  - updated_on
+  records: 
+  - - 1
+    - 1
+    - nasmanager55@gmail.com
+    - true
+    - true
+    - '2021-05-26 13:24:07.764058'
+    - '2021-05-28 13:38:35.267466'
+  - - 2
+    - 5
+    - manakamu2012@gmail.com
+    - true
+    - true
+    - '2021-05-26 13:28:13.874703'
+    - '2021-05-26 13:28:13.874703'
+
+---
+enabled_modules:
+  columns:
+  - id
+  - project_id
+  - name
+  records: 
+  - - 1
+    - 1
+    - issue_tracking
+  - - 2
+    - 1
+    - time_tracking
+  - - 3
+    - 1
+    - news
+  - - 4
+    - 1
+    - documents
+  - - 5
+    - 1
+    - files
+  - - 6
+    - 1
+    - wiki
+  - - 7
+    - 1
+    - repository
+  - - 8
+    - 1
+    - boards
+  - - 9
+    - 1
+    - calendar
+  - - 10
+    - 1
+    - gantt
+
+---
+enumerations:
+  columns:
+  - id
+  - name
+  - position
+  - is_default
+  - type
+  - active
+  - project_id
+  - parent_id
+  - position_name
+  records: 
+  - - 1
+    - 緊急
+    - 1
+    - false
+    - IssuePriority
+    - true
+    - 
+    - 
+    - lowest
+  - - 2
+    - 高
+    - 2
+    - false
+    - IssuePriority
+    - true
+    - 
+    - 
+    - low2
+  - - 3
+    - 通常
+    - 3
+    - true
+    - IssuePriority
+    - true
+    - 
+    - 
+    - default
+  - - 4
+    - 低
+    - 4
+    - false
+    - IssuePriority
+    - true
+    - 
+    - 
+    - highest
+
+---
+issue_statuses:
+  columns:
+  - id
+  - name
+  - is_closed
+  - position
+  - default_done_ratio
+  records: 
+  - - 1
+    - 未着手
+    - false
+    - 1
+    - 
+  - - 2
+    - 着手
+    - false
+    - 2
+    - 
+  - - 3
+    - 完了
+    - true
+    - 3
+    - 
+
+---
+issues:
+  columns:
+  - id
+  - tracker_id
+  - project_id
+  - subject
+  - description
+  - due_date
+  - category_id
+  - status_id
+  - assigned_to_id
+  - priority_id
+  - fixed_version_id
+  - author_id
+  - lock_version
+  - created_on
+  - updated_on
+  - start_date
+  - done_ratio
+  - estimated_hours
+  - parent_id
+  - root_id
+  - lft
+  - rgt
+  - is_private
+  - closed_on
+  records: 
+  - - 1
+    - 2
+    - 1
+    - スリープクリニック調布
+    - 6/19 15時
+    - '2021-06-19'
+    - 
+    - 1
+    - 5
+    - 2
+    - 
+    - 5
+    - 2
+    - '2021-05-26 13:57:59.557862'
+    - '2021-05-26 16:36:50.868806'
+    - '2021-05-26'
+    - 0
+    - 
+    - 
+    - 1
+    - 1
+    - 2
+    - false
+    - 
+  - - 2
+    - 2
+    - 1
+    - クリア歯科
+    - 6/5 15時
+    - '2021-06-05'
+    - 
+    - 3
+    - 5
+    - 2
+    - 
+    - 5
+    - 3
+    - '2021-05-26 13:58:53.352230'
+    - '2021-06-05 09:27:40.867389'
+    - '2021-05-26'
+    - 0
+    - 
+    - 
+    - 2
+    - 1
+    - 2
+    - false
+    - '2021-06-05 09:27:40.867389'
+  - - 3
+    - 1
+    - 1
+    - 部屋の模様替え
+    - ''
+    - '2021-05-29'
+    - 
+    - 3
+    - 5
+    - 3
+    - 
+    - 5
+    - 2
+    - '2021-05-26 14:10:14.706140'
+    - '2021-05-30 05:09:07.063558'
+    - '2021-05-26'
+    - 0
+    - 
+    - 
+    - 3
+    - 1
+    - 2
+    - false
+    - '2021-05-30 05:09:07.063558'
+  - - 4
+    - 1
+    - 1
+    - ダイソー
+    - "買うものリスト\r\n\r\n・紙ファイル\r\n・赤ボールペン\r\n・黒ボールペン"
+    - '2021-05-28'
+    - 
+    - 3
+    - 5
+    - 3
+    - 
+    - 5
+    - 3
+    - '2021-05-26 14:14:49.559363'
+    - '2021-05-28 13:31:48.519958'
+    - '2021-05-26'
+    - 0
+    - 
+    - 
+    - 4
+    - 1
+    - 2
+    - false
+    - '2021-05-28 13:31:48.524569'
+  - - 5
+    - 1
+    - 1
+    - ANA ロンドン キャンセル
+    - ''
+    - '2021-08-01'
+    - 
+    - 1
+    - 5
+    - 3
+    - 
+    - 5
+    - 0
+    - '2021-05-26 14:56:08.280816'
+    - '2021-05-26 14:56:08.280816'
+    - '2021-05-26'
+    - 0
+    - 
+    - 
+    - 5
+    - 1
+    - 2
+    - false
+    - 
+  - - 6
+    - 1
+    - 1
+    - 衣替え
+    - ''
+    - '2021-05-30'
+    - 
+    - 3
+    - 5
+    - 3
+    - 
+    - 5
+    - 2
+    - '2021-05-26 15:17:15.930014'
+    - '2021-05-28 23:36:45.051721'
+    - '2021-05-26'
+    - 0
+    - 
+    - 
+    - 6
+    - 1
+    - 2
+    - false
+    - '2021-05-28 23:36:45.056765'
+  - - 7
+    - 1
+    - 1
+    - IKEA 家具受け取りAM
+    - ''
+    - '2021-06-04'
+    - 
+    - 3
+    - 5
+    - 2
+    - 
+    - 5
+    - 3
+    - '2021-05-26 16:22:48.723494'
+    - '2021-06-04 05:08:58.675152'
+    - '2021-05-26'
+    - 0
+    - 
+    - 
+    - 7
+    - 1
+    - 2
+    - false
+    - '2021-06-04 05:08:58.675152'
+  - - 8
+    - 1
+    - 1
+    - ぼくは航空管制官4 伊丹受け取り
+    - 午前中
+    - '2021-05-29'
+    - 
+    - 3
+    - 5
+    - 2
+    - 
+    - 5
+    - 2
+    - '2021-05-26 16:30:59.555399'
+    - '2021-05-29 03:01:42.323160'
+    - '2021-05-26'
+    - 0
+    - 
+    - 
+    - 8
+    - 1
+    - 2
+    - false
+    - '2021-05-29 03:01:42.331788'
+  - - 9
+    - 1
+    - 1
+    - ホットカーペットを片付ける
+    - ''
+    - '2021-05-30'
+    - 
+    - 1
+    - 5
+    - 3
+    - 
+    - 5
+    - 0
+    - '2021-05-27 22:20:54.427446'
+    - '2021-05-27 22:20:54.427446'
+    - '2021-05-27'
+    - 0
+    - 
+    - 
+    - 9
+    - 1
+    - 2
+    - false
+    - 
+  - - 10
+    - 1
+    - 1
+    - 靴磨く
+    - ''
+    - '2021-05-30'
+    - 
+    - 3
+    - 5
+    - 3
+    - 
+    - 5
+    - 2
+    - '2021-05-27 23:19:55.272347'
+    - '2021-05-28 21:35:53.497246'
+    - '2021-05-27'
+    - 0
+    - 
+    - 
+    - 10
+    - 1
+    - 2
+    - false
+    - '2021-05-28 21:35:53.501925'
+  - - 11
+    - 1
+    - 1
+    - 自転車に空気入れる
+    - ''
+    - '2021-05-30'
+    - 
+    - 3
+    - 5
+    - 3
+    - 
+    - 5
+    - 2
+    - '2021-05-28 17:31:06.958386'
+    - '2021-05-28 21:36:57.471464'
+    - '2021-05-29'
+    - 0
+    - 
+    - 
+    - 11
+    - 1
+    - 2
+    - false
+    - '2021-05-28 21:36:57.477220'
+  - - 12
+    - 1
+    - 1
+    - メガネの調整に行く
+    - ''
+    - '2021-06-06'
+    - 
+    - 3
+    - 5
+    - 3
+    - 
+    - 5
+    - 2
+    - '2021-05-28 17:53:35.719221'
+    - '2021-05-29 02:45:03.641541'
+    - '2021-05-29'
+    - 0
+    - 
+    - 
+    - 12
+    - 1
+    - 2
+    - false
+    - '2021-05-29 02:45:03.647494'
+  - - 13
+    - 1
+    - 1
+    - 風呂のイス綺麗にする
+    - ''
+    - '2021-06-27'
+    - 
+    - 3
+    - 5
+    - 3
+    - 
+    - 5
+    - 2
+    - '2021-05-28 18:13:23.177127'
+    - '2021-05-28 21:59:19.886796'
+    - '2021-05-29'
+    - 0
+    - 
+    - 
+    - 13
+    - 1
+    - 2
+    - false
+    - '2021-05-28 21:59:19.891047'
+  - - 14
+    - 1
+    - 1
+    - ルーターの場所移動
+    - ''
+    - '2021-06-27'
+    - 
+    - 1
+    - 5
+    - 4
+    - 
+    - 5
+    - 1
+    - '2021-05-29 07:06:56.985936'
+    - '2021-05-29 07:07:09.882010'
+    - '2021-05-29'
+    - 0
+    - 
+    - 
+    - 14
+    - 1
+    - 2
+    - false
+    - 
+  - - 15
+    - 1
+    - 1
+    - テレビ台組み立て
+    - ''
+    - '2021-06-04'
+    - 
+    - 3
+    - 5
+    - 3
+    - 
+    - 5
+    - 2
+    - '2021-05-30 05:06:11.081070'
+    - '2021-06-04 05:08:18.954160'
+    - '2021-05-30'
+    - 0
+    - 
+    - 
+    - 15
+    - 1
+    - 2
+    - false
+    - '2021-06-04 05:08:18.954160'
+  - - 16
+    - 1
+    - 1
+    - 本棚組み立て
+    - ''
+    - '2021-06-06'
+    - 
+    - 3
+    - 5
+    - 3
+    - 
+    - 5
+    - 2
+    - '2021-05-30 05:07:13.406696'
+    - '2021-06-05 01:06:13.662687'
+    - '2021-05-30'
+    - 0
+    - 
+    - 
+    - 16
+    - 1
+    - 2
+    - false
+    - '2021-06-05 01:06:13.662687'
+  - - 17
+    - 1
+    - 1
+    - トイレ掃除
+    - ''
+    - '2021-06-06'
+    - 
+    - 1
+    - 1
+    - 3
+    - 
+    - 1
+    - 0
+    - '2021-05-30 05:51:51.190489'
+    - '2021-05-30 05:51:51.190489'
+    - '2021-05-30'
+    - 0
+    - 
+    - 
+    - 17
+    - 1
+    - 2
+    - false
+    - 
+  - - 18
+    - 1
+    - 1
+    - 衣替え
+    - ''
+    - '2021-06-06'
+    - 
+    - 3
+    - 5
+    - 3
+    - 
+    - 5
+    - 2
+    - '2021-06-01 11:29:25.713266'
+    - '2021-06-05 11:47:01.005299'
+    - '2021-06-01'
+    - 0
+    - 
+    - 
+    - 18
+    - 1
+    - 2
+    - false
+    - '2021-06-05 11:47:01.005299'
+  - - 19
+    - 2
+    - 1
+    - 白須整形外科クリニック（午後）
+    - 午後に行く
+    - '2021-08-07'
+    - 
+    - 2
+    - 5
+    - 4
+    - 
+    - 5
+    - 2
+    - '2021-06-02 13:24:45.602479'
+    - '2021-06-05 09:26:55.351278'
+    - '2021-06-02'
+    - 0
+    - 
+    - 
+    - 19
+    - 1
+    - 2
+    - false
+    - 
+  - - 20
+    - 1
+    - 1
+    - JINS
+    - "眼鏡調整に行く\r\n整形外科のついでに"
+    - '2021-06-04'
+    - 
+    - 1
+    - 5
+    - 3
+    - 
+    - 5
+    - 0
+    - '2021-06-02 13:25:27.830148'
+    - '2021-06-02 13:25:27.830148'
+    - '2021-06-02'
+    - 0
+    - 
+    - 
+    - 20
+    - 1
+    - 2
+    - false
+    - 
+  - - 21
+    - 2
+    - 1
+    - あさひ耳鼻咽喉科
+    - 午後
+    - '2021-06-04'
+    - 
+    - 1
+    - 5
+    - 3
+    - 
+    - 5
+    - 0
+    - '2021-06-03 11:11:45.563586'
+    - '2021-06-03 11:11:45.563586'
+    - '2021-06-03'
+    - 0
+    - 
+    - 
+    - 21
+    - 1
+    - 2
+    - false
+    - 
+  - - 22
+    - 1
+    - 1
+    - 粗大ごみ予約（椅子）
+    - "申込先 株式会社日野環境保全\r\n\r\n電話 042-581-4331"
+    - '2021-06-23'
+    - 
+    - 2
+    - 5
+    - 3
+    - 
+    - 5
+    - 1
+    - '2021-06-03 14:14:57.440462'
+    - '2021-06-04 00:56:49.418813'
+    - '2021-06-03'
+    - 0
+    - 
+    - 
+    - 22
+    - 1
+    - 2
+    - false
+    - 
+  - - 23
+    - 1
+    - 1
+    - ごみ（小型家電）
+    - ''
+    - '2021-06-30'
+    - 
+    - 1
+    - 5
+    - 3
+    - 
+    - 5
+    - 0
+    - '2021-06-03 14:16:28.452823'
+    - '2021-06-03 14:16:28.452823'
+    - '2021-06-03'
+    - 0
+    - 
+    - 
+    - 23
+    - 1
+    - 2
+    - false
+    - 
+  - - 24
+    - 1
+    - 1
+    - クリーニング（～6/17(木)）
+    - ''
+    - '2021-06-17'
+    - 
+    - 2
+    - 5
+    - 3
+    - 
+    - 5
+    - 1
+    - '2021-06-04 06:34:09.217251'
+    - '2021-06-05 09:25:51.594375'
+    - '2021-06-04'
+    - 0
+    - 
+    - 
+    - 24
+    - 1
+    - 2
+    - false
+    - 
+  - - 25
+    - 1
+    - 1
+    - 椅子の組み立て
+    - ''
+    - '2021-06-20'
+    - 
+    - 1
+    - 5
+    - 3
+    - 
+    - 5
+    - 0
+    - '2021-06-05 12:07:36.471053'
+    - '2021-06-05 12:07:36.471053'
+    - '2021-06-05'
+    - 0
+    - 
+    - 
+    - 25
+    - 1
+    - 2
+    - false
+    - 
+
+---
+journal_details:
+  columns:
+  - id
+  - journal_id
+  - property
+  - prop_key
+  - old_value
+  - value
+  records: 
+  - - 1
+    - 1
+    - attr
+    - priority_id
+    - '3'
+    - '2'
+  - - 2
+    - 2
+    - attr
+    - priority_id
+    - '3'
+    - '1'
+  - - 3
+    - 3
+    - attr
+    - priority_id
+    - '3'
+    - '2'
+  - - 4
+    - 4
+    - attr
+    - priority_id
+    - '1'
+    - '2'
+  - - 5
+    - 5
+    - attr
+    - description
+    - "買うものリスト\r\n\r\n・紙ファイル\r\n・赤ボールペン"
+    - "買うものリスト\r\n\r\n・紙ファイル\r\n・赤ボールペン\r\n・黒ボールペン"
+  - - 6
+    - 6
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 7
+    - 7
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 8
+    - 8
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 9
+    - 9
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 10
+    - 10
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 11
+    - 11
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 12
+    - 12
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 13
+    - 13
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 14
+    - 14
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 15
+    - 15
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 16
+    - 16
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 17
+    - 17
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 18
+    - 18
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 19
+    - 19
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 20
+    - 20
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 21
+    - 21
+    - attr
+    - priority_id
+    - '3'
+    - '4'
+  - - 22
+    - 22
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 23
+    - 23
+    - attr
+    - subject
+    - 整形外科
+    - 白須整形外科クリニック（午後）
+  - - 24
+    - 24
+    - attr
+    - due_date
+    - '2021-06-04'
+    - '2021-06-23'
+  - - 25
+    - 24
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 26
+    - 25
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 27
+    - 26
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 28
+    - 27
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 29
+    - 28
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 30
+    - 29
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 31
+    - 30
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 32
+    - 31
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 33
+    - 32
+    - attr
+    - due_date
+    - '2021-06-04'
+    - '2021-08-07'
+  - - 34
+    - 32
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 35
+    - 32
+    - attr
+    - priority_id
+    - '3'
+    - '4'
+  - - 36
+    - 33
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 37
+    - 34
+    - attr
+    - status_id
+    - '2'
+    - '3'
+  - - 38
+    - 35
+    - attr
+    - status_id
+    - '1'
+    - '2'
+  - - 39
+    - 36
+    - attr
+    - status_id
+    - '2'
+    - '3'
+
+---
+journals:
+  columns:
+  - id
+  - journalized_id
+  - journalized_type
+  - user_id
+  - notes
+  - created_on
+  - private_notes
+  records: 
+  - - 1
+    - 7
+    - Issue
+    - 5
+    - ''
+    - '2021-05-26 16:29:18.714738'
+    - false
+  - - 2
+    - 1
+    - Issue
+    - 1
+    - ''
+    - '2021-05-26 16:35:23.915452'
+    - false
+  - - 3
+    - 2
+    - Issue
+    - 1
+    - ''
+    - '2021-05-26 16:36:11.090555'
+    - false
+  - - 4
+    - 1
+    - Issue
+    - 1
+    - ''
+    - '2021-05-26 16:36:50.873477'
+    - false
+  - - 5
+    - 4
+    - Issue
+    - 5
+    - ''
+    - '2021-05-27 14:34:02.781736'
+    - false
+  - - 6
+    - 4
+    - Issue
+    - 5
+    - ''
+    - '2021-05-28 13:31:26.775551'
+    - false
+  - - 7
+    - 4
+    - Issue
+    - 5
+    - 購入済み
+    - '2021-05-28 13:31:48.524569'
+    - false
+  - - 8
+    - 10
+    - Issue
+    - 5
+    - ''
+    - '2021-05-28 21:35:31.824453'
+    - false
+  - - 9
+    - 10
+    - Issue
+    - 5
+    - 靴磨いた
+    - '2021-05-28 21:35:53.501925'
+    - false
+  - - 10
+    - 11
+    - Issue
+    - 5
+    - ''
+    - '2021-05-28 21:36:42.514011'
+    - false
+  - - 11
+    - 11
+    - Issue
+    - 5
+    - 空気入れた。
+    - '2021-05-28 21:36:57.477220'
+    - false
+  - - 12
+    - 13
+    - Issue
+    - 5
+    - ''
+    - '2021-05-28 21:59:02.096355'
+    - false
+  - - 13
+    - 13
+    - Issue
+    - 5
+    - 水垢を落とした。
+    - '2021-05-28 21:59:19.891047'
+    - false
+  - - 14
+    - 6
+    - Issue
+    - 5
+    - ''
+    - '2021-05-28 23:36:32.548289'
+    - false
+  - - 15
+    - 6
+    - Issue
+    - 5
+    - 完了した。
+    - '2021-05-28 23:36:45.056765'
+    - false
+  - - 16
+    - 12
+    - Issue
+    - 5
+    - ''
+    - '2021-05-29 02:44:06.475200'
+    - false
+  - - 17
+    - 12
+    - Issue
+    - 5
+    - "行ったけど、まだ右側きつい。\r\nまた、調整に行った方が良いかも（様子見）。"
+    - '2021-05-29 02:45:03.647494'
+    - false
+  - - 18
+    - 3
+    - Issue
+    - 5
+    - ''
+    - '2021-05-29 02:45:18.899641'
+    - false
+  - - 19
+    - 8
+    - Issue
+    - 5
+    - ''
+    - '2021-05-29 03:01:26.558596'
+    - false
+  - - 20
+    - 8
+    - Issue
+    - 5
+    - 無事に受けっとった。
+    - '2021-05-29 03:01:42.331788'
+    - false
+  - - 21
+    - 14
+    - Issue
+    - 5
+    - ''
+    - '2021-05-29 07:07:09.888021'
+    - false
+  - - 22
+    - 3
+    - Issue
+    - 5
+    - ''
+    - '2021-05-30 05:09:07.069623'
+    - false
+  - - 23
+    - 19
+    - Issue
+    - 5
+    - ''
+    - '2021-06-02 14:43:01.705889'
+    - false
+  - - 24
+    - 22
+    - Issue
+    - 5
+    - 200円のシールを貼って、朝8時までに出す
+    - '2021-06-04 00:56:49.424233'
+    - false
+  - - 25
+    - 15
+    - Issue
+    - 5
+    - ''
+    - '2021-06-04 05:08:01.327686'
+    - false
+  - - 26
+    - 15
+    - Issue
+    - 5
+    - 組み立て完了
+    - '2021-06-04 05:08:18.958564'
+    - false
+  - - 27
+    - 7
+    - Issue
+    - 5
+    - ''
+    - '2021-06-04 05:08:43.659016'
+    - false
+  - - 28
+    - 7
+    - Issue
+    - 5
+    - 予定通りに受け取り完了
+    - '2021-06-04 05:08:58.681266'
+    - false
+  - - 29
+    - 16
+    - Issue
+    - 5
+    - 組み立て完了
+    - '2021-06-05 01:06:02.762588'
+    - false
+  - - 30
+    - 16
+    - Issue
+    - 5
+    - ''
+    - '2021-06-05 01:06:13.668051'
+    - false
+  - - 31
+    - 24
+    - Issue
+    - 5
+    - 2着は出した
+    - '2021-06-05 09:25:51.601263'
+    - false
+  - - 32
+    - 19
+    - Issue
+    - 5
+    - 行ったけど、混んでたから帰った
+    - '2021-06-05 09:26:55.356332'
+    - false
+  - - 33
+    - 2
+    - Issue
+    - 5
+    - ''
+    - '2021-06-05 09:27:20.634762'
+    - false
+  - - 34
+    - 2
+    - Issue
+    - 5
+    - ''
+    - '2021-06-05 09:27:40.871562'
+    - false
+  - - 35
+    - 18
+    - Issue
+    - 5
+    - ''
+    - '2021-06-05 11:46:00.954441'
+    - false
+  - - 36
+    - 18
+    - Issue
+    - 5
+    - ''
+    - '2021-06-05 11:47:01.010961'
+    - false
+
+---
+member_roles:
+  columns:
+  - id
+  - member_id
+  - role_id
+  - inherited_from
+  records: 
+  - - 1
+    - 1
+    - 3
+    - 
+
+---
+members:
+  columns:
+  - id
+  - user_id
+  - project_id
+  - created_on
+  - mail_notification
+  records: 
+  - - 1
+    - 5
+    - 1
+    - '2021-05-26 13:56:12.691441'
+    - false
+
+---
+projects:
+  columns:
+  - id
+  - name
+  - description
+  - homepage
+  - is_public
+  - parent_id
+  - created_on
+  - updated_on
+  - identifier
+  - status
+  - lft
+  - rgt
+  - inherit_members
+  - default_version_id
+  - default_assigned_to_id
+  records: 
+  - - 1
+    - 日常生活
+    - ''
+    - ''
+    - true
+    - 
+    - '2021-05-26 13:27:23.119857'
+    - '2021-05-27 15:06:17.552680'
+    - daily
+    - 1
+    - 1
+    - 2
+    - false
+    - 
+    - 5
+
+---
+projects_trackers:
+  columns:
+  - project_id
+  - tracker_id
+  records: 
+  - - 1
+    - 1
+  - - 1
+    - 2
+
+---
+roles:
+  columns:
+  - id
+  - name
+  - position
+  - assignable
+  - builtin
+  - permissions
+  - issues_visibility
+  - users_visibility
+  - time_entries_visibility
+  - all_roles_managed
+  - settings
+  records: 
+  - - 1
+    - Non member
+    - 0
+    - true
+    - 1
+    - |
+      ---
+      - :view_issues
+      - :view_news
+      - :view_messages
+    - default
+    - all
+    - all
+    - true
+    - 
+  - - 2
+    - Anonymous
+    - 0
+    - true
+    - 2
+    - |
+      ---
+      - :view_issues
+      - :view_news
+      - :view_messages
+    - default
+    - all
+    - all
+    - true
+    - 
+  - - 3
+    - 一般ユーザ
+    - 1
+    - true
+    - 0
+    - |
+      ---
+      - :view_messages
+      - :view_calendar
+      - :view_gantt
+      - :view_issues
+      - :add_issues
+      - :edit_issues
+      - :edit_own_issues
+      - :copy_issues
+      - :manage_issue_relations
+      - :manage_subtasks
+      - :set_issues_private
+      - :set_own_issues_private
+      - :add_issue_notes
+      - :edit_issue_notes
+      - :edit_own_issue_notes
+      - :view_private_notes
+      - :set_notes_private
+      - :delete_issues
+      - :view_issue_watchers
+      - :add_issue_watchers
+      - :delete_issue_watchers
+      - :manage_categories
+      - :view_news
+    - default
+    - all
+    - all
+    - true
+    - |
+      --- !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+      permissions_all_trackers: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+        view_issues: '1'
+        add_issues: '1'
+        edit_issues: '1'
+        add_issue_notes: '1'
+        delete_issues: '1'
+      permissions_tracker_ids: !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+        view_issues: []
+        add_issues: []
+        edit_issues: []
+        add_issue_notes: []
+        delete_issues: []
+
+---
+settings:
+  columns:
+  - id
+  - name
+  - value
+  - updated_on
+  records: 
+  - - 1
+    - app_title
+    - Redmine
+    - '2021-05-26 13:34:26.683454'
+  - - 2
+    - welcome_text
+    - ''
+    - '2021-05-26 13:34:26.688992'
+  - - 3
+    - per_page_options
+    - '25,50,100'
+    - '2021-05-26 13:34:26.694158'
+  - - 4
+    - search_results_per_page
+    - '10'
+    - '2021-05-26 13:34:26.698876'
+  - - 5
+    - activity_days_default
+    - '10'
+    - '2021-05-26 13:34:26.703260'
+  - - 6
+    - host_name
+    - indigoblue.ddns.net:8080
+    - '2021-05-26 13:34:26.707285'
+  - - 7
+    - protocol
+    - http
+    - '2021-05-26 13:42:33.897708'
+  - - 8
+    - text_formatting
+    - textile
+    - '2021-05-26 13:34:26.715859'
+  - - 9
+    - cache_formatted_text
+    - '0'
+    - '2021-05-26 13:34:26.719443'
+  - - 10
+    - wiki_compression
+    - ''
+    - '2021-05-26 13:34:26.723157'
+  - - 11
+    - feeds_limit
+    - '15'
+    - '2021-05-26 13:34:26.727576'
+  - - 12
+    - ui_theme
+    - ''
+    - '2021-05-26 13:34:45.120895'
+  - - 13
+    - default_language
+    - ja
+    - '2021-05-26 13:34:45.125302'
+  - - 14
+    - force_default_language_for_anonymous
+    - '0'
+    - '2021-05-26 13:34:45.129164'
+  - - 15
+    - force_default_language_for_loggedin
+    - '0'
+    - '2021-05-26 13:34:45.132985'
+  - - 16
+    - start_of_week
+    - ''
+    - '2021-05-26 13:34:45.138886'
+  - - 17
+    - date_format
+    - ''
+    - '2021-05-26 13:34:45.144259'
+  - - 18
+    - time_format
+    - ''
+    - '2021-05-26 13:34:45.149190'
+  - - 19
+    - timespan_format
+    - decimal
+    - '2021-05-26 13:34:45.154013'
+  - - 20
+    - user_format
+    - lastname_firstname
+    - '2021-05-26 13:34:45.158479'
+  - - 21
+    - gravatar_enabled
+    - '0'
+    - '2021-05-26 13:34:45.175385'
+  - - 22
+    - thumbnails_enabled
+    - '1'
+    - '2021-05-26 13:34:45.179733'
+  - - 23
+    - thumbnails_size
+    - '100'
+    - '2021-05-26 13:34:45.183878'
+  - - 24
+    - new_item_menu_tab
+    - '2'
+    - '2021-05-26 13:34:45.187685'
+  - - 25
+    - login_required
+    - '1'
+    - '2021-05-26 13:35:06.792279'
+  - - 26
+    - autologin
+    - '30'
+    - '2021-05-26 13:35:06.799140'
+  - - 27
+    - self_registration
+    - '0'
+    - '2021-05-27 15:02:55.767847'
+  - - 28
+    - show_custom_fields_on_registration
+    - '0'
+    - '2021-05-27 15:02:55.772293'
+  - - 29
+    - password_min_length
+    - '8'
+    - '2021-05-26 13:35:06.814416'
+  - - 30
+    - password_required_char_classes
+    - "--- []\n"
+    - '2021-05-26 13:35:06.818821'
+  - - 31
+    - password_max_age
+    - '0'
+    - '2021-05-26 13:35:06.823318'
+  - - 32
+    - lost_password
+    - '1'
+    - '2021-05-26 13:35:06.827582'
+  - - 33
+    - twofa
+    - '1'
+    - '2021-05-26 13:35:06.832133'
+  - - 34
+    - openid
+    - '0'
+    - '2021-05-26 13:35:06.836080'
+  - - 35
+    - session_lifetime
+    - '0'
+    - '2021-05-26 13:35:06.840291'
+  - - 36
+    - session_timeout
+    - '0'
+    - '2021-05-26 13:35:06.844310'
+  - - 37
+    - default_projects_public
+    - '0'
+    - '2021-05-26 13:35:20.214733'
+  - - 38
+    - default_projects_modules
+    - |
+      ---
+      - issue_tracking
+      - time_tracking
+      - news
+      - documents
+      - files
+      - wiki
+      - repository
+      - boards
+      - calendar
+      - gantt
+    - '2021-05-26 13:35:20.219791'
+  - - 39
+    - default_projects_tracker_ids
+    - "--- []\n"
+    - '2021-05-26 13:35:20.224786'
+  - - 40
+    - sequential_project_identifiers
+    - '0'
+    - '2021-05-26 13:35:20.228771'
+  - - 41
+    - project_list_display_type
+    - board
+    - '2021-05-26 13:35:20.236614'
+  - - 42
+    - project_list_defaults
+    - |
+      ---
+      :column_names:
+      - name
+      - identifier
+      - short_description
+    - '2021-05-26 13:35:20.241067'
+  - - 43
+    - mail_from
+    - nasmanager55@gmail.com
+    - '2021-05-27 15:01:38.070931'
+  - - 44
+    - bcc_recipients
+    - '1'
+    - '2021-05-27 15:01:38.076175'
+  - - 45
+    - plain_text_mail
+    - '0'
+    - '2021-05-27 15:01:38.080315'
+  - - 46
+    - show_status_changes_in_mail_subject
+    - '1'
+    - '2021-05-27 15:01:38.084540'
+  - - 47
+    - notified_events
+    - |
+      ---
+      - issue_added
+      - issue_updated
+    - '2021-05-27 15:01:38.088738'
+  - - 48
+    - emails_header
+    - ''
+    - '2021-05-27 15:01:38.092637'
+  - - 49
+    - emails_footer
+    - "You have received this notification because you have either subscribed to it,
+      or are involved in it.\r\nTo change your notification preferences, please click
+      here: http://hostname/my/account"
+    - '2021-05-27 15:01:38.096186'
+  - - 50
+    - plugin_redmine_extended_reminder
+    - |
+      --- !ruby/hash:ActiveSupport::HashWithIndifferentAccess
+      days: '3'
+      disable_on_non_woking_days: '1'
+    - '2021-05-30 05:50:13.381635'
+
+---
+tokens:
+  columns:
+  - id
+  - user_id
+  - action
+  - value
+  - created_on
+  - updated_on
+  records: 
+  - - 3
+    - 1
+    - feeds
+    - '085cd32ec9f704733e88aa4188ac8c2f8447dd1e'
+    - '2021-05-26 13:28:16.782519'
+    - '2021-05-26 13:28:16.782519'
+  - - 6
+    - 5
+    - feeds
+    - cc1a65a2350d65cc404a162d06be6733732a6210
+    - '2021-05-26 13:54:57.808946'
+    - '2021-05-26 13:54:57.808946'
+  - - 17
+    - 1
+    - session
+    - b31851ef6883ad086d3a1c878264895d034336a4
+    - '2021-05-26 16:34:26.418309'
+    - '2021-05-26 16:40:23.462066'
+  - - 54
+    - 1
+    - session
+    - 1c06add4d8171b692979826313dc6b668fb05221
+    - '2021-05-31 11:43:57.833414'
+    - '2021-05-31 11:46:14.451477'
+  - - 60
+    - 5
+    - api
+    - 8ef7fd4ca09ac42413262929333b12a06dc58d0c
+    - '2021-06-01 10:59:56.084996'
+    - '2021-06-01 10:59:56.084996'
+  - - 64
+    - 5
+    - autologin
+    - edbe906b4ba823aa87488e03d6cbb46ab54299b7
+    - '2021-06-01 11:14:48.541942'
+    - '2021-06-01 11:14:48.541942'
+  - - 69
+    - 5
+    - autologin
+    - c5b8d1505d310f0d59835ae81a92071822fb0743
+    - '2021-06-01 11:29:46.521542'
+    - '2021-06-01 11:29:46.521542'
+  - - 76
+    - 5
+    - autologin
+    - d2a8b6c85ddbf0775080e04e30d8fe7592f139a6
+    - '2021-06-02 13:34:47.052086'
+    - '2021-06-02 13:34:47.052086'
+  - - 80
+    - 5
+    - autologin
+    - cf93144c2a6e3713e03a5b3740fb8b66c222ee49
+    - '2021-06-02 13:36:42.668956'
+    - '2021-06-02 13:36:42.668956'
+  - - 84
+    - 5
+    - autologin
+    - dc7d4b3687dabe97a0a65d9544d84f2e373bbb45
+    - '2021-06-02 13:37:18.972636'
+    - '2021-06-02 13:37:18.972636'
+  - - 88
+    - 5
+    - autologin
+    - 0d14b4567580193153e73829b3d626994ba0e636
+    - '2021-06-02 13:37:46.630913'
+    - '2021-06-02 13:37:46.630913'
+  - - 92
+    - 5
+    - autologin
+    - d99fb746afe93c531e8783151d825c54b0fdaf70
+    - '2021-06-02 13:37:52.538700'
+    - '2021-06-02 13:37:52.538700'
+  - - 93
+    - 5
+    - session
+    - a82d739e56d7d8f246226ad1541331f050957130
+    - '2021-06-02 14:41:02.409748'
+    - '2021-06-11 13:46:08.476848'
+  - - 94
+    - 5
+    - session
+    - 7615193c1bab83ba8d1d27c8e013495d71f08d04
+    - '2021-06-02 22:19:45.324429'
+    - '2021-06-07 13:23:47.259644'
+  - - 97
+    - 5
+    - autologin
+    - 3a1bbf4a79a514be2cf15797131fb483f3de6409
+    - '2021-06-03 11:10:02.409707'
+    - '2021-06-03 11:10:02.409707'
+  - - 98
+    - 5
+    - session
+    - 4c9501d4637783ff0b08b32737632d7ee2abb251
+    - '2021-06-05 01:05:29.284472'
+    - '2021-06-05 01:07:19.839123'
+  - - 99
+    - 5
+    - autologin
+    - 1f0e635fc1addb2d10a6bdeb70c61e80cd9178dd
+    - '2021-06-05 01:05:29.291744'
+    - '2021-06-05 01:05:29.291744'
+  - - 100
+    - 5
+    - session
+    - e0826369a3649eb2c2ae4487400b32628ea0f61b
+    - '2021-06-05 09:25:09.210111'
+    - '2021-06-05 09:28:01.403135'
+  - - 101
+    - 5
+    - autologin
+    - bd263a511ab04491e5013281163e3a3e22889012
+    - '2021-06-05 09:25:09.217849'
+    - '2021-06-05 09:25:09.217849'
+  - - 102
+    - 5
+    - session
+    - b0ada75580ce168721bb870b225d9ce48480d67a
+    - '2021-06-05 10:16:24.042350'
+    - '2021-06-05 10:16:24.042350'
+  - - 103
+    - 5
+    - session
+    - f082eb96425223d262361345f1d747d34fe21884
+    - '2021-06-05 11:45:47.136125'
+    - '2021-06-05 11:48:11.287897'
+  - - 104
+    - 5
+    - session
+    - 84e1ea82a40f78d3247b6d2e29a32cb23711a921
+    - '2021-06-05 12:06:53.646968'
+    - '2021-06-05 12:07:41.479588'
+  - - 105
+    - 5
+    - session
+    - d64a05798ed024eae07c8719ce4ebc2c6dbd602e
+    - '2021-06-05 13:00:55.481585'
+    - '2021-06-05 13:00:55.481585'
+  - - 106
+    - 5
+    - session
+    - 6c8d4ad54b0d2c7a9c51ed8979961babda8fb76b
+    - '2021-06-05 14:04:44.301125'
+    - '2021-06-05 14:18:03.449986'
+  - - 107
+    - 5
+    - session
+    - 461bd92d2a36ef7ec81a80596d4aa3af94a6f010
+    - '2021-06-06 04:14:08.039083'
+    - '2021-06-06 06:59:14.245935'
+
+---
+trackers:
+  columns:
+  - id
+  - name
+  - is_in_chlog
+  - position
+  - is_in_roadmap
+  - fields_bits
+  - default_status_id
+  - description
+  records: 
+  - - 1
+    - ToDo
+    - false
+    - 1
+    - true
+    - 198
+    - 1
+    - ''
+  - - 2
+    - 予約
+    - false
+    - 2
+    - true
+    - 198
+    - 1
+    - ''
+
+---
+user_preferences:
+  columns:
+  - id
+  - user_id
+  - others
+  - hide_mail
+  - time_zone
+  records: 
+  - - 1
+    - 1
+    - |
+      ---
+      :no_self_notified: '1'
+      :my_page_layout:
+        left:
+        - issuesassignedtome
+        right:
+        - issuesreportedbyme
+      :my_page_settings: {}
+      :comments_sorting: asc
+      :warn_on_leaving_unsaved: '1'
+      :textarea_font: ''
+      :recently_used_projects: 3
+      :history_default_tab: notes
+      :toolbar_language_options: c,cpp,csharp,css,diff,go,groovy,html,java,javascript,objc,perl,php,python,r,ruby,sass,scala,shell,sql,swift,xml,yaml
+      :recently_used_project_ids: '1'
+      :gantt_zoom: 2
+      :gantt_months: 6
+      :notify_about_high_priority_issues: '0'
+    - true
+    - ''
+  - - 2
+    - 5
+    - |
+      ---
+      :no_self_notified: '1'
+      :comments_sorting: asc
+      :warn_on_leaving_unsaved: '1'
+      :textarea_font: ''
+      :recently_used_projects: 3
+      :history_default_tab: notes
+      :toolbar_language_options: c,cpp,csharp,css,diff,go,groovy,html,java,javascript,objc,perl,php,python,r,ruby,sass,scala,shell,sql,swift,xml,yaml
+      :my_page_layout:
+        left:
+        - issuesassignedtome
+        right:
+        - issuesreportedbyme
+      :my_page_settings: {}
+      :recently_used_project_ids: '1'
+      :gantt_zoom: 2
+      :gantt_months: 6
+      :notify_about_high_priority_issues: '0'
+    - true
+    - Osaka
+
+---
+users:
+  columns:
+  - id
+  - login
+  - hashed_password
+  - firstname
+  - lastname
+  - admin
+  - status
+  - last_login_on
+  - language
+  - auth_source_id
+  - created_on
+  - updated_on
+  - type
+  - identity_url
+  - mail_notification
+  - salt
+  - must_change_passwd
+  - passwd_changed_on
+  - twofa_scheme
+  - twofa_totp_key
+  - twofa_totp_last_used_at
+  records: 
+  - - 1
+    - admin
+    - c3b687eb77b4ce065c9d31cfb7b16c6111ba9675
+    - 学
+    - 中村
+    - true
+    - 1
+    - '2021-06-02 13:25:46.096875'
+    - ''
+    - 
+    - '2021-05-26 13:24:04.756008'
+    - '2021-05-28 13:38:35.265226'
+    - User
+    - 
+    - all
+    - ad1f67daa8ef03d356f6c583590ad6b2
+    - false
+    - '2021-05-26 13:24:40'
+    - 
+    - 
+    - 
+  - - 2
+    - ''
+    - ''
+    - ''
+    - Anonymous users
+    - false
+    - 1
+    - 
+    - ''
+    - 
+    - '2021-05-26 13:24:07.684235'
+    - '2021-05-26 13:24:07.684235'
+    - GroupAnonymous
+    - 
+    - ''
+    - 
+    - false
+    - 
+    - 
+    - 
+    - 
+  - - 3
+    - ''
+    - ''
+    - ''
+    - Non member users
+    - false
+    - 1
+    - 
+    - ''
+    - 
+    - '2021-05-26 13:24:07.717586'
+    - '2021-05-26 13:24:07.717586'
+    - GroupNonMember
+    - 
+    - ''
+    - 
+    - false
+    - 
+    - 
+    - 
+    - 
+  - - 4
+    - ''
+    - ''
+    - ''
+    - Anonymous
+    - false
+    - 0
+    - 
+    - ''
+    - 
+    - '2021-05-26 13:24:16.325348'
+    - '2021-05-26 13:24:16.325348'
+    - AnonymousUser
+    - 
+    - only_my_events
+    - 
+    - false
+    - 
+    - 
+    - 
+    - 
+  - - 5
+    - manabu
+    - c0a11543362fcc0110991abfae6e692eb3ba9dd8
+    - 学
+    - 中村
+    - false
+    - 1
+    - '2021-06-06 04:14:08.035094'
+    - ja
+    - 
+    - '2021-05-26 13:28:13.868713'
+    - '2021-05-26 15:18:16.061020'
+    - User
+    - 
+    - all
+    - d254a34fd024aee2d2376fc68470a17e
+    - false
+    - '2021-05-26 13:28:13'
+    - 
+    - 
+    - 
+
+---
+wikis:
+  columns:
+  - id
+  - project_id
+  - start_page
+  - status
+  records: 
+  - - 1
+    - 1
+    - Wiki
+    - 1
+
+---
+workflows:
+  columns:
+  - id
+  - tracker_id
+  - old_status_id
+  - new_status_id
+  - role_id
+  - assignee
+  - author
+  - type
+  - field_name
+  - rule
+  records: 
+  - - 1
+    - 1
+    - 1
+    - 0
+    - 3
+    - false
+    - false
+    - WorkflowPermission
+    - assigned_to_id
+    - required
+  - - 2
+    - 1
+    - 1
+    - 0
+    - 3
+    - false
+    - false
+    - WorkflowPermission
+    - due_date
+    - required
+  - - 3
+    - 2
+    - 1
+    - 0
+    - 3
+    - false
+    - false
+    - WorkflowPermission
+    - assigned_to_id
+    - required
+  - - 4
+    - 2
+    - 1
+    - 0
+    - 3
+    - false
+    - false
+    - WorkflowPermission
+    - due_date
+    - required
+  - - 5
+    - 2
+    - 1
+    - 2
+    - 3
+    - false
+    - false
+    - WorkflowTransition
+    - 
+    - 
+  - - 6
+    - 2
+    - 2
+    - 3
+    - 3
+    - false
+    - false
+    - WorkflowTransition
+    - 
+    - 
+  - - 7
+    - 1
+    - 0
+    - 1
+    - 3
+    - false
+    - false
+    - WorkflowTransition
+    - 
+    - 
+  - - 8
+    - 1
+    - 1
+    - 2
+    - 3
+    - false
+    - false
+    - WorkflowTransition
+    - 
+    - 
+  - - 9
+    - 1
+    - 2
+    - 3
+    - 3
+    - false
+    - false
+    - WorkflowTransition
+    - 
+    - 

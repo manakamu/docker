@@ -1,0 +1,7 @@
+FROM mysql:5.7
+
+COPY ./my.cnf /etc/mysql/
+
+#RUN chmod 755 /etc/mysql/my.cnf
+RUN apt-get update
+RUN apt-get install -y less emacs
