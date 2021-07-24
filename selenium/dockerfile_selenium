@@ -18,7 +18,7 @@ ENV TZ JST-9
 RUN apt-get -y install /root/google-chrome-stable_current_amd64.deb
 
 RUN cd /root
-RUN git clone https://manakamu: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@github.com/manakamu/poleScraper.git
+RUN git clone https://manakamu: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@github.com/manakamu/poleScraper.git
 
 COPY ./run_poleBlogScraper.sh /root/poleScraper/
 COPY ./poleBlog.db /root/poleScraper/
