@@ -2,7 +2,7 @@ FROM python
 
 COPY ./google-chrome-stable_current_amd64.deb /root
 COPY ./chromedriver /root
-
+copy ./poleScraper-master.zip /root
 
 RUN apt-get update
 RUN apt-get install -y less emacs
@@ -18,7 +18,8 @@ ENV TZ JST-9
 RUN apt-get -y install /root/google-chrome-stable_current_amd64.deb
 
 RUN cd /root
-RUN git clone https://manakamu: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@github.com/manakamu/poleScraper
+#RUN git clone https://manakamu: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@github.com/manakamu/poleScraper.git
+RUN unzip -x poleScraper-master.zip
 
 COPY ./run_poleBlogScraper.sh /root/poleScraper/
 COPY ./poleBlog.db /root/poleScraper/
