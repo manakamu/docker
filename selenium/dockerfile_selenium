@@ -20,10 +20,10 @@ RUN apt-get -y install /root/google-chrome-stable_current_amd64.deb
 RUN cd /root
 RUN git clone https://manakamu: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@github.com/manakamu/poleScraper.git
 
-COPY ./run_poleBlogScraper.sh /root/poleScraper
-COPY ./poleBlog.db
+COPY ./run_poleBlogScraper.sh /root/poleScraper/
+COPY ./poleBlog.db /root/poleScraper/
 RUN chmod +x /root/poleScraper/run_poleBlogScraper
-COPY ./config_linux.py /root/poleScraper
+COPY ./config_linux.py /root/poleScraper/
 
 RUN pip install lxml
 RUN pip install selenium
