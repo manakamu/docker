@@ -20,8 +20,9 @@ RUN apt-get -y install /root/google-chrome-stable_current_amd64.deb
 
 RUN cd /root
 #RUN git clone https://manakamu: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@github.com/manakamu/poleScraper.git
-RUN unzip -x poleScraper-master.zip
+RUN unzip -x /root/poleScraper-master.zip -d /root
 RUN mv /root/poleScraper-master/ /root/poleScraper/
+
 COPY ./run_poleBlogScraper.sh /root/poleScraper/
 COPY ./poleBlog.db /root/poleScraper/
 RUN chmod +x /root/poleScraper/run_poleBlogScraper.sh
