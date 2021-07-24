@@ -1,7 +1,7 @@
 FROM python
 
 COPY ./google-chrome-stable_current_amd64.deb /root
-COPY ./chromedriver /root
+COPY ./chromedriver_linux64.zip /root
 copy ./poleScraper-master.zip /root
 
 RUN apt-get update
@@ -22,6 +22,7 @@ RUN cd /root
 #RUN git clone https://manakamu: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@github.com/manakamu/poleScraper.git
 RUN unzip -x /root/poleScraper-master.zip -d /root
 RUN mv /root/poleScraper-master/ /root/poleScraper/
+RUN unzip -x /root/chromedriver_linux64.zip -d /root
 
 COPY ./run_poleBlogScraper.sh /root/poleScraper/
 COPY ./poleBlog.db /root/poleScraper/
