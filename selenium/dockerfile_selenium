@@ -7,6 +7,7 @@ copy ./poleScraper-master.zip /root
 RUN apt-get update
 RUN apt-get install -y less emacs
 RUN apt-get install -y git
+RUN apt-get install -y unzip
 
 RUN apt-get -y install locales && \
     localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
