@@ -1,2 +1,5 @@
 docker-compose build
 docker-compose up
+
+構成ファイルを更新しても、キャッシュが使われる場合
+docker-compose build --no-cache
