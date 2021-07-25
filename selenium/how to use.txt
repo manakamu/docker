@@ -1,5 +1,11 @@
 docker-compose build
-docker-compose up
+docker-compose up -d
 
 構成ファイルを更新しても、キャッシュが使われる場合
 docker-compose build --no-cache
+
+Dockerコンテナの削除
+docker rm selenium-python
+
+Dockerコンテナに接続
+docker exec -it selenium-python /bin/bash

@@ -8,6 +8,7 @@ RUN apt-get update
 RUN apt-get install -y less emacs
 RUN apt-get install -y git
 RUN apt-get install -y unzip
+RUN apt-get install -y imagemagick
 
 RUN apt-get -y install locales && \
     localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
@@ -22,7 +23,7 @@ RUN cd /root
 #RUN git clone https://manakamu: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@github.com/manakamu/poleScraper.git
 RUN unzip -x /root/poleScraper-master.zip -d /root
 RUN mv /root/poleScraper-master/ /root/poleScraper/
-RUN unzip -x /root/chromedriver_linux64.zip -d /root
+RUN unzip -x -o /root/chromedriver_linux64.zip -d /root
 
 COPY ./run_poleBlogScraper.sh /root/poleScraper/
 COPY ./poleBlog.db /root/poleScraper/
