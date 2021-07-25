@@ -1,4 +1,4 @@
-FROM python
+FROM python:3.6
 
 COPY ./google-chrome-stable_current_amd64.deb /root
 COPY ./chromedriver_linux64.zip /root
@@ -32,3 +32,5 @@ COPY ./config_linux.py /root/poleScraper/
 RUN pip install lxml
 RUN pip install selenium
 RUN pip install requests
+RUN pip install cssselect
+
