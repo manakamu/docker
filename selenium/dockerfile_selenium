@@ -9,6 +9,7 @@ RUN apt-get install -y less emacs
 RUN apt-get install -y git
 RUN apt-get install -y unzip
 RUN apt-get install -y imagemagick
+RUN apt-get install -y python3-pip
 
 RUN apt-get -y install locales && \
     localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
@@ -30,8 +31,8 @@ COPY ./poleBlog.db /root/poleScraper/
 RUN chmod +x /root/poleScraper/run_poleBlogScraper.sh
 COPY ./config_linux.py /root/poleScraper/
 
-RUN pip install lxml
-RUN pip install selenium
-RUN pip install requests
-RUN pip install cssselect
+RUN pip3 install lxml
+RUN pip3 install selenium
+RUN pip3 install requests
+RUN pip3 install cssselect
 
