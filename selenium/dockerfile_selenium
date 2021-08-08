@@ -20,16 +20,26 @@ ENV TZ JST-9
 
 RUN apt-get -y install /root/google-chrome-stable_current_amd64.deb
 
+# shをbashに置き換える
+RUN mv /bin/sh /bin/sh_tmp && ln -s /bin/bash /bin/sh
+
 RUN cd /root
 #RUN git clone https://manakamu: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@github.com/manakamu/poleScraper.git
-RUN unzip -x /root/poleScraper-master.zip -d /root
-RUN mv /root/poleScraper-master/ /root/poleScraper/
+RUN rm -rf /root/poleScraper
+RUN mkdir /root/poleScraper
+RUN unzip -j -x /root/poleScraper-master.zip -d /root/poleScraper
+#RUN mv /root/poleScraper-master /root/poleScraper
 RUN unzip -x -o /root/chromedriver_linux64.zip -d /root
+RUN python -m venv /root/python_venv
+RUN source /root/python_venv/bin/activate
 
 COPY ./run_poleBlogScraper.sh /root/poleScraper/
 COPY ./poleBlog.db /root/poleScraper/
 RUN chmod +x /root/poleScraper/run_poleBlogScraper.sh
 COPY ./config_linux.py /root/poleScraper/
+
+# shを元に戻す
+RUN rm /bin/sh && mv /bin/sh_tmp /bin/sh
 
 RUN pip3 install lxml
 RUN pip3 install selenium
