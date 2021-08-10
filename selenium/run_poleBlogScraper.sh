@@ -13,7 +13,7 @@ else
   trap 'kill $(jobs -p);rm -f $LOCK_FILE;echo 強制終了されました。' EXIT
 
   #処理本体
-  source /root/python_venv/bin/activate
+  source /usr/src/python_venv/bin/activate
   /usr/bin/python3 $SCRIPT_DIR/main.py >>$SCRIPT_DIR/pole.log 2>>$SCRIPT_DIR/pole-err.log
 
   #ロックファイルを削除
