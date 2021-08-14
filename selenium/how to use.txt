@@ -9,3 +9,9 @@ docker rm selenium-python
 
 Dockerコンテナに接続
 docker exec -it selenium-python /bin/bash
+
+コンテナからホストへのコピー
+sudo docker cp <コンテナID>:/etc/my.cnf my.cnf
+
+ホストからコンテナへのコピー
+sudo docker cp my.cnf <コンテナID>:/etc/my.cnf
