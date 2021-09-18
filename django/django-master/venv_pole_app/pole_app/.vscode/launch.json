@@ -1,0 +1,48 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Django",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\manage.py",
+            "args": [
+                "runserver",
+                "--noreload"
+            ],
+            "env": {
+                "DJANGO_SETTINGS_MODULE": "pole_app.settings_dev",
+            },
+            "django": true
+        },
+        {
+            "name": "Python: Django makemigrations",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\manage.py",
+            "args": [
+                "makemigrations"
+            ],
+            "env": {
+                "DJANGO_SETTINGS_MODULE": "pole_app.settings_dev",
+            },
+            "django": true
+        },
+        {
+            "name": "Python: Django migrate",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}\\manage.py",
+            "args": [
+                "migrate"
+            ],
+            "env": {
+                "DJANGO_SETTINGS_MODULE": "pole_app.settings_dev",
+            },
+            "django": true
+        }
+    ]
+}
