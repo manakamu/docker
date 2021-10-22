@@ -1,8 +1,0 @@
-{% load static %}
-{% load pole_tags %}
-
-{% block contents %}
-{% for entry in photos %}
-    <img src="{% static 'img/pole/thumb/'|append_string:entry %}"  data-highres="{% static 'img/pole/'|append_string:entry %}" />
-{% endfor %}
-{% endblock %}
