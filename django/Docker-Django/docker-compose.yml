@@ -3,7 +3,7 @@ version: "3.7"
 services:
   web:
     build: ./django_project
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn project.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./django_project/:/usr/src/app/
     ports:
@@ -11,5 +11,3 @@ services:
     env_file:
       - ./.env.dev
  
-volumes:
-  postgres_data:
