@@ -1,7 +1,9 @@
 # BUILDER #
  
 FROM python:3.8.3-alpine as builder
- 
+
+USER root
+
 WORKDIR /usr/src/app
  
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -21,10 +23,12 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
 # FINAL #
  
 FROM python:3.8.3-alpine
- 
+
+USER root
+
 RUN mkdir -p /home/app
  
-RUN addgroup -S app && adduser -S app -G app
+#RUN addgroup -S app && adduser -S app -G app
  
 ENV HOME=/home/app
 ENV APP_HOME=/home/app/web
@@ -40,8 +44,8 @@ RUN pip install --no-cache /wheels/*
  
 COPY . $APP_HOME
  
-RUN chown -R app:app $APP_HOME
+#RUN chown -R app:app $APP_HOME
  
-USER app
+#USER app
  
 #ENTRYPOINT ["/home/app/web/entrypoint.sh"]
