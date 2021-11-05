@@ -1,6 +1,6 @@
 # BUILDER #
  
-FROM python:3.8.3-alpine as builder
+FROM python:3.8.12-bullseye as builder
 
 USER root
 
@@ -22,7 +22,7 @@ RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requir
  
 # FINAL #
  
-FROM python:3.8.3-alpine
+FROM python:3.8.12-bullseye
 
 USER root
 
@@ -35,7 +35,11 @@ ENV APP_HOME=/usr/src/app/web
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
  
-RUN apk update && apk add libpq
+#RUN apk update && apk add libpq
+RUN apt-get update
+RUN apt-get install emacs -y
+RUN apt-get install less -y
+
 COPY --from=builder /usr/src/app/wheels /wheels
 COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --no-cache /wheels/*
