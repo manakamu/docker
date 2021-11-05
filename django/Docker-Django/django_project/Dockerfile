@@ -26,12 +26,12 @@ FROM python:3.8.3-alpine
 
 USER root
 
-RUN mkdir -p /home/app
+RUN mkdir -p /usr/src/app
  
 #RUN addgroup -S app && adduser -S app -G app
  
-ENV HOME=/home/app
-ENV APP_HOME=/home/app/web
+ENV HOME=/usr/src/app
+ENV APP_HOME=/usr/src/app/web
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
  
