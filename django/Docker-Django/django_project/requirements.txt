@@ -1,2 +1,5 @@
-Django
+Django==2.2.2
 gunicorn
+django-allauth
+django-multiselectfield
+jpholiday
