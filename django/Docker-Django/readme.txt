@@ -9,3 +9,5 @@ docker-compose exec web python manage.py migrate --noinpu
 
 ■Djangoプロジェクト内のstatic関係のファイルを、nginxのstaticディレクトリへ移動する
 docker-compose exec web python manage.py collectstatic --no-input --clear
+
+docker-compose exec web python manage.py createsuperuser
