@@ -3,7 +3,7 @@ version: "3.7"
 services:
   web:
     build: ./django_project
-    command: gunicorn project.wsgi:application --bind 0.0.0.0:8000
+    command: gunicorn pole_app.wsgi:application --bind 0.0.0.0:8000
     volumes:
         - static_volume:/usr/src/app/web/static
     expose:
