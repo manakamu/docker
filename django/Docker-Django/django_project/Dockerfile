@@ -53,3 +53,4 @@ COPY . $APP_HOME
 #ENTRYPOINT ["/home/app/web/entrypoint.sh"]
 
 RUN cp /usr/share/zoneinfo/Japan /etc/localtime
+RUN ln -s /usr/src/app/web/db/poleBlog.db /usr/src/app/web/poleBlog.db

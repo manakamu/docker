@@ -6,19 +6,43 @@ services:
     command: gunicorn pole_app.wsgi:application --bind 0.0.0.0:8000
     volumes:
         - static_volume:/usr/src/app/web/static
+        - db_volume:/usr/src/app/web/db
     expose:
       - 8000
     env_file:
       - ./.env.dev
+    restart: always
+    depends_on:
+      - python
 
   nginx:
     build: ./nginx
     volumes:
       - static_volume:/usr/src/app/web/static
+      - image_volume:/usr/src/app/web/static/img/pole
+      - nginx_log_volume:/var/log/nginx
     ports:
       - 80:80
     depends_on:
       - web
- 
+      - python
+    restart: always
+
+  python:
+    image: python:3.6
+    build:
+      context: .
+      dockerfile: ./selenium/dockerfile_selenium
+    restart: always
+    volumes:
+      - image_volume:/usr/src/poleScraper/images
+      - db_volume:/usr/src/poleScraper/db
+      - ./:/share_dir
+    container_name: selenium-python
+    tty: true
+
 volumes:
   static_volume:
+  image_volume:
+  db_volume:
+  nginx_log_volume:

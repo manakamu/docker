@@ -1,0 +1,14 @@
+version: '3.1'
+
+services:
+
+  python:
+    image: python:3.6
+    build:
+      context: .
+      dockerfile: dockerfile_selenium
+    restart: always
+    volumes:
+      - ./:/share_dir
+    container_name: selenium-python
+    tty: true

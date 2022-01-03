@@ -11,3 +11,6 @@ docker-compose exec web python manage.py migrate --noinpu
 docker-compose exec web python manage.py collectstatic --no-input --clear
 
 docker-compose exec web python manage.py createsuperuser
+
+■不要なイメージの削除
+docker system prune

@@ -1,0 +1,54 @@
+FROM python:3.6
+
+ENV HOME=/usr/src
+ENV APP_HOME=/usr/src
+WORKDIR $APP_HOME
+
+COPY ./selenium/google-chrome-stable_current_amd64.deb /usr/src
+COPY ./selenium/chromedriver_linux64.zip /usr/src
+copy ./selenium/poleScraper-master.zip /usr/src
+
+RUN apt-get update
+RUN apt-get install -y less emacs
+#RUN apt-get install -y git
+#RUN apt-get install -y unzip
+RUN apt-get install -y imagemagick
+#RUN apt-get install -y python3-pip
+
+RUN apt-get -y install locales && \
+    localedef -f UTF-8 -i ja_JP ja_JP.UTF-8
+ENV LANG ja_JP.UTF-8
+ENV LANGUAGE ja_JP:ja
+ENV LC_ALL ja_JP.UTF-8
+ENV TZ JST-9
+
+RUN apt-get -y install /usr/src/google-chrome-stable_current_amd64.deb
+
+# shをbashに置き換える
+RUN mv /bin/sh /bin/sh_tmp && ln -s /bin/bash /bin/sh
+
+RUN cd /usr/src
+#RUN git clone https://manakamu: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@github.com/manakamu/poleScraper.git
+RUN rm -rf /usr/src/poleScraper
+RUN mkdir /usr/src/poleScraper
+RUN unzip -j -x /usr/src/poleScraper-master.zip -d /usr/src/poleScraper
+#RUN mv /root/poleScraper-master /root/poleScraper
+RUN unzip -x -o /usr/src/chromedriver_linux64.zip -d /usr/src
+#RUN python -m venv /usr/src/python_venv
+#RUN source /usr/src/python_venv/bin/activate
+
+COPY ./selenium/run_poleBlogScraper.sh /usr/src/poleScraper/
+#COPY ./selenium/poleBlog.db /usr/src/poleScraper/
+RUN chmod +x /usr/src/poleScraper/run_poleBlogScraper.sh
+COPY ./selenium/config_linux.py /usr/src/poleScraper/
+COPY ./selenium/requirements.txt /usr/src
+
+# shを元に戻す
+RUN rm /bin/sh && mv /bin/sh_tmp /bin/sh
+
+#RUN pip install lxml
+#RUN pip install selenium
+#RUN pip install requests
+#RUN pip install cssselect
+
+RUN pip install -r /usr/src/requirements.txt
