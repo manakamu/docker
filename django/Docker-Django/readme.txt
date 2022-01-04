@@ -14,3 +14,9 @@ docker-compose exec web python manage.py createsuperuser
 
 ■不要なイメージの削除
 docker system prune
+
+■ホストからコンテナへのコピー
+sudo docker cp my.cnf <コンテナID>:/etc/my.cnf
+
+■コンテナからホストへのコピー
+sudo docker cp <コンテナID>:/etc/my.cnf my.cnf

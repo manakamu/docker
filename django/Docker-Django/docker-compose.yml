@@ -21,6 +21,7 @@ services:
       - static_volume:/usr/src/app/web/static
       - image_volume:/usr/src/app/web/static/img/pole
       - nginx_log_volume:/var/log/nginx
+      - ./:/share_dir
     ports:
       - 80:80
     depends_on:
