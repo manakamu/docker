@@ -7,4 +7,4 @@ RUN cp /usr/share/zoneinfo/Japan /etc/localtime
 
 RUN apt update
 RUN apt install emacs less -y
-RUN aput install certbot -y
+RUN apt install certbot -y
