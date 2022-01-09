@@ -15,3 +15,5 @@ COPY server.password /etc/nginx/conf.d/
 
 RUN rm /var/log/nginx/*
 
+RUN apt install certbot 
+#RUN certbot --no-bootstrap certonly --webroot -w /usr/src/app/web -d indigoblue3.ddns.net -m manakamu2012@gmail.com --agree-tos
