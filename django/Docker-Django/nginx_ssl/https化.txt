@@ -1,3 +1,9 @@
 certbot --no-bootstrap certonly --webroot -w /usr/src/app/web -d indigoblue3.ddns.net -m manakamu2012@gmail.com --agree-tos
 
-/home/centos/certbot/certbot-auto renew -q --renew-hook "/usr/bin/systemctl reload nginx.service"
+ホスト側のcrontabに下記を追加する。
+0 3 1 * * docker exec docker-django_nginx_ssl_1 /usr/bin/certbot/certbot renew -q --renew-hook "/etc/init.d/nginx restart"
+
+httpとhttpsを止めて下記を実行
+certbot certonly --standalone -d indigoblue100.ddns.net -m manakamu2012@gmail.com --agree-tos
+
+/etc/nginx/conf.d/の設定ファイルを書き換える

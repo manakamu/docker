@@ -52,3 +52,7 @@ RUN rm /bin/sh && mv /bin/sh_tmp /bin/sh
 #RUN pip install cssselect
 
 RUN pip install -r /usr/src/requirements.txt
+
+RUN apt install certbot -y
+
+#RUN certbot certonly --standalone -d indigoblue100.ddns.net -m manakamu2012@gmail.com --agree-tos

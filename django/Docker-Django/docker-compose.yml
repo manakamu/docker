@@ -37,13 +37,14 @@ services:
       - image_volume:/usr/src/app/web/static/img/pole
       - nginx_log_volume:/var/log/nginx
       - ./:/share_dir
+      - ssl_volume:/etc/letsencrypt
     ports:
       - 443:443
     depends_on:
       - web
       - python
     restart: always
-    
+
   python:
     image: python:3.6
     build:
@@ -54,6 +55,7 @@ services:
       - image_volume:/usr/src/poleScraper/images
       - db_volume:/usr/src/poleScraper/db
       - ./:/share_dir
+      - ssl_volume:/etc/letsencrypt
     container_name: selenium-python
     tty: true
 
@@ -62,3 +64,5 @@ volumes:
   image_volume:
   db_volume:
   nginx_log_volume:
+  ssl_volume:
+
