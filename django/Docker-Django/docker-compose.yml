@@ -29,6 +29,21 @@ services:
       - python
     restart: always
 
+
+  nginx_ssl:
+    build: ./nginx_ssl
+    volumes:
+      - static_volume:/usr/src/app/web/static
+      - image_volume:/usr/src/app/web/static/img/pole
+      - nginx_log_volume:/var/log/nginx
+      - ./:/share_dir
+    ports:
+      - 443:443
+    depends_on:
+      - web
+      - python
+    restart: always
+    
   python:
     image: python:3.6
     build:

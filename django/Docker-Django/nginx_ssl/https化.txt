@@ -1,0 +1,6 @@
+certbot --no-bootstrap certonly --webroot -w /usr/src/app/web -d indigoblue3.ddns.net -m manakamu2012@gmail.com --agree-tos
+
+RUN openssl genrsa -aes128 2048 > /etc/nginx/conf.d/server.key
+RUN openssl req -new -key /etc/nginx/conf.d/server.key > /etc/nginx/conf.d/server.csr
+RUN openssl x509 -in /etc/nginx/conf.d/server.csr -days 3650 -req -signkey /etc/nginx/conf.d/server.key > /etc/nginx/conf.d/server.crt
+RUN echo shizuka0910 > /etc/nginx/conf.d/server.password
