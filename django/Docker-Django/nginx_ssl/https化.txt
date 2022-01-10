@@ -7,3 +7,9 @@ httpとhttpsを止めて下記を実行
 certbot certonly --standalone -d indigoblue100.ddns.net -m manakamu2012@gmail.com --agree-tos
 
 /etc/nginx/conf.d/の設定ファイルを書き換える
+
+
+
+openssl genrsa -des3 2048 >server.key
+openssl req -new -key server.key -out server.csr -sha256
+openssl req -noout -text -in server.csr
