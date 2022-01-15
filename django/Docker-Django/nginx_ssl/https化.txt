@@ -13,3 +13,10 @@ certbot certonly --standalone -d indigoblue100.ddns.net -m manakamu2012@gmail.co
 openssl genrsa -des3 2048 >server.key
 openssl req -new -key server.key -out server.csr -sha256
 openssl req -noout -text -in server.csr
+
+
+■Let's Encryptの使い方（未検証）
+httpとhttpsを止めて下記を実行
+certbot certonly --standalone --preferred-challenges http -d indigoblue.ddns.net
+sudo ls /etc/letsencrypt/live/
+sudo certbot renew --dry-run
