@@ -14,10 +14,13 @@ services:
       REDMINE_DB_MYSQL: db
       REDMINE_DB_PASSWORD: redmine
       REDMINE_SECRET_KEY_BASE: supersecretkey
+      RAILS_RELATIVE_URL_ROOT: /redmine
     links:
       - "db:mysql"
     volumes:
       - ./:/share_dir
+      - ./config.ru:/usr/src/redmine/config.ru
+      - ./environment.rb:/usr/src/redmine/config/environment.rb
     container_name: my-redmine
 
   db:
