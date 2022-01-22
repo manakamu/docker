@@ -1,5 +1,5 @@
 import telnetlib
-from flask import Flask, request
+from flask import Flask, request, render_template
 import datetime
 import sqlite3
 
@@ -28,5 +28,13 @@ def post_data():
 
     return "time:" + date + ", place:" + place + ", temperature:" + temperature + ", humidity:" + humidity
 
+@app.route('/dht11', methods=["GET"])
+def get_dht11():
+    return render_template('dht11.html', \
+        daily_data = '',
+        monthly_script = '',
+        yearly_script = ''
+        )
+
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=True)
