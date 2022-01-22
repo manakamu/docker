@@ -11,7 +11,7 @@ app = Flask(__name__)
 def index():
     return '<h2>Hello Flask+uWSGI+Nginx</h2>'
 
-@app.route('/api/post', methods=["GET"])
+@app.route('/api/post', methods=["POST"])
 def post_data():
     place = request.args.get("place")
     temperature = request.args.get("temperature")
