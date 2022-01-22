@@ -15,19 +15,19 @@ services:
     depends_on:
       - python
 
-  nginx:
-    build: ./nginx
-    volumes:
-      - static_volume:/usr/src/app/web/static
-      - image_volume:/usr/src/app/web/static/img/pole
-      - nginx_log_volume:/var/log/nginx
-      - ./:/share_dir
-    ports:
-      - 80:80
-    depends_on:
-      - web
-      - python
-    restart: always
+#  nginx:
+#    build: ./nginx
+#    volumes:
+#      - static_volume:/usr/src/app/web/static
+#      - image_volume:/usr/src/app/web/static/img/pole
+#      - nginx_log_volume:/var/log/nginx
+#      - ./:/share_dir
+#    ports:
+#      - 80:80
+#    depends_on:
+#      - web
+#      - python
+#    restart: always
 
 
   nginx_ssl:
@@ -38,7 +38,9 @@ services:
       - nginx_log_volume:/var/log/nginx
       - ./:/share_dir
       - ssl_volume:/etc/letsencrypt
+      - ./nginx_ssl/ssl.conf:/etc/nginx/conf.d/ssl.conf
     ports:
+      - 80:80
       - 443:443
     depends_on:
       - web
