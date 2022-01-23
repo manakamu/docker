@@ -37,11 +37,19 @@ def get_dht11():
     label_list = list()
     temperature_list = list()
     humidity_list = list()
-    
+
+    counter = 0    
     for element in cur.execute(sql):
-        label_list.append(element[0])
+        """
+        if counter % 6 == 0:
+            label_list.append(element[0])
+        else:
+            label_list.append('')
+        """
+        label_list.append(counter)
         temperature_list.append(element[2])
         humidity_list.append(element[3])
+        counter += 1
         print(element)
 
     conn.close()
