@@ -9,51 +9,45 @@ Temperature & Humidity
 {% endblock %}
 
 {% block content %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
-
 <h2>Daily</h2>
-<canvas id="DailyChart" width="400" height="100"></canvas>
-<script>
-    var ctx = document.getElementById("DailyChart");
-    var myLineChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: {{labels}},
-        datasets: [
-          {
-            label: '{{label1}}',
-            data: {{daily_data1}},
-            borderColor: "rgba(255,0,0,1)",
-            backgroundColor: "rgba(0,0,0,0)"
-          },
-          {
-            label: '{{label2}}',
-            data: {{daily_data2}},
-            borderColor: "rgba(0,0,255,1)",
-            backgroundColor: "rgba(0,0,0,0)"
-          }
-        ],
-      },
-      options: {
-        title: {
-          display: true,
-          text: '気温（8月1日~8月7日）'
-        },
-        scales: {
-          yAxes: [{
-            ticks: {
-              suggestedMax: 40,
-              suggestedMin: 0,
-              stepSize: 10,
-              callback: function(value, index, values){
-                return  value +  '度'
-              }
-            }
-          }]
-        },
-      }
-    });
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+ <!-- バーチャートの定義 -->
+<script type="text/javascript">
+  // ライブラリのロード
+  // name:visualization(可視化),version:バージョン(1),packages:パッケージ(corechart)
+  google.load('visualization', '1', {'packages':['corechart']});     
+         
+  // グラフを描画する為のコールバック関数を指定
+  google.setOnLoadCallback(drawChart);
+ 
+  // グラフの描画   
+  function drawChart() {         
+        
+    // 配列からデータの生成
+    var data = google.visualization.arrayToDataTable([
+        ['時刻'   , '温度', '湿度'],
+      {% for label, temperature, humidity in all_list %}
+        ['{{label}}', {{temperature}}, {{humidity}}],
+      {% endfor %}  
+    ]);
+ 
+    // オプションの設定
+    var options = {
+      title: '気温と湿度の推移',
+      seriesType: "line",         // グラフの種類(line:折れ線,bars:棒グラフ,candlesticks:ローソク足, steppedArea:段付面グラフ)
+      //series: {3: {type: "line"}} // 平均だけを折れ線グラフにする(数値:配列の順番(0から開始),type:seriesTypeと同等)
+    };        
+                
+    // 指定されたIDの要素にコンボチャートを作成
+    var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+ 
+    // グラフの描画
+    chart.draw(data, options);
+  }
 </script>
+<!--  グラフの描画エリア -->
+<div id="chart_div" style="width: 100%; height: 350px"></div>
+
 <script>{{daily_script}}</script>
 <h2>Monthly</h2>
 <canvas id="MonthlyChart" width="400" height="100"></canvas>
