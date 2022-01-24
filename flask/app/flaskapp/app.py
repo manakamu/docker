@@ -32,7 +32,7 @@ def post_data():
 def get_dht11():
     conn = sqlite3.connect('temperature.sqlite3')
     cur = conn.cursor()
-    sql = "SELECT datetime(time, 'localtime'), place, temperature, humidity FROM data WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hour')"
+    sql = "SELECT strftime('%H:%M', datetime(time, 'localtime')), place, temperature, humidity FROM data WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hour')"
     
     label_list = list()
     temperature_list = list()
@@ -46,7 +46,8 @@ def get_dht11():
         else:
             label_list.append('')
         """
-        label_list.append(counter)
+        #label_list.append(counter)
+        label_list.append(element[0])
         temperature_list.append(element[2])
         humidity_list.append(element[3])
         counter += 1
