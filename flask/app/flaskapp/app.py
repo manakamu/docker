@@ -15,7 +15,7 @@ def post_data():
     temperature = request.args.get("temperature")
     humidity = request.args.get("humidity")
 
-    date = u"{0:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.now())
+    date = u"{0:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.utcnow())
 
     conn = sqlite3.connect('temperature.sqlite3')
     conn.execute("CREATE TABLE IF NOT EXISTS data(id INTEGER PRIMARY KEY AUTOINCREMENT, time STRING, place STRING, temperature REAL, humidity REAL)")
