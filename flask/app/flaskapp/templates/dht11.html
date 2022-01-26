@@ -93,11 +93,87 @@ Temperature & Humidity
   });
 </script>
 
-<script>{{daily_script}}</script>
 <h2>Monthly</h2>
-<canvas id="MonthlyChart" width="400" height="100"></canvas>
-<script>{{monthly_script}}</script>
+<canvas id="temperatureDailyChart"></canvas>
+<script>
+  var ctx = document.getElementById("temperatureDailyChart");
+  var myLineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [
+        {% for item in label_monthly %}
+          '{{item.strip("'")}}',
+        {% endfor %}
+      ],
+      datasets: [
+        {
+          label: '気温(℃）',
+          data: {{temperature_monthly}},
+          tension: 0.3,
+          pointRadius: 0,
+          borderColor: "rgba(255,0,0,1)",
+          backgroundColor: "rgba(0,0,0,0)"
+        },
+      ],
+    },
+    options: {
+      title: {
+        display: true,
+        //text: '気温({{label_monthly[0]}}～{{label_monthly[-1]}})'
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            stepSize: 1,
+            callback: function(value, index, values){
+              return  value +  '℃'
+            }
+          }
+        }]
+      },
+    }
+  });
+</script>
+<canvas id="humidityMonthlyChart"></canvas>
+<script>
+  var ctx = document.getElementById("humidityMonthlyChart");
+  var myLineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [
+        {% for item in label_monthly %}
+          '{{item.strip("'")}}',
+        {% endfor %}
+      ],
+      datasets: [
+        {
+          label: '湿度(%）',
+          data: {{humidity_monthly}},
+          tension: 0.3,
+          pointRadius: 0,
+          borderColor: "rgba(0,0,255,1)",
+          backgroundColor: "rgba(0,0,0,0)"
+        },
+      ],
+    },
+    options: {
+      title: {
+        display: true,
+        //text: '湿度({{label_monthly[0]}}～{{label_monthly[-1]}})'
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            stepSize: 1,
+            callback: function(value, index, values){
+              return  value +  '%'
+            }
+          }
+        }]
+      },
+    }
+  });
+</script>
 <h2>Yealy</h2>
-<canvas id="YearlyChart" width="400" height="100"></canvas>
-<script>{{yearly_script}}</script>
+
 {% endblock %}

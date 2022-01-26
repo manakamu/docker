@@ -37,25 +37,33 @@ def get_dht11():
     label_24h_list = list()
     temperature_24h_list = list()
     humidity_24h_list = list()
-    counter = 0    
+
     for element in cur.execute(sql):
         label_24h_list.append(element[0])
         temperature_24h_list.append(element[2])
         humidity_24h_list.append(element[3])
-        counter += 1
+
+    sql = "SELECT strftime('%m/%d', datetime(time, 'localtime')), place, temperature, humidity FROM data WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 month')"
+    
+    label_monthly_list = list()
+    temperature_monthly_list = list()
+    humidity_monthly_list = list()
+
+    for element in cur.execute(sql):
+        label_monthly_list.append(element[0])
+        temperature_monthly_list.append(element[2])
+        humidity_monthly_list.append(element[3])
         print(element)
 
     conn.close()
 
     return render_template('dht11.html', \
-        label_24h_temperature = '気温(℃）',
-        label_24h_humidity = '湿度(%)',
-        label_24h = label_24h_list,
-        
+        label_24h = label_24h_list,        
         temperature_24h = temperature_24h_list,
         humidity_24h = humidity_24h_list,
-        monthly_script = '',
-        yearly_script = ''
+        label_monthly = label_monthly_list,
+        temperature_monthly = temperature_monthly_list,
+        humidity_monthly = humidity_monthly_list,
         )
 
 if __name__ == "__main__":
