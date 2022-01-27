@@ -43,6 +43,18 @@ def get_dht11():
         temperature_daily_list.append(element[2])
         humidity_daily_list.append(element[3])
 
+    sql = "SELECT strftime('%m/%d %H:%M', datetime(time, 'localtime')), place, temperature, humidity FROM data WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days')"
+    
+    label_weekly_list = list()
+    temperature_weekly_list = list()
+    humidity_weekly_list = list()
+
+    for element in cur.execute(sql):
+        label_weekly_list.append(element[0])
+        temperature_weekly_list.append(element[2])
+        humidity_weekly_list.append(element[3])
+        print(element)
+
     sql = "SELECT strftime('%m/%d %H:%M', datetime(time, 'localtime')), place, temperature, humidity FROM data WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 month')"
     
     label_monthly_list = list()
@@ -61,6 +73,9 @@ def get_dht11():
         label_daily = label_daily_list,        
         temperature_daily = temperature_daily_list,
         humidity_daily = humidity_daily_list,
+        label_weekly = label_weekly_list,        
+        temperature_weekly = temperature_weekly_list,
+        humidity_weekly = humidity_weekly_list,
         label_monthly = label_monthly_list,
         temperature_monthly = temperature_monthly_list,
         humidity_monthly = humidity_monthly_list,
