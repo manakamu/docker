@@ -1,3 +1,4 @@
+from pickletools import read_unicodestringnl
 import telnetlib
 from flask import Flask, request, render_template
 import datetime
@@ -15,14 +16,57 @@ def post_data():
     temperature = request.args.get("temperature")
     humidity = request.args.get("humidity")
 
-    date = u"{0:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.utcnow())
+    date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
 
     conn = sqlite3.connect('temperature.sqlite3')
-    conn.execute("CREATE TABLE IF NOT EXISTS data(id INTEGER PRIMARY KEY AUTOINCREMENT, time STRING, place STRING, temperature REAL, humidity REAL)")
+
+    # テーブルがなければ作成する
+    conn.execute("CREATE TABLE IF NOT EXISTS T_Manage(id INTEGER PRIMARY KEY AUTOINCREMENT, time STRING, recordId INTEGER)")
     cur = conn.cursor()
-    sql = 'INSERT INTO data(time, place, temperature, humidity) values(?, ?, ?, ?)'
-    data = [date, place, temperature, humidity]
+    conn.execute("CREATE TABLE IF NOT EXISTS T_Record(recordId INTEGER PRIMARY KEY AUTOINCREMENT, placeId INTEGER, temperature REAL, humidity REAL)")
+    cur = conn.cursor()
+    conn.execute("CREATE TABLE IF NOT EXISTS T_Place(placeId INTEGER PRIMARY KEY AUTOINCREMENT, place STRING)")
+    cur = conn.cursor()
+
+    sql = 'INSERT INTO T_Place(place) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM T_Place WHERE place=?)'
+    cur.execute(sql, [place, place])
+
+    # placeIdを取得
+    sql = 'SELECT placeId FROM T_Place WHERE place=?'
+    cur.execute(sql, [place])
+    placeId = ''
+    for element in cur:
+        placeId = element[0]
+
+    # T_Recordにデータを追加
+    sql = 'INSERT INTO T_Record(placeId, temperature, humidity) VALUES(?, ?, ?)'
+    data = [placeId, temperature, humidity]
     cur.execute(sql, data)
+
+    # T_Recordに追加したレコードのrecordIdを取得する
+    sql = 'select LAST_INSERT_ROWID() FROM T_Record'
+    cur.execute(sql)
+    recordId = 0
+    for element in cur:
+        recordId = element[0]
+
+    # 既にあるrecordIdを取得する
+    sql = 'SELECT recordId FROM T_Manage WHERE time=?'
+    cur.execute(sql, [date])
+    recordIds = ''
+    for element in cur:
+        recordIds = element[0]
+
+    if len(str(recordIds)) == 0:
+        # 同じ時刻のレコードがない場合はINSERTする
+        sql = 'INSERT INTO T_Manage(time, recordId) VALUES(?, ?)'
+        cur.execute(sql, [date, recordId])
+    else:
+        # recordIdはカンマ区切りで追加する
+        data = '{},{}'.format(recordIds, recordId)
+        sql = 'UPDATE T_Manage SET recordId=? WHERE time=?'
+        cur.execute(sql, [data, date])
+
     conn.commit()
     conn.close()
 
