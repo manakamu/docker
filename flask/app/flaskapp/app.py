@@ -21,11 +21,17 @@ def post_data():
     conn = sqlite3.connect('temperature.sqlite3')
 
     # テーブルがなければ作成する
-    conn.execute("CREATE TABLE IF NOT EXISTS T_Manage(id INTEGER PRIMARY KEY AUTOINCREMENT, time STRING, recordId INTEGER)")
+    conn.execute("CREATE TABLE IF NOT EXISTS \
+        T_Manage(id INTEGER PRIMARY KEY AUTOINCREMENT, time STRING, recordId INTEGER, \
+        FOREIGN KEY(recordId) REFERENCES T_Record (recordId))")
     cur = conn.cursor()
-    conn.execute("CREATE TABLE IF NOT EXISTS T_Record(recordId INTEGER PRIMARY KEY AUTOINCREMENT, placeId INTEGER, temperature REAL, humidity REAL)")
+    conn.execute("CREATE TABLE IF NOT EXISTS \
+        T_Record(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
+        placeId INTEGER, \
+        temperature REAL, humidity REAL)")
     cur = conn.cursor()
-    conn.execute("CREATE TABLE IF NOT EXISTS T_Place(placeId INTEGER PRIMARY KEY AUTOINCREMENT, place STRING)")
+    conn.execute("CREATE TABLE IF NOT EXISTS \
+        T_Place(placeId INTEGER PRIMARY KEY AUTOINCREMENT, place STRING)")
     cur = conn.cursor()
 
     sql = 'INSERT INTO T_Place(place) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM T_Place WHERE place=?)'
