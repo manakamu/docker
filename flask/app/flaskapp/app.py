@@ -28,7 +28,8 @@ def post_data():
     conn.execute("CREATE TABLE IF NOT EXISTS \
         T_Record(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
         placeId INTEGER, \
-        temperature REAL, humidity REAL)")
+        temperature REAL, humidity REAL, \
+        FOREIGN KEY(placeId) REFERENCES T_Place (placeId))")
     cur = conn.cursor()
     conn.execute("CREATE TABLE IF NOT EXISTS \
         T_Place(placeId INTEGER PRIMARY KEY AUTOINCREMENT, place STRING)")
