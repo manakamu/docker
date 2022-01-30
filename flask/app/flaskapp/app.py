@@ -96,7 +96,7 @@ def get_dht11():
             INNER JOIN T_Record ON split.fld = T_Record.recordId \
             INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-24 hours') \
-            ORDER BY KEY ASC, T_Record.placeId ASC"
+            ORDER BY T_Record.placeId ASC, KEY ASC"
 
     label_daily_list = list()
     temperature_daily_list = list()
@@ -121,7 +121,7 @@ def get_dht11():
             INNER JOIN T_Record ON split.fld = T_Record.recordId \
             INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-7 days') \
-            ORDER BY KEY ASC, T_Record.placeId ASC"
+            ORDER BY T_Record.placeId ASC, KEY ASC"
 
     label_weekly_list = list()
     temperature_weekly_list = list()
@@ -147,7 +147,7 @@ def get_dht11():
             INNER JOIN T_Record ON split.fld = T_Record.recordId \
             INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-1 months') \
-            ORDER BY KEY ASC, T_Record.placeId ASC"
+            ORDER BY T_Record.placeId ASC, KEY ASC"
 
     label_monthly_list = list()
     temperature_monthly_list = list()
