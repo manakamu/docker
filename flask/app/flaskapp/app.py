@@ -148,10 +148,12 @@ def get_dht11():
             INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-24 hours') \
             ORDER BY T_Record.placeId ASC, KEY ASC"
-
     label_daily_list, temperature_daily_list, humidity_daily_list = \
         create_data_list(cur, label_sql, sql)
 
+    label_sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
+        WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
+        GROUP BY datetime(time, 'localtime')"
     sql =   "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
                 (SELECT time, instr(recordId,',') AS idx, \
                     substr(recordId,1,instr(recordId,',')-1) AS fld, \
@@ -160,24 +162,18 @@ def get_dht11():
                         substr(remain,1,instr(remain,',')-1) AS fld, \
                         substr(remain, instr(remain,',')+1) AS remain \
                 FROM split WHERE remain != '') \
-            SELECT strftime('%m/%d %H:%M', datetime(KEY, 'localtime')) AS time, \
+            SELECT datetime(KEY, 'localtime') AS time, \
                 T_Record.placeId, T_Place.place, temperature, humidity FROM split \
             INNER JOIN T_Record ON split.fld = T_Record.recordId \
             INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-7 days') \
             ORDER BY T_Record.placeId ASC, KEY ASC"
+    label_weekly_list, temperature_weekly_list, humidity_weekly_list = \
+        create_data_list(cur, label_sql, sql)
 
-    label_weekly_list = list()
-    temperature_weekly_list = list()
-    humidity_weekly_list = list()
-
-    for element in cur.execute(sql):
-        label_weekly_list.append(element[0])
-        temperature_weekly_list.append(element[3])
-        humidity_weekly_list.append(element[4])
-        print(element)
-
-    #sql = "SELECT strftime('%m/%d %H:%M', datetime(time, 'localtime')), place, temperature, humidity FROM data WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 month')"
+    label_sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
+        WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
+        GROUP BY datetime(time, 'localtime')"
     sql =   "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
                 (SELECT time, instr(recordId,',') AS idx, \
                     substr(recordId,1,instr(recordId,',')-1) AS fld, \
@@ -186,22 +182,14 @@ def get_dht11():
                         substr(remain,1,instr(remain,',')-1) AS fld, \
                         substr(remain, instr(remain,',')+1) AS remain \
                 FROM split WHERE remain != '') \
-            SELECT strftime('%m/%d %H:%M', datetime(KEY, 'localtime')) AS time, \
+            SELECT datetime(KEY, 'localtime') AS time, \
                 T_Record.placeId, T_Place.place, temperature, humidity FROM split \
             INNER JOIN T_Record ON split.fld = T_Record.recordId \
             INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-1 months') \
             ORDER BY T_Record.placeId ASC, KEY ASC"
-
-    label_monthly_list = list()
-    temperature_monthly_list = list()
-    humidity_monthly_list = list()
-
-    for element in cur.execute(sql):
-        label_monthly_list.append(element[0])
-        temperature_monthly_list.append(element[3])
-        humidity_monthly_list.append(element[4])
-        print(element)
+    label_monthly_list, temperature_monthly_list, humidity_monthly_list = \
+        create_data_list(cur, label_sql, sql)
 
     conn.close()
 

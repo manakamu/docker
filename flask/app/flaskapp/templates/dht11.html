@@ -110,14 +110,16 @@ Temperature & Humidity
         {% endfor %}
       ],
       datasets: [
+        {% for temperature_list in temperature_weekly %}
         {
           label: '気温(℃）',
-          data: {{temperature_weekly}},
+          data: {{temperature_list}},
           tension: 0.3,
           pointRadius: 0,
           borderColor: "rgba(255,0,0,1)",
           backgroundColor: "rgba(0,0,0,0)"
         },
+        {% endfor %}
       ],
     },
     options: {
@@ -151,14 +153,16 @@ Temperature & Humidity
         {% endfor %}
       ],
       datasets: [
+      {% for humidity_list in humidity_weekly %}
         {
           label: '湿度(%）',
-          data: {{humidity_weekly}},
+          data: {{humidity_list}},
           tension: 0.3,
           pointRadius: 0,
           borderColor: "rgba(0,0,255,1)",
           backgroundColor: "rgba(0,0,0,0)"
         },
+        {% endfor %}
       ],
     },
     options: {
@@ -193,14 +197,16 @@ Temperature & Humidity
         {% endfor %}
       ],
       datasets: [
+        {% for temperature_list in temperature_monthly %}
         {
           label: '気温(℃）',
-          data: {{temperature_monthly}},
+          data: {{temperature_list}},
           tension: 0.3,
           pointRadius: 0,
           borderColor: "rgba(255,0,0,1)",
           backgroundColor: "rgba(0,0,0,0)"
         },
+        {% endfor %}
       ],
     },
     options: {
@@ -234,14 +240,16 @@ Temperature & Humidity
         {% endfor %}
       ],
       datasets: [
+        {% for humidity_list in humidity_monthly %}
         {
           label: '湿度(%）',
-          data: {{humidity_monthly}},
+          data: {{humidity_list}},
           tension: 0.3,
           pointRadius: 0,
           borderColor: "rgba(0,0,255,1)",
           backgroundColor: "rgba(0,0,0,0)"
         },
+        {% endfor %}
       ],
     },
     options: {
