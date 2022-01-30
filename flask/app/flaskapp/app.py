@@ -124,8 +124,9 @@ def get_dht11():
             temperature_daily_list.append(temperature_list)
             humidity_daily_list.append(humidity_list)
 
-        timestamp = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
-        label_daily_list.append(timestamp.strftime('%H:%M'))
+        if len(label_daily_list) < len(label_list):
+            timestamp = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
+            label_daily_list.append(timestamp.strftime('%H:%M'))
         if datetime.datetime.strptime(label_list[counter], '%Y-%m-%d %H:%M:%S') == \
             datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
             temperature_list.append(element[3])
