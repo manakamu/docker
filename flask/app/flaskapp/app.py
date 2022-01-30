@@ -133,12 +133,11 @@ def get_dht11():
             humidity_list.append(element[4])
         else:
             skip = 0
-            for i, time in enumerate(label_list, counter + 1):
+            for i, time in enumerate(label_list, counter):
                 if datetime.datetime.strptime(label_list[i], '%Y-%m-%d %H:%M:%S') == \
                     datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
                     temperature_list.append(element[3])
                     humidity_list.append(element[4])
-                    skip += 1
                     break
                 else:
                     # データが欠落しているため、同じデータで埋める
