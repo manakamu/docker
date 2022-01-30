@@ -24,14 +24,16 @@ Temperature & Humidity
         {% endfor %}
       ],
       datasets: [
+        {% for temperature_list in temperature_daily %}
         {
           label: '気温(℃）',
-          data: {{temperature_daily}},
+          data: {{temperature_list}},
           tension: 0.3,
           pointRadius: 0,
           borderColor: "rgba(255,0,0,1)",
           backgroundColor: "rgba(0,0,0,0)"
         },
+        {% endfor %}
       ],
     },
     options: {

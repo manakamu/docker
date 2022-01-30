@@ -1,3 +1,5 @@
+from cProfile import label
+from itertools import count
 from pickletools import read_unicodestringnl
 import telnetlib
 from flask import Flask, request, render_template
@@ -83,6 +85,14 @@ def post_data():
 def get_dht11():
     conn = sqlite3.connect('temperature.sqlite3')
     cur = conn.cursor()
+
+    label_list = list()
+    sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
+        WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
+        GROUP BY datetime(time, 'localtime')"
+    for element in cur.execute(sql):
+        label_list.append(element[0])
+
     sql =   "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
                 (SELECT time, instr(recordId,',') AS idx, \
                     substr(recordId,1,instr(recordId,',')-1) AS fld, \
@@ -91,23 +101,52 @@ def get_dht11():
                         substr(remain,1,instr(remain,',')-1) AS fld, \
                         substr(remain, instr(remain,',')+1) AS remain \
                 FROM split WHERE remain != '') \
-            SELECT strftime('%H:%M', datetime(KEY, 'localtime')) AS time, \
+            SELECT datetime(KEY, 'localtime') AS time, \
                 T_Record.placeId, T_Place.place, temperature, humidity FROM split \
             INNER JOIN T_Record ON split.fld = T_Record.recordId \
             INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-24 hours') \
             ORDER BY T_Record.placeId ASC, KEY ASC"
 
+    placeId = -1
     label_daily_list = list()
     temperature_daily_list = list()
     humidity_daily_list = list()
-
+    temperature_list = list()
+    humidity_list = list()
+    counter = 0
     for element in cur.execute(sql):
-        label_daily_list.append(element[0])
-        temperature_daily_list.append(element[3])
-        humidity_daily_list.append(element[4])
+        if element[1] != placeId:
+            counter = 0
+            placeId = element[1]
+            temperature_list = list()
+            humidity_list = list()
+            temperature_daily_list.append(temperature_list)
+            humidity_daily_list.append(humidity_list)
 
-    #sql = "SELECT strftime('%m/%d %H:%M', datetime(time, 'localtime')), place, temperature, humidity FROM data WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days')"
+        timestamp = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
+        label_daily_list.append(timestamp.strftime('%H:%M'))
+        if datetime.datetime.strptime(label_list[counter], '%Y-%m-%d %H:%M:%S') == \
+            datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
+            temperature_list.append(element[3])
+            humidity_list.append(element[4])
+        else:
+            skip = 0
+            for i, time in enumerate(label_list, counter + 1):
+                if datetime.datetime.strptime(label_list[i], '%Y-%m-%d %H:%M:%S') == \
+                    datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
+                    temperature_list.append(element[3])
+                    humidity_list.append(element[4])
+                    skip += 1
+                    break
+                else:
+                    # データが欠落しているため、同じデータで埋める
+                    temperature_list.append(element[3])
+                    humidity_list.append(element[4])
+                    skip += 1
+            counter += skip
+        counter += 1
+
     sql =   "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
                 (SELECT time, instr(recordId,',') AS idx, \
                     substr(recordId,1,instr(recordId,',')-1) AS fld, \
