@@ -92,6 +92,7 @@ def create_data_list(cur, label_sql, sql, x_axis_format):
     humidity_list = list()
     temperatures = list()
     humidities = list()
+    place_list = list()
     counter = 0
     for element in cur.execute(sql):
         if element[1] != placeId:
@@ -101,7 +102,7 @@ def create_data_list(cur, label_sql, sql, x_axis_format):
             humidities = list()
             temperature_list.append(temperatures)
             humidity_list.append(humidities)
-
+            place_list.append(element[2])
         if len(label_list) < len(labels):
             timestamp = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
             label_list.append(timestamp.strftime(x_axis_format))
@@ -124,7 +125,7 @@ def create_data_list(cur, label_sql, sql, x_axis_format):
                     skip += 1
             counter += skip
         counter += 1
-    return label_list, temperature_list, humidity_list
+    return label_list, temperature_list, humidity_list, place_list
 
 @app.route('/dht11', methods=["GET"])
 def get_dht11():
@@ -148,7 +149,7 @@ def get_dht11():
             INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-24 hours') \
             ORDER BY T_Record.placeId ASC, KEY ASC"
-    label_daily_list, temperature_daily_list, humidity_daily_list = \
+    label_daily_list, temperature_daily_list, humidity_daily_list, place_dayly_list = \
         create_data_list(cur, label_sql, sql, '%H:%M')
 
     label_sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
@@ -168,7 +169,7 @@ def get_dht11():
             INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-7 days') \
             ORDER BY T_Record.placeId ASC, KEY ASC"
-    label_weekly_list, temperature_weekly_list, humidity_weekly_list = \
+    label_weekly_list, temperature_weekly_list, humidity_weekly_list, place_weekly_list = \
         create_data_list(cur, label_sql, sql, '%Y/%m/%d %H:%M')
 
     label_sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
@@ -188,7 +189,7 @@ def get_dht11():
             INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-1 months') \
             ORDER BY T_Record.placeId ASC, KEY ASC"
-    label_monthly_list, temperature_monthly_list, humidity_monthly_list = \
+    label_monthly_list, temperature_monthly_list, humidity_monthly_list, place_monthly_list = \
         create_data_list(cur, label_sql, sql, '%Y/%m/%d')
 
     conn.close()
@@ -197,12 +198,15 @@ def get_dht11():
         label_daily = label_daily_list,        
         temperature_daily = temperature_daily_list,
         humidity_daily = humidity_daily_list,
+        place_daily = place_dayly_list,
         label_weekly = label_weekly_list,        
         temperature_weekly = temperature_weekly_list,
         humidity_weekly = humidity_weekly_list,
+        place_weekly = place_weekly_list,
         label_monthly = label_monthly_list,
         temperature_monthly = temperature_monthly_list,
         humidity_monthly = humidity_monthly_list,
+        place_monthly = place_monthly_list
         )
 
 if __name__ == "__main__":
