@@ -81,18 +81,59 @@ def post_data():
 
     return "time:" + date + ", place:" + place + ", temperature:" + temperature + ", humidity:" + humidity
 
+def create_data_list(cur, label_sql, sql):
+    labels = list()
+    for element in cur.execute(label_sql):
+        labels.append(element[0])
+
+    placeId = -1
+    label_list = list()
+    temperature_list = list()
+    humidity_list = list()
+    temperatures = list()
+    humidities = list()
+    counter = 0
+    for element in cur.execute(sql):
+        if element[1] != placeId:
+            counter = 0
+            placeId = element[1]
+            temperatures = list()
+            humidities = list()
+            temperature_list.append(temperatures)
+            humidity_list.append(humidities)
+
+        if len(label_list) < len(labels):
+            timestamp = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
+            label_list.append(timestamp.strftime('%H:%M'))
+        if datetime.datetime.strptime(labels[counter], '%Y-%m-%d %H:%M:%S') == \
+            datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
+            temperatures.append(element[3])
+            humidities.append(element[4])
+        else:
+            skip = 0
+            for i, time in enumerate(labels, counter):
+                if datetime.datetime.strptime(labels[i], '%Y-%m-%d %H:%M:%S') == \
+                    datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
+                    temperatures.append(element[3])
+                    humidities.append(element[4])
+                    break
+                else:
+                    # データが欠落しているため、同じデータで埋める
+                    temperatures.append(element[3])
+                    humidities.append(element[4])
+                    skip += 1
+            counter += skip
+        counter += 1
+    return label_list, temperature_list, humidity_list
+
 @app.route('/dht11', methods=["GET"])
 def get_dht11():
     conn = sqlite3.connect('temperature.sqlite3')
     cur = conn.cursor()
 
-    label_list = list()
-    sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
+    label_sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
         WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
         GROUP BY datetime(time, 'localtime')"
-    for element in cur.execute(sql):
-        label_list.append(element[0])
-
     sql =   "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
                 (SELECT time, instr(recordId,',') AS idx, \
                     substr(recordId,1,instr(recordId,',')-1) AS fld, \
@@ -108,44 +149,8 @@ def get_dht11():
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-24 hours') \
             ORDER BY T_Record.placeId ASC, KEY ASC"
 
-    placeId = -1
-    label_daily_list = list()
-    temperature_daily_list = list()
-    humidity_daily_list = list()
-    temperature_list = list()
-    humidity_list = list()
-    counter = 0
-    for element in cur.execute(sql):
-        if element[1] != placeId:
-            counter = 0
-            placeId = element[1]
-            temperature_list = list()
-            humidity_list = list()
-            temperature_daily_list.append(temperature_list)
-            humidity_daily_list.append(humidity_list)
-
-        if len(label_daily_list) < len(label_list):
-            timestamp = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
-            label_daily_list.append(timestamp.strftime('%H:%M'))
-        if datetime.datetime.strptime(label_list[counter], '%Y-%m-%d %H:%M:%S') == \
-            datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
-            temperature_list.append(element[3])
-            humidity_list.append(element[4])
-        else:
-            skip = 0
-            for i, time in enumerate(label_list, counter):
-                if datetime.datetime.strptime(label_list[i], '%Y-%m-%d %H:%M:%S') == \
-                    datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
-                    temperature_list.append(element[3])
-                    humidity_list.append(element[4])
-                    break
-                else:
-                    # データが欠落しているため、同じデータで埋める
-                    temperature_list.append(element[3])
-                    humidity_list.append(element[4])
-                    skip += 1
-            counter += skip
-        counter += 1
+    label_daily_list, temperature_daily_list, humidity_daily_list = \
+        create_data_list(cur, label_sql, sql)
 
     sql =   "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
                 (SELECT time, instr(recordId,',') AS idx, \
