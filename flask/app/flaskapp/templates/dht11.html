@@ -66,14 +66,16 @@ Temperature & Humidity
         {% endfor %}
       ],
       datasets: [
+        {% for humidity_list in humidity_daily %}
         {
           label: '湿度(%）',
-          data: {{humidity_daily}},
+          data: {{humidity_list}},
           tension: 0.3,
           pointRadius: 0,
           borderColor: "rgba(0,0,255,1)",
           backgroundColor: "rgba(0,0,0,0)"
         },
+        {% endfor %}
       ],
     },
     options: {
