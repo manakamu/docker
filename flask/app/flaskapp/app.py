@@ -81,7 +81,7 @@ def post_data():
 
     return "time:" + date + ", place:" + place + ", temperature:" + temperature + ", humidity:" + humidity
 
-def create_data_list(cur, label_sql, sql):
+def create_data_list(cur, label_sql, sql, x_axis_format):
     labels = list()
     for element in cur.execute(label_sql):
         labels.append(element[0])
@@ -104,7 +104,7 @@ def create_data_list(cur, label_sql, sql):
 
         if len(label_list) < len(labels):
             timestamp = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
-            label_list.append(timestamp.strftime('%H:%M'))
+            label_list.append(timestamp.strftime(x_axis_format))
         if datetime.datetime.strptime(labels[counter], '%Y-%m-%d %H:%M:%S') == \
             datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
             temperatures.append(element[3])
@@ -149,7 +149,7 @@ def get_dht11():
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-24 hours') \
             ORDER BY T_Record.placeId ASC, KEY ASC"
     label_daily_list, temperature_daily_list, humidity_daily_list = \
-        create_data_list(cur, label_sql, sql)
+        create_data_list(cur, label_sql, sql, '%H:%M')
 
     label_sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
         WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
@@ -169,7 +169,7 @@ def get_dht11():
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-7 days') \
             ORDER BY T_Record.placeId ASC, KEY ASC"
     label_weekly_list, temperature_weekly_list, humidity_weekly_list = \
-        create_data_list(cur, label_sql, sql)
+        create_data_list(cur, label_sql, sql, '%Y/%m/%d %H:%M')
 
     label_sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
         WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
@@ -189,7 +189,7 @@ def get_dht11():
             WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-1 months') \
             ORDER BY T_Record.placeId ASC, KEY ASC"
     label_monthly_list, temperature_monthly_list, humidity_monthly_list = \
-        create_data_list(cur, label_sql, sql)
+        create_data_list(cur, label_sql, sql, '%Y/%m/%d')
 
     conn.close()
 
