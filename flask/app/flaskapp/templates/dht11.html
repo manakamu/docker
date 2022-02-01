@@ -15,27 +15,28 @@ Temperature & Humidity
 <canvas id="temperatureDailyChart"></canvas>
 <script>
   var ctx = document.getElementById("temperatureDailyChart");
+  var dailyTemperatureData = {
+    labels: [
+      {% for item in label_daily %}
+        '{{item.strip("'")}}',
+      {% endfor %}
+    ],
+    datasets: [
+      {% for temperature_list in temperature_daily %}
+      {
+        label: '{{place_daily[loop.index0]}}',
+        data: {{temperature_list}},
+        tension: 0.3,
+        pointRadius: 0,
+        borderColor: "rgba(255,0,0,1)",
+        backgroundColor: "rgba(0,0,0,0)"
+      },
+      {% endfor %}
+    ],
+  };
   var myLineChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: [
-        {% for item in label_daily %}
-          '{{item.strip("'")}}',
-        {% endfor %}
-      ],
-      datasets: [
-        {% for temperature_list in temperature_daily %}
-        {
-          label: '{{place_daily[loop.index0]}}',
-          data: {{temperature_list}},
-          tension: 0.3,
-          pointRadius: 0,
-          borderColor: "rgba(255,0,0,1)",
-          backgroundColor: "rgba(0,0,0,0)"
-        },
-        {% endfor %}
-      ],
-    },
+    data: dailyTemperatureData,
     options: {
       title: {
         display: true,
@@ -57,27 +58,28 @@ Temperature & Humidity
 <canvas id="humidityDailyChart"></canvas>
 <script>
   var ctx = document.getElementById("humidityDailyChart");
+  var dailytHumidityData = {
+    labels: [
+      {% for item in label_daily %}
+        '{{item.strip("'")}}',
+      {% endfor %}
+    ],
+    datasets: [
+      {% for humidity_list in humidity_daily %}
+      {
+        label: '{{place_daily[loop.index0]}}',
+        data: {{humidity_list}},
+        tension: 0.3,
+        pointRadius: 0,
+        borderColor: "rgba(0,0,255,1)",
+        backgroundColor: "rgba(0,0,0,0)"
+      },
+      {% endfor %}
+    ],
+  };
   var myLineChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: [
-        {% for item in label_daily %}
-          '{{item.strip("'")}}',
-        {% endfor %}
-      ],
-      datasets: [
-        {% for humidity_list in humidity_daily %}
-        {
-          label: '{{place_daily[loop.index0]}}',
-          data: {{humidity_list}},
-          tension: 0.3,
-          pointRadius: 0,
-          borderColor: "rgba(0,0,255,1)",
-          backgroundColor: "rgba(0,0,0,0)"
-        },
-        {% endfor %}
-      ],
-    },
+    data: dailytHumidityData,
     options: {
       title: {
         display: true,
@@ -101,27 +103,28 @@ Temperature & Humidity
 <canvas id="temperatureWeeklyChart"></canvas>
 <script>
   var ctx = document.getElementById("temperatureWeeklyChart");
+  var weeklyTemperatureData = {
+    labels: [
+      {% for item in label_weekly %}
+        '{{item.strip("'")}}',
+      {% endfor %}
+    ],
+    datasets: [
+      {% for temperature_list in temperature_weekly %}
+      {
+        label: '{{place_weekly[loop.index0]}}',
+        data: {{temperature_list}},
+        tension: 0.3,
+        pointRadius: 0,
+        borderColor: "rgba(255,0,0,1)",
+        backgroundColor: "rgba(0,0,0,0)"
+      },
+      {% endfor %}
+    ],
+  };
   var myLineChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: [
-        {% for item in label_weekly %}
-          '{{item.strip("'")}}',
-        {% endfor %}
-      ],
-      datasets: [
-        {% for temperature_list in temperature_weekly %}
-        {
-          label: '{{place_weekly[loop.index0]}}',
-          data: {{temperature_list}},
-          tension: 0.3,
-          pointRadius: 0,
-          borderColor: "rgba(255,0,0,1)",
-          backgroundColor: "rgba(0,0,0,0)"
-        },
-        {% endfor %}
-      ],
-    },
+    data: weeklyTemperatureData, 
     options: {
       title: {
         display: true,
@@ -144,27 +147,28 @@ Temperature & Humidity
 <canvas id="humidityWeeklyChart"></canvas>
 <script>
   var ctx = document.getElementById("humidityWeeklyChart");
+  var weeklyHumidityData = {
+    labels: [
+      {% for item in label_weekly %}
+        '{{item.strip("'")}}',
+      {% endfor %}
+    ],
+    datasets: [
+    {% for humidity_list in humidity_weekly %}
+      {
+        label: '{{place_weekly[loop.index0]}}',
+        data: {{humidity_list}},
+        tension: 0.3,
+        pointRadius: 0,
+        borderColor: "rgba(0,0,255,1)",
+        backgroundColor: "rgba(0,0,0,0)"
+      },
+      {% endfor %}
+    ],
+  };
   var myLineChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: [
-        {% for item in label_weekly %}
-          '{{item.strip("'")}}',
-        {% endfor %}
-      ],
-      datasets: [
-      {% for humidity_list in humidity_weekly %}
-        {
-          label: '{{place_weekly[loop.index0]}}',
-          data: {{humidity_list}},
-          tension: 0.3,
-          pointRadius: 0,
-          borderColor: "rgba(0,0,255,1)",
-          backgroundColor: "rgba(0,0,0,0)"
-        },
-        {% endfor %}
-      ],
-    },
+    data: weeklyHumidityData,
     options: {
       title: {
         display: true,
@@ -188,27 +192,28 @@ Temperature & Humidity
 <canvas id="temperatureMonthlyChart"></canvas>
 <script>
   var ctx = document.getElementById("temperatureMonthlyChart");
+  var monthlyTemperatureData = {
+    labels: [
+      {% for item in label_monthly %}
+        '{{item.strip("'")}}',
+      {% endfor %}
+    ],
+    datasets: [
+      {% for temperature_list in temperature_monthly %}
+      {
+        label: '{{place_monthly[loop.index0]}}',
+        data: {{temperature_list}},
+        tension: 0.3,
+        pointRadius: 0,
+        borderColor: "rgba(255,0,0,1)",
+        backgroundColor: "rgba(0,0,0,0)"
+      },
+      {% endfor %}
+    ],
+  };
   var myLineChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: [
-        {% for item in label_monthly %}
-          '{{item.strip("'")}}',
-        {% endfor %}
-      ],
-      datasets: [
-        {% for temperature_list in temperature_monthly %}
-        {
-          label: '{{place_monthly[loop.index0]}}',
-          data: {{temperature_list}},
-          tension: 0.3,
-          pointRadius: 0,
-          borderColor: "rgba(255,0,0,1)",
-          backgroundColor: "rgba(0,0,0,0)"
-        },
-        {% endfor %}
-      ],
-    },
+    data: monthlyTemperatureData,
     options: {
       title: {
         display: true,
@@ -231,27 +236,28 @@ Temperature & Humidity
 <canvas id="humidityMonthlyChart"></canvas>
 <script>
   var ctx = document.getElementById("humidityMonthlyChart");
+  var monthlyHumidityData = {
+    labels: [
+      {% for item in label_monthly %}
+        '{{item.strip("'")}}',
+      {% endfor %}
+    ],
+    datasets: [
+      {% for humidity_list in humidity_monthly %}
+      {
+        label: '{{place_monthly[loop.index0]}}',
+        data: {{humidity_list}},
+        tension: 0.3,
+        pointRadius: 0,
+        borderColor: "rgba(0,0,255,1)",
+        backgroundColor: "rgba(0,0,0,0)"
+      },
+      {% endfor %}
+    ],
+  };
   var myLineChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: [
-        {% for item in label_monthly %}
-          '{{item.strip("'")}}',
-        {% endfor %}
-      ],
-      datasets: [
-        {% for humidity_list in humidity_monthly %}
-        {
-          label: '{{place_monthly[loop.index0]}}',
-          data: {{humidity_list}},
-          tension: 0.3,
-          pointRadius: 0,
-          borderColor: "rgba(0,0,255,1)",
-          backgroundColor: "rgba(0,0,0,0)"
-        },
-        {% endfor %}
-      ],
-    },
+    data: monthlyHumidityData,
     options: {
       title: {
         display: true,
