@@ -194,6 +194,10 @@ def get_dht11():
 
     conn.close()
 
+    temperature_color = ['rgba(182, 15, 0, 0.5)', 'rgba(254, 78, 19, 0.5)', \
+        'rgba(255, 159, 75, 0.5)', 'rgba(255, 220, 131, 0.5)', 'rgba(239, 255, 189, 0.5)']
+    humidity_color = ['rgba(0, 67, 106, 0.5)', 'rgba(32, 125, 147, 0.5)', \
+        'rgba(85, 186, 191, 0.5)', 'rgba(132, 236, 225, 0.5)', 'rgba(178, 255, 217, 0.5)']
     return render_template('dht11.html', \
         label_daily = label_daily_list,        
         temperature_daily = temperature_daily_list,
@@ -206,7 +210,9 @@ def get_dht11():
         label_monthly = label_monthly_list,
         temperature_monthly = temperature_monthly_list,
         humidity_monthly = humidity_monthly_list,
-        place_monthly = place_monthly_list
+        place_monthly = place_monthly_list,
+        temperature_color = temperature_color,
+        humidity_color = humidity_color,
         )
 
 if __name__ == "__main__":

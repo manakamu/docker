@@ -28,7 +28,7 @@ Temperature & Humidity
         data: {{temperature_list}},
         tension: 0.3,
         pointRadius: 0,
-        borderColor: "rgba(255,0,0,1)",
+        borderColor: "{{temperature_color[loop.index0]}}",
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
@@ -72,7 +72,7 @@ Temperature & Humidity
         data: {{humidity_list}},
         tension: 0.3,
         pointRadius: 0,
-        borderColor: "rgba(0,0,255,1)",
+        borderColor: "{{humidity_color[loop.index0]}}",
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
@@ -118,7 +118,7 @@ Temperature & Humidity
         data: {{temperature_list}},
         tension: 0.3,
         pointRadius: 0,
-        borderColor: "rgba(255,0,0,1)",
+        borderColor: "{{temperature_color[loop.index0]}}",
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
@@ -163,7 +163,7 @@ Temperature & Humidity
         data: {{humidity_list}},
         tension: 0.3,
         pointRadius: 0,
-        borderColor: "rgba(0,0,255,1)",
+        borderColor: "{{humidity_color[loop.index0]}}",
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
@@ -209,7 +209,7 @@ Temperature & Humidity
         data: {{temperature_list}},
         tension: 0.3,
         pointRadius: 0,
-        borderColor: "rgba(255,0,0,1)",
+        borderColor: "{{temperature_color[loop.index0]}}",
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
@@ -254,7 +254,7 @@ Temperature & Humidity
         data: {{humidity_list}},
         tension: 0.3,
         pointRadius: 0,
-        borderColor: "rgba(0,0,255,1)",
+        borderColor: "{{humidity_color[loop.index0]}}",
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
