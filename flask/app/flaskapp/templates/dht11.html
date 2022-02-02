@@ -78,25 +78,26 @@ Temperature & Humidity
       {% endfor %}
     ],
   };
+  var dailytHumidityOptions = {
+    title: {
+      display: true,
+      text: '湿度({{label_daily[0]}}～{{label_daily[-1]}})'
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          stepSize: 1,
+          callback: function(value, index, values){
+            return  value +  '%'
+          }
+        }
+      }]
+    },
+  };
   var myLineChart = new Chart(ctx, {
     type: 'line',
     data: dailytHumidityData,
-    options: {
-      title: {
-        display: true,
-        text: '湿度({{label_daily[0]}}～{{label_daily[-1]}})'
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            stepSize: 1,
-            callback: function(value, index, values){
-              return  value +  '%'
-            }
-          }
-        }]
-      },
-    }
+    options: dailytHumidityOptions
   });
 </script>
 
@@ -123,25 +124,26 @@ Temperature & Humidity
       {% endfor %}
     ],
   };
+  var weeklyTemperatureOptions = {
+    title: {
+      display: true,
+      text: '気温({{label_weekly[0]}}～{{label_weekly[-1]}})'
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          stepSize: 1,
+          callback: function(value, index, values){
+            return  value +  '℃'
+          }
+        }
+      }]
+    },
+  };
   var myLineChart = new Chart(ctx, {
     type: 'line',
     data: weeklyTemperatureData, 
-    options: {
-      title: {
-        display: true,
-        text: '気温({{label_weekly[0]}}～{{label_weekly[-1]}})'
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            stepSize: 1,
-            callback: function(value, index, values){
-              return  value +  '℃'
-            }
-          }
-        }]
-      },
-    }
+    options: weeklyTemperatureOptions
   });
 </script>
 
@@ -167,25 +169,26 @@ Temperature & Humidity
       {% endfor %}
     ],
   };
+  var weeklyHumidityOptions = {
+    title: {
+      display: true,
+      text: '湿度({{label_weekly[0]}}～{{label_weekly[-1]}})'
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          stepSize: 1,
+          callback: function(value, index, values){
+            return  value +  '%'
+          }
+        }
+      }]
+    },
+  };
   var myLineChart = new Chart(ctx, {
     type: 'line',
     data: weeklyHumidityData,
-    options: {
-      title: {
-        display: true,
-        text: '湿度({{label_weekly[0]}}～{{label_weekly[-1]}})'
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            stepSize: 1,
-            callback: function(value, index, values){
-              return  value +  '%'
-            }
-          }
-        }]
-      },
-    }
+    options: weeklyHumidityOptions
   });
 </script>
 
