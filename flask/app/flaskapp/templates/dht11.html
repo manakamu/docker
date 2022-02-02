@@ -28,7 +28,11 @@ Temperature & Humidity
         data: {{temperature_list}},
         tension: 0.3,
         pointRadius: 0,
+        {% if temperature_color|length > loop.index0 + 1 %}
         borderColor: "{{temperature_color[loop.index0]}}",
+        {% else %}
+        borderColor: "rgba(255,0,0,1)",
+        {% endif %}
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
@@ -72,7 +76,11 @@ Temperature & Humidity
         data: {{humidity_list}},
         tension: 0.3,
         pointRadius: 0,
+        {% if humidity_color|length > loop.index0 + 1 %}
         borderColor: "{{humidity_color[loop.index0]}}",
+        {% else %}
+        borderColor: "rgba(0,0,255,1)",
+        {% endif %}
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
@@ -118,7 +126,11 @@ Temperature & Humidity
         data: {{temperature_list}},
         tension: 0.3,
         pointRadius: 0,
+        {% if temperature_color|length > loop.index0 + 1 %}
         borderColor: "{{temperature_color[loop.index0]}}",
+        {% else %}
+        borderColor: "rgba(255,0,0,1)",
+        {% endif %}
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
@@ -163,7 +175,11 @@ Temperature & Humidity
         data: {{humidity_list}},
         tension: 0.3,
         pointRadius: 0,
+        {% if humidity_color|length > loop.index0 + 1 %}
         borderColor: "{{humidity_color[loop.index0]}}",
+        {% else %}
+        borderColor: "rgba(0,0,255,1)",
+        {% endif %}
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
@@ -209,7 +225,11 @@ Temperature & Humidity
         data: {{temperature_list}},
         tension: 0.3,
         pointRadius: 0,
+        {% if temperature_color|length > loop.index0 + 1 %}
         borderColor: "{{temperature_color[loop.index0]}}",
+        {% else %}
+        borderColor: "rgba(255,0,0,1)",
+        {% endif %}
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
@@ -254,7 +274,11 @@ Temperature & Humidity
         data: {{humidity_list}},
         tension: 0.3,
         pointRadius: 0,
+        {% if humidity_color|length > loop.index0 + 1 %}
         borderColor: "{{humidity_color[loop.index0]}}",
+        {% else %}
+        borderColor: "rgba(0,0,255,1)",
+        {% endif %}
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
