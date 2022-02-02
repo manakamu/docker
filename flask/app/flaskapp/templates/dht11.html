@@ -34,25 +34,26 @@ Temperature & Humidity
       {% endfor %}
     ],
   };
+  var dailyTemperatureOptions = {
+    title: {
+      display: true,
+      text: '気温({{label_daily[0]}}～{{label_daily[-1]}})'
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          stepSize: 1,
+          callback: function(value, index, values){
+            return  value +  '℃'
+          }
+        }
+      }]
+    },
+  };
   var myLineChart = new Chart(ctx, {
     type: 'line',
     data: dailyTemperatureData,
-    options: {
-      title: {
-        display: true,
-        text: '気温({{label_daily[0]}}～{{label_daily[-1]}})'
-      },
-      scales: {
-        yAxes: [{
-          ticks: {
-            stepSize: 1,
-            callback: function(value, index, values){
-              return  value +  '℃'
-            }
-          }
-        }]
-      },
-    }
+    options: dailyTemperatureOptions
   });
 </script>
 <canvas id="humidityDailyChart"></canvas>
