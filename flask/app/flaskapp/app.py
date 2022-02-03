@@ -103,9 +103,11 @@ def create_data_list(cur, label_sql, sql, x_axis_format):
             temperature_list.append(temperatures)
             humidity_list.append(humidities)
             place_list.append(element[2])
-        if len(label_list) < len(labels):
+            
+        if len(label_list) < len(labels) - 1:
             timestamp = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
             label_list.append(timestamp.strftime(x_axis_format))
+        
         if datetime.datetime.strptime(labels[counter], '%Y-%m-%d %H:%M:%S') == \
             datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
             temperatures.append(element[3])
