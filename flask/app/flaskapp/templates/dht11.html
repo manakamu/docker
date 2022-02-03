@@ -14,6 +14,26 @@ Temperature & Humidity
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
 <canvas id="temperatureDailyChart"></canvas>
 <script>
+  var temperatureScales = {
+    yAxes: [{
+      ticks: {
+        stepSize: 1,
+        callback: function(value, index, values){
+          return  value +  '℃'
+        }
+      }
+    }]
+  };
+  var humidityScales = {
+    yAxes: [{
+      ticks: {
+        stepSize: 1,
+        callback: function(value, index, values){
+          return  value +  '%'
+        }
+      }
+    }]
+  };
   var ctx = document.getElementById("temperatureDailyChart");
   var dailyTemperatureData = {
     labels: [
@@ -43,16 +63,7 @@ Temperature & Humidity
       display: true,
       text: '気温({{label_daily[0]}}～{{label_daily[-1]}})'
     },
-    scales: {
-      yAxes: [{
-        ticks: {
-          stepSize: 1,
-          callback: function(value, index, values){
-            return  value +  '℃'
-          }
-        }
-      }]
-    },
+    scales: temperatureScales,
   };
   var myLineChart = new Chart(ctx, {
     type: 'line',
@@ -91,16 +102,7 @@ Temperature & Humidity
       display: true,
       text: '湿度({{label_daily[0]}}～{{label_daily[-1]}})'
     },
-    scales: {
-      yAxes: [{
-        ticks: {
-          stepSize: 1,
-          callback: function(value, index, values){
-            return  value +  '%'
-          }
-        }
-      }]
-    },
+    scales: humidityScales,
   };
   var myLineChart = new Chart(ctx, {
     type: 'line',
@@ -141,16 +143,7 @@ Temperature & Humidity
       display: true,
       text: '気温({{label_weekly[0]}}～{{label_weekly[-1]}})'
     },
-    scales: {
-      yAxes: [{
-        ticks: {
-          stepSize: 1,
-          callback: function(value, index, values){
-            return  value +  '℃'
-          }
-        }
-      }]
-    },
+    scales: temperatureScales,
   };
   var myLineChart = new Chart(ctx, {
     type: 'line',
@@ -190,16 +183,7 @@ Temperature & Humidity
       display: true,
       text: '湿度({{label_weekly[0]}}～{{label_weekly[-1]}})'
     },
-    scales: {
-      yAxes: [{
-        ticks: {
-          stepSize: 1,
-          callback: function(value, index, values){
-            return  value +  '%'
-          }
-        }
-      }]
-    },
+    scales: humidityScales,
   };
   var myLineChart = new Chart(ctx, {
     type: 'line',
@@ -240,16 +224,7 @@ Temperature & Humidity
       display: true,
       text: '気温({{label_monthly[0]}}～{{label_monthly[-1]}})'
     },
-    scales: {
-      yAxes: [{
-        ticks: {
-          stepSize: 1,
-          callback: function(value, index, values){
-            return  value +  '℃'
-          }
-        }
-      }]
-    },
+    scales: temperatureScales,
   };
   var myLineChart = new Chart(ctx, {
     type: 'line',
@@ -289,16 +264,7 @@ Temperature & Humidity
       display: true,
       text: '湿度({{label_monthly[0]}}～{{label_monthly[-1]}})'
     },
-    scales: {
-      yAxes: [{
-        ticks: {
-          stepSize: 1,
-          callback: function(value, index, values){
-            return  value +  '%'
-          }
-        }
-      }]
-    },
+    scales: humidityScales,
   };
   var myLineChart = new Chart(ctx, {
     type: 'line',
