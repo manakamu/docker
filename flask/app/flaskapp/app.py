@@ -4,34 +4,48 @@ import sqlite3
 
 app = Flask(__name__)
 
+# デーブル作成クエリ
+SQL_CREATE_T_MANAGE = 'CREATE TABLE IF NOT EXISTS \
+    T_Manage(id INTEGER PRIMARY KEY AUTOINCREMENT, time STRING, recordId INTEGER, \
+    FOREIGN KEY(recordId) REFERENCES T_Record (recordId))'
+SQL_CREATE_T_RECORD = 'CREATE TABLE IF NOT EXISTS \
+    T_Record(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
+    placeId INTEGER, \
+    temperature REAL, humidity REAL, \
+    FOREIGN KEY(placeId) REFERENCES T_Place (placeId))'
+SQL_CREATE_T_PLACE = 'CREATE TABLE IF NOT EXISTS T_Place(placeId INTEGER PRIMARY KEY AUTOINCREMENT, place STRING)'
+
+# T_Placeに関するクエリ
+SQL_INSERT_T_PLACE = 'INSERT INTO T_Place(place) \
+    SELECT ? WHERE NOT EXISTS (SELECT 1 FROM T_Place WHERE place=?)'
+SQL_SELECT_PLACE_ID = 'SELECT placeId FROM T_Place WHERE place=?'
+
+# T_Recordに関するクエリ
+SQL_INSERT_T_RECORD = 'INSERT INTO T_Record(placeId, temperature, humidity) VALUES(?, ?, ?)'
+SQL_SELECT_T_RECOED ='SELECT LAST_INSERT_ROWID() FROM T_Record'
+
+# T_Manageに関するクエリ
+SQL_SELECT_T_MANAGE = 'SELECT recordId FROM T_Manage WHERE time=?'
+SQL_INSERT_T_MANAGE = 'INSERT INTO T_Manage(time, recordId) VALUES(?, ?)'
+SQL_UPDATE_T_MANAGE = 'UPDATE T_Manage SET recordId=? WHERE time=?'
+
 @app.route('/')
 def index():
     return '<h2>Hello Flask+uWSGI+Nginx</h2>'
 
 def create_table(conn):
     # テーブルがなければ作成する
-    conn.execute("CREATE TABLE IF NOT EXISTS \
-        T_Manage(id INTEGER PRIMARY KEY AUTOINCREMENT, time STRING, recordId INTEGER, \
-        FOREIGN KEY(recordId) REFERENCES T_Record (recordId))")
-
-    conn.execute("CREATE TABLE IF NOT EXISTS \
-        T_Record(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
-        placeId INTEGER, \
-        temperature REAL, humidity REAL, \
-        FOREIGN KEY(placeId) REFERENCES T_Place (placeId))")
-
-    conn.execute("CREATE TABLE IF NOT EXISTS \
-        T_Place(placeId INTEGER PRIMARY KEY AUTOINCREMENT, place STRING)")
+    conn.execute(SQL_CREATE_T_MANAGE)
+    conn.execute(SQL_CREATE_T_RECORD)
+    conn.execute(SQL_CREATE_T_PLACE)
 
 def insert_place(conn, place):
     cur = conn.cursor()
 
-    sql = 'INSERT INTO T_Place(place) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM T_Place WHERE place=?)'
-    cur.execute(sql, [place, place])
+    cur.execute(SQL_INSERT_T_PLACE, [place, place])
 
-    # placeIdを取得
-    sql = 'SELECT placeId FROM T_Place WHERE place=?'
-    cur.execute(sql, [place])
+    # 追加したplaceのplaceIdを取得
+    cur.execute(SQL_SELECT_PLACE_ID, [place])
     placeId = None
     for element in cur:
         placeId = element[0]
@@ -42,13 +56,11 @@ def insert_record(conn, placeId, temperature, humidity):
     cur = conn.cursor()
 
     # T_Recordにデータを追加
-    sql = 'INSERT INTO T_Record(placeId, temperature, humidity) VALUES(?, ?, ?)'
     data = [placeId, temperature, humidity]
-    cur.execute(sql, data)
+    cur.execute(SQL_INSERT_T_RECORD, data)
 
     # T_Recordに追加したレコードのrecordIdを取得する
-    sql = 'select LAST_INSERT_ROWID() FROM T_Record'
-    cur.execute(sql)
+    cur.execute(SQL_SELECT_T_RECOED)
     recordId = 0
     for element in cur:
         recordId = element[0]
@@ -59,21 +71,18 @@ def insert_manage(conn, date, recordId):
     cur = conn.cursor()
 
     # 既にあるrecordIdを取得する
-    sql = 'SELECT recordId FROM T_Manage WHERE time=?'
-    cur.execute(sql, [date])
+    cur.execute(SQL_SELECT_T_MANAGE, [date])
     recordIds = None
     for element in cur:
         recordIds = element[0]
 
     if len(str(recordIds)) == 0:
         # 同じ時刻のレコードがない場合はINSERTする
-        sql = 'INSERT INTO T_Manage(time, recordId) VALUES(?, ?)'
-        cur.execute(sql, [date, recordId])
+        cur.execute(SQL_INSERT_T_MANAGE, [date, recordId])
     else:
         # recordIdはカンマ区切りで追加する
         data = '{},{}'.format(recordIds, recordId)
-        sql = 'UPDATE T_Manage SET recordId=? WHERE time=?'
-        cur.execute(sql, [data, date])
+        cur.execute(SQL_UPDATE_T_MANAGE, [data, date])
 
 @app.route('/api/post', methods=["POST"])
 def post_data():
