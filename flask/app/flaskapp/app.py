@@ -1,7 +1,3 @@
-from cProfile import label
-from itertools import count
-from pickletools import read_unicodestringnl
-import telnetlib
 from flask import Flask, request, render_template
 import datetime
 import sqlite3
@@ -12,29 +8,22 @@ app = Flask(__name__)
 def index():
     return '<h2>Hello Flask+uWSGI+Nginx</h2>'
 
-@app.route('/api/post', methods=["POST"])
-def post_data():
-    place = request.args.get("place")
-    temperature = request.args.get("temperature")
-    humidity = request.args.get("humidity")
-
-    date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
-
-    conn = sqlite3.connect('temperature.sqlite3')
-
+def create_table(conn):
     # テーブルがなければ作成する
     conn.execute("CREATE TABLE IF NOT EXISTS \
         T_Manage(id INTEGER PRIMARY KEY AUTOINCREMENT, time STRING, recordId INTEGER, \
         FOREIGN KEY(recordId) REFERENCES T_Record (recordId))")
-    cur = conn.cursor()
+
     conn.execute("CREATE TABLE IF NOT EXISTS \
         T_Record(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
         placeId INTEGER, \
         temperature REAL, humidity REAL, \
         FOREIGN KEY(placeId) REFERENCES T_Place (placeId))")
-    cur = conn.cursor()
+
     conn.execute("CREATE TABLE IF NOT EXISTS \
         T_Place(placeId INTEGER PRIMARY KEY AUTOINCREMENT, place STRING)")
+
+def insert_place(conn, place):
     cur = conn.cursor()
 
     sql = 'INSERT INTO T_Place(place) SELECT ? WHERE NOT EXISTS (SELECT 1 FROM T_Place WHERE place=?)'
@@ -43,9 +32,14 @@ def post_data():
     # placeIdを取得
     sql = 'SELECT placeId FROM T_Place WHERE place=?'
     cur.execute(sql, [place])
-    placeId = ''
+    placeId = None
     for element in cur:
         placeId = element[0]
+
+    return placeId
+
+def insert_record(conn, placeId, temperature, humidity):
+    cur = conn.cursor()
 
     # T_Recordにデータを追加
     sql = 'INSERT INTO T_Record(placeId, temperature, humidity) VALUES(?, ?, ?)'
@@ -58,6 +52,24 @@ def post_data():
     recordId = 0
     for element in cur:
         recordId = element[0]
+
+    return recordId
+
+@app.route('/api/post', methods=["POST"])
+def post_data():
+    place = request.args.get("place")
+    temperature = request.args.get("temperature")
+    humidity = request.args.get("humidity")
+
+    date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
+
+    conn = sqlite3.connect('temperature.sqlite3')
+    create_table(conn)
+
+    cur = conn.cursor()
+    placeId = insert_place(conn, place)
+
+    recordId = insert_record(conn, placeId, temperature, humidity)
 
     # 既にあるrecordIdを取得する
     sql = 'SELECT recordId FROM T_Manage WHERE time=?'
