@@ -55,26 +55,13 @@ def insert_record(conn, placeId, temperature, humidity):
 
     return recordId
 
-@app.route('/api/post', methods=["POST"])
-def post_data():
-    place = request.args.get("place")
-    temperature = request.args.get("temperature")
-    humidity = request.args.get("humidity")
-
-    date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
-
-    conn = sqlite3.connect('temperature.sqlite3')
-    create_table(conn)
-
+def insert_manage(conn, date, recordId):
     cur = conn.cursor()
-    placeId = insert_place(conn, place)
-
-    recordId = insert_record(conn, placeId, temperature, humidity)
 
     # 既にあるrecordIdを取得する
     sql = 'SELECT recordId FROM T_Manage WHERE time=?'
     cur.execute(sql, [date])
-    recordIds = ''
+    recordIds = None
     for element in cur:
         recordIds = element[0]
 
@@ -87,6 +74,23 @@ def post_data():
         data = '{},{}'.format(recordIds, recordId)
         sql = 'UPDATE T_Manage SET recordId=? WHERE time=?'
         cur.execute(sql, [data, date])
+
+@app.route('/api/post', methods=["POST"])
+def post_data():
+    date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
+    place = request.args.get("place")
+    temperature = request.args.get("temperature")
+    humidity = request.args.get("humidity")
+    conn = sqlite3.connect('temperature.sqlite3')
+
+    create_table(conn)
+
+    cur = conn.cursor()
+    placeId = insert_place(conn, place)
+
+    recordId = insert_record(conn, placeId, temperature, humidity)
+
+    insert_manage(conn, date, recordId)
 
     conn.commit()
     conn.close()
