@@ -108,25 +108,27 @@ def create_data_list(cur, label_sql, sql, x_axis_format):
             timestamp = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
             label_list.append(timestamp.strftime(x_axis_format))
         
-        if datetime.datetime.strptime(labels[counter], '%Y-%m-%d %H:%M:%S') == \
-            datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
-            temperatures.append(element[3])
-            humidities.append(element[4])
-        else:
-            skip = 0
-            for i, time in enumerate(labels, counter):
-                if datetime.datetime.strptime(labels[i], '%Y-%m-%d %H:%M:%S') == \
-                    datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
-                    temperatures.append(element[3])
-                    humidities.append(element[4])
-                    break
-                else:
-                    # データが欠落しているため、同じデータで埋める
-                    temperatures.append(element[3])
-                    humidities.append(element[4])
-                    skip += 1
-            counter += skip
-        counter += 1
+        if len(labels) > counter:
+            if datetime.datetime.strptime(labels[counter], '%Y-%m-%d %H:%M:%S') == \
+                datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
+                temperatures.append(element[3])
+                humidities.append(element[4])
+            else:
+                skip = 0
+                for i, time in enumerate(labels, counter):
+                    if len(labels) > i:
+                        if datetime.datetime.strptime(labels[i], '%Y-%m-%d %H:%M:%S') == \
+                            datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
+                            temperatures.append(element[3])
+                            humidities.append(element[4])
+                            break
+                        else:
+                            # データが欠落しているため、同じデータで埋める
+                            temperatures.append(element[3])
+                            humidities.append(element[4])
+                            skip += 1
+                counter += skip
+            counter += 1
     return label_list, temperature_list, humidity_list, place_list
 
 @app.route('/dht11', methods=["GET"])
