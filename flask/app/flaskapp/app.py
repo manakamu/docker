@@ -29,6 +29,59 @@ SQL_SELECT_T_MANAGE = 'SELECT recordId FROM T_Manage WHERE time=?'
 SQL_INSERT_T_MANAGE = 'INSERT INTO T_Manage(time, recordId) VALUES(?, ?)'
 SQL_UPDATE_T_MANAGE = 'UPDATE T_Manage SET recordId=? WHERE time=?'
 
+# グラフを描くためのSQL
+SQL_SELECT_DAILY_DATE = "SELECT datetime(time, 'localtime') FROM T_Manage \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
+    GROUP BY datetime(time, 'localtime')"
+SQL_SELECT_DAILY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
+        (SELECT time, instr(recordId,',') AS idx, \
+            substr(recordId,1,instr(recordId,',')-1) AS fld, \
+            substr(recordId, instr(recordId,',')+1)||',' AS remain \
+        FROM T_Manage UNION ALL SELECT KEY, instr(remain,',') AS idx, \
+                substr(remain,1,instr(remain,',')-1) AS fld, \
+                substr(remain, instr(remain,',')+1) AS remain \
+        FROM split WHERE remain != '') \
+    SELECT datetime(KEY, 'localtime') AS time, \
+        T_Record.placeId, T_Place.place, temperature, humidity FROM split \
+    INNER JOIN T_Record ON split.fld = T_Record.recordId \
+    INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
+    WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-24 hours') \
+    ORDER BY T_Record.placeId ASC, KEY ASC"
+SQL_SELECT_WEEKLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Manage \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
+    GROUP BY datetime(time, 'localtime')"
+SQL_SELECT_WEEKLY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
+        (SELECT time, instr(recordId,',') AS idx, \
+            substr(recordId,1,instr(recordId,',')-1) AS fld, \
+            substr(recordId, instr(recordId,',')+1)||',' AS remain \
+        FROM T_Manage UNION ALL SELECT KEY, instr(remain,',') AS idx, \
+                substr(remain,1,instr(remain,',')-1) AS fld, \
+                substr(remain, instr(remain,',')+1) AS remain \
+        FROM split WHERE remain != '') \
+    SELECT datetime(KEY, 'localtime') AS time, \
+        T_Record.placeId, T_Place.place, temperature, humidity FROM split \
+    INNER JOIN T_Record ON split.fld = T_Record.recordId \
+    INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
+    WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-7 days') \
+    ORDER BY T_Record.placeId ASC, KEY ASC"
+SQL_SELECT_MONTHLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Manage \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
+    GROUP BY datetime(time, 'localtime')"
+SQL_SELECT_MONTHLY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
+        (SELECT time, instr(recordId,',') AS idx, \
+            substr(recordId,1,instr(recordId,',')-1) AS fld, \
+            substr(recordId, instr(recordId,',')+1)||',' AS remain \
+        FROM T_Manage UNION ALL SELECT KEY, instr(remain,',') AS idx, \
+                substr(remain,1,instr(remain,',')-1) AS fld, \
+                substr(remain, instr(remain,',')+1) AS remain \
+        FROM split WHERE remain != '') \
+    SELECT datetime(KEY, 'localtime') AS time, \
+        T_Record.placeId, T_Place.place, temperature, humidity FROM split \
+    INNER JOIN T_Record ON split.fld = T_Record.recordId \
+    INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
+    WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-1 months') \
+    ORDER BY T_Record.placeId ASC, KEY ASC"
+    
 @app.route('/')
 def index():
     return '<h2>Hello Flask+uWSGI+Nginx</h2>'
@@ -161,65 +214,14 @@ def get_dht11():
     conn = sqlite3.connect('temperature.sqlite3')
     cur = conn.cursor()
 
-    label_sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
-        WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
-        GROUP BY datetime(time, 'localtime')"
-    sql =   "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
-                (SELECT time, instr(recordId,',') AS idx, \
-                    substr(recordId,1,instr(recordId,',')-1) AS fld, \
-                    substr(recordId, instr(recordId,',')+1)||',' AS remain \
-                FROM T_Manage UNION ALL SELECT KEY, instr(remain,',') AS idx, \
-                        substr(remain,1,instr(remain,',')-1) AS fld, \
-                        substr(remain, instr(remain,',')+1) AS remain \
-                FROM split WHERE remain != '') \
-            SELECT datetime(KEY, 'localtime') AS time, \
-                T_Record.placeId, T_Place.place, temperature, humidity FROM split \
-            INNER JOIN T_Record ON split.fld = T_Record.recordId \
-            INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
-            WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-24 hours') \
-            ORDER BY T_Record.placeId ASC, KEY ASC"
     label_daily_list, temperature_daily_list, humidity_daily_list, place_dayly_list = \
-        create_data_list(cur, label_sql, sql, '%H:%M')
+        create_data_list(cur, SQL_SELECT_DAILY_DATE, SQL_SELECT_DAILY_DATA, '%H:%M')
 
-    label_sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
-        WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
-        GROUP BY datetime(time, 'localtime')"
-    sql =   "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
-                (SELECT time, instr(recordId,',') AS idx, \
-                    substr(recordId,1,instr(recordId,',')-1) AS fld, \
-                    substr(recordId, instr(recordId,',')+1)||',' AS remain \
-                FROM T_Manage UNION ALL SELECT KEY, instr(remain,',') AS idx, \
-                        substr(remain,1,instr(remain,',')-1) AS fld, \
-                        substr(remain, instr(remain,',')+1) AS remain \
-                FROM split WHERE remain != '') \
-            SELECT datetime(KEY, 'localtime') AS time, \
-                T_Record.placeId, T_Place.place, temperature, humidity FROM split \
-            INNER JOIN T_Record ON split.fld = T_Record.recordId \
-            INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
-            WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-7 days') \
-            ORDER BY T_Record.placeId ASC, KEY ASC"
     label_weekly_list, temperature_weekly_list, humidity_weekly_list, place_weekly_list = \
-        create_data_list(cur, label_sql, sql, '%Y/%m/%d %H:%M')
+        create_data_list(cur, SQL_SELECT_WEEKLY_DATE, SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
 
-    label_sql = "SELECT datetime(time, 'localtime') FROM T_Manage \
-        WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
-        GROUP BY datetime(time, 'localtime')"
-    sql =   "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
-                (SELECT time, instr(recordId,',') AS idx, \
-                    substr(recordId,1,instr(recordId,',')-1) AS fld, \
-                    substr(recordId, instr(recordId,',')+1)||',' AS remain \
-                FROM T_Manage UNION ALL SELECT KEY, instr(remain,',') AS idx, \
-                        substr(remain,1,instr(remain,',')-1) AS fld, \
-                        substr(remain, instr(remain,',')+1) AS remain \
-                FROM split WHERE remain != '') \
-            SELECT datetime(KEY, 'localtime') AS time, \
-                T_Record.placeId, T_Place.place, temperature, humidity FROM split \
-            INNER JOIN T_Record ON split.fld = T_Record.recordId \
-            INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
-            WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-1 months') \
-            ORDER BY T_Record.placeId ASC, KEY ASC"
     label_monthly_list, temperature_monthly_list, humidity_monthly_list, place_monthly_list = \
-        create_data_list(cur, label_sql, sql, '%Y/%m/%d')
+        create_data_list(cur, SQL_SELECT_MONTHLY_DATE, SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
 
     conn.close()
 
