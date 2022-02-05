@@ -106,17 +106,17 @@ def post_data():
 
     return "time:" + date + ", place:" + place + ", temperature:" + temperature + ", humidity:" + humidity
 
-def create_data_list(cur, label_sql, sql, x_axis_format):
-    labels = list()
-    for element in cur.execute(label_sql):
-        labels.append(element[0])
+def create_data_list(cur, date_sql, sql, x_axis_format):
+    dates_all = list()
+    for element in cur.execute(date_sql):
+        dates_all.append(element[0])
 
     placeId = -1
-    label_list = list()
+    date_list = list()
     temperature_list = list()
     humidity_list = list()
-    temperatures = list()
-    humidities = list()
+    temperatures = None
+    humidities = None
     place_list = list()
     counter = 0
     for element in cur.execute(sql):
@@ -129,20 +129,20 @@ def create_data_list(cur, label_sql, sql, x_axis_format):
             humidity_list.append(humidities)
             place_list.append(element[2])
             
-        if len(label_list) < len(labels) - 1:
+        if len(date_list) < len(dates_all) - 1:
             timestamp = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
-            label_list.append(timestamp.strftime(x_axis_format))
+            date_list.append(timestamp.strftime(x_axis_format))
         
-        if len(labels) > counter:
-            if datetime.datetime.strptime(labels[counter], '%Y-%m-%d %H:%M:%S') == \
+        if len(dates_all) > counter:
+            if datetime.datetime.strptime(dates_all[counter], '%Y-%m-%d %H:%M:%S') == \
                 datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
                 temperatures.append(element[3])
                 humidities.append(element[4])
             else:
                 skip = 0
-                for i, time in enumerate(labels, counter):
-                    if len(labels) > i:
-                        if datetime.datetime.strptime(labels[i], '%Y-%m-%d %H:%M:%S') == \
+                for i, time in enumerate(dates_all, counter):
+                    if len(dates_all) > i:
+                        if datetime.datetime.strptime(dates_all[i], '%Y-%m-%d %H:%M:%S') == \
                             datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
                             temperatures.append(element[3])
                             humidities.append(element[4])
@@ -154,7 +154,7 @@ def create_data_list(cur, label_sql, sql, x_axis_format):
                             skip += 1
                 counter += skip
             counter += 1
-    return label_list, temperature_list, humidity_list, place_list
+    return date_list, temperature_list, humidity_list, place_list
 
 @app.route('/dht11', methods=["GET"])
 def get_dht11():
