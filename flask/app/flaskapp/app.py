@@ -81,7 +81,7 @@ SQL_SELECT_MONTHLY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
     INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
     WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-1 months') \
     ORDER BY T_Record.placeId ASC, KEY ASC"
-    
+
 @app.route('/')
 def index():
     return '<h2>Hello Flask+uWSGI+Nginx</h2>'
@@ -214,13 +214,13 @@ def get_dht11():
     conn = sqlite3.connect('temperature.sqlite3')
     cur = conn.cursor()
 
-    label_daily_list, temperature_daily_list, humidity_daily_list, place_dayly_list = \
+    label_daily, temperature_daily, humidity_daily, place_daily = \
         create_data_list(cur, SQL_SELECT_DAILY_DATE, SQL_SELECT_DAILY_DATA, '%H:%M')
 
-    label_weekly_list, temperature_weekly_list, humidity_weekly_list, place_weekly_list = \
+    label_weekly, temperature_weekly, humidity_weekly, place_weekly = \
         create_data_list(cur, SQL_SELECT_WEEKLY_DATE, SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
 
-    label_monthly_list, temperature_monthly_list, humidity_monthly_list, place_monthly_list = \
+    label_monthly, temperature_monthly, humidity_monthly, place_monthly = \
         create_data_list(cur, SQL_SELECT_MONTHLY_DATE, SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
 
     conn.close()
@@ -230,18 +230,18 @@ def get_dht11():
     humidity_color = ['rgba(0, 67, 106, 0.5)', 'rgba(32, 125, 147, 0.5)', \
         'rgba(85, 186, 191, 0.5)', 'rgba(132, 236, 225, 0.5)', 'rgba(178, 255, 217, 0.5)']
     return render_template('dht11.html', \
-        label_daily = label_daily_list,        
-        temperature_daily = temperature_daily_list,
-        humidity_daily = humidity_daily_list,
-        place_daily = place_dayly_list,
-        label_weekly = label_weekly_list,        
-        temperature_weekly = temperature_weekly_list,
-        humidity_weekly = humidity_weekly_list,
-        place_weekly = place_weekly_list,
-        label_monthly = label_monthly_list,
-        temperature_monthly = temperature_monthly_list,
-        humidity_monthly = humidity_monthly_list,
-        place_monthly = place_monthly_list,
+        label_daily = label_daily,        
+        temperature_daily = temperature_daily,
+        humidity_daily = humidity_daily,
+        place_daily = place_daily,
+        label_weekly = label_weekly,        
+        temperature_weekly = temperature_weekly,
+        humidity_weekly = humidity_weekly,
+        place_weekly = place_weekly,
+        label_monthly = label_monthly,
+        temperature_monthly = temperature_monthly,
+        humidity_monthly = humidity_monthly,
+        place_monthly = place_monthly,
         temperature_color = temperature_color,
         humidity_color = humidity_color,
         )
