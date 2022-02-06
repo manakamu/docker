@@ -14,7 +14,8 @@ SQL_CREATE_T_RECORD = 'CREATE TABLE IF NOT EXISTS \
     placeId INTEGER, \
     temperature REAL, humidity REAL, \
     FOREIGN KEY(placeId) REFERENCES T_Place (placeId))'
-SQL_CREATE_T_PLACE = 'CREATE TABLE IF NOT EXISTS T_Place(placeId INTEGER PRIMARY KEY AUTOINCREMENT, place STRING)'
+SQL_CREATE_T_PLACE = 'CREATE TABLE IF NOT EXISTS \
+    T_Place(placeId INTEGER PRIMARY KEY AUTOINCREMENT, place STRING)'
 
 # T_Placeに関するクエリ
 SQL_INSERT_T_PLACE = 'INSERT INTO T_Place(place) \
@@ -158,7 +159,8 @@ def post_data():
     conn.commit()
     conn.close()
 
-    return "time:" + date + ", place:" + place + ", temperature:" + temperature + ", humidity:" + humidity
+    return "time:" + date + ", place:" + place + ", \
+        temperature:" + temperature + ", humidity:" + humidity
 
 def create_data_list(cur, date_sql, sql, x_axis_format):
     dates_all = list()
@@ -183,7 +185,7 @@ def create_data_list(cur, date_sql, sql, x_axis_format):
             humidity_list.append(humidities)
             place_list.append(element[2])
         if counter >= len(dates_all):
-            break    
+            break
         current_date = datetime.datetime.strptime(dates_all[counter], '%Y-%m-%d %H:%M:%S')
         record_date = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
         if len(date_list) < len(dates_all):
@@ -232,9 +234,11 @@ def get_dht11():
     conn.close()
 
     temperature_color = ['rgba(182, 15, 0, 0.5)', 'rgba(254, 78, 19, 0.5)', \
-        'rgba(255, 159, 75, 0.5)', 'rgba(255, 220, 131, 0.5)', 'rgba(239, 255, 189, 0.5)']
+        'rgba(255, 159, 75, 0.5)', 'rgba(255, 220, 131, 0.5)', \
+        'rgba(239, 255, 189, 0.5)']
     humidity_color = ['rgba(0, 67, 106, 0.5)', 'rgba(32, 125, 147, 0.5)', \
-        'rgba(85, 186, 191, 0.5)', 'rgba(132, 236, 225, 0.5)', 'rgba(178, 255, 217, 0.5)']
+        'rgba(85, 186, 191, 0.5)', 'rgba(132, 236, 225, 0.5)', \
+        'rgba(178, 255, 217, 0.5)']
     return render_template('dht11.html', \
         label_daily = label_daily,        
         temperature_daily = temperature_daily,
