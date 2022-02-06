@@ -1,3 +1,4 @@
+from pyexpat.errors import XML_ERROR_FEATURE_REQUIRES_XML_DTD
 from flask import Flask, request, render_template
 import datetime
 import sqlite3
@@ -181,32 +182,37 @@ def create_data_list(cur, date_sql, sql, x_axis_format):
             temperature_list.append(temperatures)
             humidity_list.append(humidities)
             place_list.append(element[2])
-            
-        if len(date_list) < len(dates_all) - 1:
-            timestamp = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
-            date_list.append(timestamp.strftime(x_axis_format))
-        
-        if len(dates_all) > counter:
-            if datetime.datetime.strptime(dates_all[counter], '%Y-%m-%d %H:%M:%S') == \
-                datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
-                temperatures.append(element[3])
-                humidities.append(element[4])
-            else:
-                skip = 0
-                for i, time in enumerate(dates_all, counter):
-                    if len(dates_all) > i:
-                        if datetime.datetime.strptime(dates_all[i], '%Y-%m-%d %H:%M:%S') == \
-                            datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S'):
-                            temperatures.append(element[3])
-                            humidities.append(element[4])
-                            break
-                        else:
-                            # データが欠落しているため、同じデータで埋める
-                            temperatures.append(element[3])
-                            humidities.append(element[4])
-                            skip += 1
-                counter += skip
-            counter += 1
+        if counter >= len(dates_all):
+            break    
+        current_date = datetime.datetime.strptime(dates_all[counter], '%Y-%m-%d %H:%M:%S')
+        record_date = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
+        if len(date_list) < len(dates_all):
+            date_list.append(current_date.strftime(x_axis_format))
+        if current_date == record_date:
+            temperatures.append(element[3])
+            humidities.append(element[4])
+        else:
+            skip = 0
+            for i, time in enumerate(dates_all, counter):
+                if len(dates_all) > i:
+                    current_date = datetime.datetime.strptime( \
+                        dates_all[i], '%Y-%m-%d %H:%M:%S')
+                    if len(date_list) < len(dates_all):
+                        date_list.append(current_date.strftime(x_axis_format))
+
+                    if current_date == record_date:
+                        temperatures.append(element[3])
+                        humidities.append(element[4])
+                        break
+                    else:
+                        # データが欠落しているため、同じデータで埋める
+                        temperatures.append(element[3])
+                        humidities.append(element[4])
+                        skip += 1
+                else:
+                    break
+            counter += skip
+        counter += 1
     return date_list, temperature_list, humidity_list, place_list
 
 @app.route('/dht11', methods=["GET"])
