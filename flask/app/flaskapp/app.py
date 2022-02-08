@@ -6,40 +6,48 @@ import sqlite3
 app = Flask(__name__)
 
 # デーブル作成クエリ
-SQL_CREATE_T_MANAGE = 'CREATE TABLE IF NOT EXISTS \
-    T_Manage(id INTEGER PRIMARY KEY AUTOINCREMENT, time STRING, recordId INTEGER, \
-    FOREIGN KEY(recordId) REFERENCES T_Record (recordId))'
-SQL_CREATE_T_RECORD = 'CREATE TABLE IF NOT EXISTS \
-    T_Record(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
-    placeId INTEGER, \
-    temperature REAL, humidity REAL, \
-    FOREIGN KEY(placeId) REFERENCES T_Place (placeId))'
+SQL_CREATE_T_DHT11 = 'CREATE TABLE IF NOT EXISTS \
+    T_DHT11(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
+    temperature REAL, humidity REAL)'
+SQL_CREATE_T_SENSOR = 'CREATE TABLE IF NOT EXISTS \
+    T_Sensor(sensorId INTEGER PRIMARY KEY AUTOINCREMENT, sensor STRING)'
 SQL_CREATE_T_PLACE = 'CREATE TABLE IF NOT EXISTS \
     T_Place(placeId INTEGER PRIMARY KEY AUTOINCREMENT, place STRING)'
+SQL_CREATE_T_MASTER = 'CREATE TABLE IF NOT EXISTS \
+    T_Master(id INTEGER PRIMARY KEY AUTOINCREMENT, time STRING, \
+    sensorId INTEGER, placeId INTEGER, recordId INTEGER, \
+    FOREIGN KEY(sensorId) REFERENCES T_Sensor (sensorId), \
+    FOREIGN KEY(placeId) REFERENCES T_Place (placeId), \
+    FOREIGN KEY(recordId) REFERENCES T_Record (recordId))'
 
 # T_Placeに関するクエリ
 SQL_INSERT_T_PLACE = 'INSERT INTO T_Place(place) \
     SELECT ? WHERE NOT EXISTS (SELECT 1 FROM T_Place WHERE place=?)'
 SQL_SELECT_PLACE_ID = 'SELECT placeId FROM T_Place WHERE place=?'
 
-# T_Recordに関するクエリ
-SQL_INSERT_T_RECORD = 'INSERT INTO T_Record(placeId, temperature, humidity) VALUES(?, ?, ?)'
-SQL_SELECT_T_RECOED ='SELECT LAST_INSERT_ROWID() FROM T_Record'
+# T_Sensorに関するクエリ
+SQL_INSERT_T_SENSOR = 'INSERT INTO T_Sensor(sensor) \
+    SELECT ? WHERE NOT EXISTS (SELECT 1 FROM T_Sensor WHERE sensor=?)'
+SQL_SELECT_SENSOR_ID = 'SELECT sensorId FROM T_Sensor WHERE sensor=?'
 
-# T_Manageに関するクエリ
-SQL_SELECT_T_MANAGE = 'SELECT recordId FROM T_Manage WHERE time=?'
-SQL_INSERT_T_MANAGE = 'INSERT INTO T_Manage(time, recordId) VALUES(?, ?)'
-SQL_UPDATE_T_MANAGE = 'UPDATE T_Manage SET recordId=? WHERE time=?'
+# T_DHT11に関するクエリ
+SQL_INSERT_T_DHT11_RECORD = 'INSERT INTO T_DHT11(temperature, humidity) \
+    VALUES(?, ?)'
+SQL_SELECT_T_DHT11_RECOED ='SELECT LAST_INSERT_ROWID() FROM T_DHT11'
+
+# T_Masterに関するクエリ
+SQL_SELECT_T_MASTER = 'SELECT recordId FROM T_Master WHERE time=?'
+SQL_INSERT_T_MASTER = 'INSERT INTO T_Master(time, sensorId, placeId, recordId) VALUES(?, ?, ?, ?)'
 
 # グラフを描くためのSQL
-SQL_SELECT_DAILY_DATE = "SELECT datetime(time, 'localtime') FROM T_Manage \
+SQL_SELECT_DAILY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
     GROUP BY datetime(time, 'localtime')"
 SQL_SELECT_DAILY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
         (SELECT time, instr(recordId,',') AS idx, \
             substr(recordId,1,instr(recordId,',')-1) AS fld, \
             substr(recordId, instr(recordId,',')+1)||',' AS remain \
-        FROM T_Manage UNION ALL SELECT KEY, instr(remain,',') AS idx, \
+        FROM T_Master UNION ALL SELECT KEY, instr(remain,',') AS idx, \
                 substr(remain,1,instr(remain,',')-1) AS fld, \
                 substr(remain, instr(remain,',')+1) AS remain \
         FROM split WHERE remain != '') \
@@ -49,14 +57,14 @@ SQL_SELECT_DAILY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
     INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
     WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-24 hours') \
     ORDER BY T_Record.placeId ASC, KEY ASC"
-SQL_SELECT_WEEKLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Manage \
+SQL_SELECT_WEEKLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
     GROUP BY datetime(time, 'localtime')"
 SQL_SELECT_WEEKLY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
         (SELECT time, instr(recordId,',') AS idx, \
             substr(recordId,1,instr(recordId,',')-1) AS fld, \
             substr(recordId, instr(recordId,',')+1)||',' AS remain \
-        FROM T_Manage UNION ALL SELECT KEY, instr(remain,',') AS idx, \
+        FROM T_Master UNION ALL SELECT KEY, instr(remain,',') AS idx, \
                 substr(remain,1,instr(remain,',')-1) AS fld, \
                 substr(remain, instr(remain,',')+1) AS remain \
         FROM split WHERE remain != '') \
@@ -66,14 +74,14 @@ SQL_SELECT_WEEKLY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
     INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
     WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-7 days') \
     ORDER BY T_Record.placeId ASC, KEY ASC"
-SQL_SELECT_MONTHLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Manage \
+SQL_SELECT_MONTHLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
     GROUP BY datetime(time, 'localtime')"
 SQL_SELECT_MONTHLY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
         (SELECT time, instr(recordId,',') AS idx, \
             substr(recordId,1,instr(recordId,',')-1) AS fld, \
             substr(recordId, instr(recordId,',')+1)||',' AS remain \
-        FROM T_Manage UNION ALL SELECT KEY, instr(remain,',') AS idx, \
+        FROM T_Master UNION ALL SELECT KEY, instr(remain,',') AS idx, \
                 substr(remain,1,instr(remain,',')-1) AS fld, \
                 substr(remain, instr(remain,',')+1) AS remain \
         FROM split WHERE remain != '') \
@@ -88,11 +96,12 @@ SQL_SELECT_MONTHLY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
 def index():
     return '<h2>Hello Flask+uWSGI+Nginx</h2>'
 
-def create_table(conn):
+def create_dht11_table(conn):
     # テーブルがなければ作成する
-    conn.execute(SQL_CREATE_T_MANAGE)
-    conn.execute(SQL_CREATE_T_RECORD)
+    conn.execute(SQL_CREATE_T_DHT11)
+    conn.execute(SQL_CREATE_T_SENSOR)
     conn.execute(SQL_CREATE_T_PLACE)
+    conn.execute(SQL_CREATE_T_MASTER)
 
 def insert_place(conn, place):
     cur = conn.cursor()
@@ -107,59 +116,60 @@ def insert_place(conn, place):
 
     return placeId
 
-def insert_record(conn, placeId, temperature, humidity):
+def insert_sensor(conn, sensor):
     cur = conn.cursor()
 
-    # T_Recordにデータを追加
-    data = [placeId, temperature, humidity]
-    cur.execute(SQL_INSERT_T_RECORD, data)
+    cur.execute(SQL_INSERT_T_SENSOR, [sensor, sensor])
 
-    # T_Recordに追加したレコードのrecordIdを取得する
-    cur.execute(SQL_SELECT_T_RECOED)
+    # 追加したT_sensorのplaceIdを取得
+    cur.execute(SQL_SELECT_SENSOR_ID, [sensor])
+    sensorId = None
+    for element in cur:
+        sensorId = element[0]
+
+    return sensorId
+    
+def insert_dht11_record(conn, temperature, humidity):
+    cur = conn.cursor()
+
+    # T_DHT11にデータを追加
+    data = [temperature, humidity]
+    cur.execute(SQL_INSERT_T_DHT11_RECORD, data)
+
+    # T_DHT11に追加したレコードのrecordIdを取得する
+    cur.execute(SQL_SELECT_T_DHT11_RECOED)
     recordId = 0
     for element in cur:
         recordId = element[0]
 
     return recordId
 
-def insert_manage(conn, date, recordId):
+def insert_master(conn, sensorId, placeId, date, recordId):
     cur = conn.cursor()
+    cur.execute(SQL_INSERT_T_MASTER, [date, sensorId, placeId, recordId])
 
-    # 既にあるrecordIdを取得する
-    cur.execute(SQL_SELECT_T_MANAGE, [date])
-    recordIds = None
-    for element in cur:
-        recordIds = element[0]
-
-    if len(str(recordIds)) == 0:
-        # 同じ時刻のレコードがない場合はINSERTする
-        cur.execute(SQL_INSERT_T_MANAGE, [date, recordId])
-    else:
-        # recordIdはカンマ区切りで追加する
-        data = '{},{}'.format(recordIds, recordId)
-        cur.execute(SQL_UPDATE_T_MANAGE, [data, date])
-
-@app.route('/api/post', methods=["POST"])
+@app.route('/api/dht11', methods=["POST"])
 def post_data():
     date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
+    sensor = request.args.get("sensor")
     place = request.args.get("place")
     temperature = request.args.get("temperature")
     humidity = request.args.get("humidity")
-    conn = sqlite3.connect('temperature.sqlite3')
+    conn = sqlite3.connect('sensors.sqlite3')
 
-    create_table(conn)
+    create_dht11_table(conn)
 
     cur = conn.cursor()
+    sensorId = insert_sensor(conn, sensor)
     placeId = insert_place(conn, place)
+    recordId = insert_dht11_record(conn, temperature, humidity)
 
-    recordId = insert_record(conn, placeId, temperature, humidity)
-
-    insert_manage(conn, date, recordId)
+    insert_master(conn, date, sensorId, placeId, recordId)
 
     conn.commit()
     conn.close()
 
-    return "time:" + date + ", place:" + place + ", \
+    return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
         temperature:" + temperature + ", humidity:" + humidity
 
 def create_data_list(cur, date_sql, sql, x_axis_format):
@@ -184,6 +194,7 @@ def create_data_list(cur, date_sql, sql, x_axis_format):
             temperature_list.append(temperatures)
             humidity_list.append(humidities)
             place_list.append(element[2])
+            print(element[2])
         if counter >= len(dates_all):
             break
         current_date = datetime.datetime.strptime(dates_all[counter], '%Y-%m-%d %H:%M:%S')
