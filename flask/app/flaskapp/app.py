@@ -9,6 +9,9 @@ app = Flask(__name__)
 SQL_CREATE_T_DHT11 = 'CREATE TABLE IF NOT EXISTS \
     T_DHT11(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
     temperature REAL, humidity REAL)'
+SQL_CREATE_T_AM2320 = 'CREATE TABLE IF NOT EXISTS \
+    T_AM2320(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
+    temperature REAL, humidity REAL)'
 SQL_CREATE_T_SENSOR = 'CREATE TABLE IF NOT EXISTS \
     T_Sensor(sensorId INTEGER PRIMARY KEY AUTOINCREMENT, sensor STRING)'
 SQL_CREATE_T_PLACE = 'CREATE TABLE IF NOT EXISTS \
@@ -29,6 +32,11 @@ SQL_SELECT_PLACE_ID = 'SELECT placeId FROM T_Place WHERE place=?'
 SQL_INSERT_T_SENSOR = 'INSERT INTO T_Sensor(sensor) \
     SELECT ? WHERE NOT EXISTS (SELECT 1 FROM T_Sensor WHERE sensor=?)'
 SQL_SELECT_SENSOR_ID = 'SELECT sensorId FROM T_Sensor WHERE sensor=?'
+
+# T_DHT11に関するクエリ
+SQL_INSERT_T_AM2320_RECORD = 'INSERT INTO T_AM2320(temperature, humidity) \
+    VALUES(?, ?)'
+SQL_SELECT_T_AM2320_RECOED ='SELECT LAST_INSERT_ROWID() FROM T_AM2320'
 
 # T_DHT11に関するクエリ
 SQL_INSERT_T_DHT11_RECORD = 'INSERT INTO T_DHT11(temperature, humidity) \
@@ -144,12 +152,34 @@ def insert_dht11_record(conn, temperature, humidity):
 
     return recordId
 
-def insert_master(conn, sensorId, placeId, date, recordId):
+def insert_master(conn, date, sensorId, placeId, recordId):
     cur = conn.cursor()
     cur.execute(SQL_INSERT_T_MASTER, [date, sensorId, placeId, recordId])
 
+def create_am2320_table(conn):
+    # テーブルがなければ作成する
+    conn.execute(SQL_CREATE_T_AM2320)
+    conn.execute(SQL_CREATE_T_SENSOR)
+    conn.execute(SQL_CREATE_T_PLACE)
+    conn.execute(SQL_CREATE_T_MASTER)
+
+def insert_am2330_record(conn, temperature, humidity):
+    cur = conn.cursor()
+
+    # T_AM2320にデータを追加
+    data = [temperature, humidity]
+    cur.execute(SQL_INSERT_T_AM2320_RECORD, data)
+
+    # T_AM2330に追加したレコードのrecordIdを取得する
+    cur.execute(SQL_SELECT_T_AM2320_RECOED)
+    recordId = 0
+    for element in cur:
+        recordId = element[0]
+
+    return recordId
+
 @app.route('/api/dht11', methods=["POST"])
-def post_data():
+def post_dht11():
     date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
     sensor = request.args.get("sensor")
     place = request.args.get("place")
@@ -163,6 +193,30 @@ def post_data():
     sensorId = insert_sensor(conn, sensor)
     placeId = insert_place(conn, place)
     recordId = insert_dht11_record(conn, temperature, humidity)
+
+    insert_master(conn, date, sensorId, placeId, recordId)
+
+    conn.commit()
+    conn.close()
+
+    return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
+        temperature:" + temperature + ", humidity:" + humidity
+
+@app.route('/api/am2320', methods=["POST"])
+def post_am2320():
+    date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
+    sensor = request.args.get("sensor")
+    place = request.args.get("place")
+    temperature = request.args.get("temperature")
+    humidity = request.args.get("humidity")
+    conn = sqlite3.connect('sensors.sqlite3')
+
+    create_am2320_table(conn)
+
+    cur = conn.cursor()
+    sensorId = insert_sensor(conn, sensor)
+    placeId = insert_place(conn, place)
+    recordId = insert_am2330_record(conn, temperature, humidity)
 
     insert_master(conn, date, sensorId, placeId, recordId)
 
