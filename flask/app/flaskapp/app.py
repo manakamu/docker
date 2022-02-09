@@ -52,32 +52,54 @@ SQL_SELECT_DAILY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
 	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
     GROUP BY datetime(time, 'localtime')"
-SQL_SELECT_DAILY_DATA = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+SQL_SELECT_MONTHLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+    GROUP BY datetime(time, 'localtime')"
+SQL_SELECT_WEEKLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+    GROUP BY datetime(time, 'localtime')"
+
+SQL_SELECT_DAILY_DATA_DHT11 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
 	temperature, humidity FROM T_Master \
 	INNER JOIN T_DHT11 ON T_Master.recordId = T_DHT11.recordId \
 	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
 	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
 	ORDER BY T_Master.placeId ASC, time ASC"
-    
-SQL_SELECT_WEEKLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
-    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
-	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
-    GROUP BY datetime(time, 'localtime')"
-SQL_SELECT_WEEKLY_DATA = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+SQL_SELECT_WEEKLY_DATA_DHT11 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
 	temperature, humidity FROM T_Master \
 	INNER JOIN T_DHT11 ON T_Master.recordId = T_DHT11.recordId \
 	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
 	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
 	ORDER BY T_Master.placeId ASC, time ASC"
-SQL_SELECT_MONTHLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
-    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
-	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
-    GROUP BY datetime(time, 'localtime')"
-SQL_SELECT_MONTHLY_DATA = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+SQL_SELECT_MONTHLY_DATA_DHT11 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
 	temperature, humidity FROM T_Master \
 	INNER JOIN T_DHT11 ON T_Master.recordId = T_DHT11.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
+
+SQL_SELECT_DAILY_DATA_AM2320 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	temperature, humidity FROM T_Master \
+	INNER JOIN T_AM2320 ON T_Master.recordId = T_AM2320.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
+SQL_SELECT_WEEKLY_DATA_AM2320 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	temperature, humidity FROM T_Master \
+	INNER JOIN T_AM2320 ON T_Master.recordId = T_AM2320.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
+SQL_SELECT_MONTHLY_DATA_AM2320 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	temperature, humidity FROM T_Master \
+	INNER JOIN T_AM2320 ON T_Master.recordId = T_AM2320.recordId \
 	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
 	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
@@ -271,13 +293,13 @@ def get_dht11():
     cur = conn.cursor()
 
     label_daily, temperature_daily, humidity_daily, place_daily = \
-        create_data_list(cur, 'DHT11', SQL_SELECT_DAILY_DATE, SQL_SELECT_DAILY_DATA, '%H:%M')
+        create_data_list(cur, 'DHT11', SQL_SELECT_DAILY_DATE, SQL_SELECT_DAILY_DATA_DHT11, '%H:%M')
 
     label_weekly, temperature_weekly, humidity_weekly, place_weekly = \
-        create_data_list(cur, 'DHT11', SQL_SELECT_WEEKLY_DATE, SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
+        create_data_list(cur, 'DHT11', SQL_SELECT_WEEKLY_DATE, SQL_SELECT_WEEKLY_DATA_DHT11, '%Y/%m/%d %H:%M')
 
     label_monthly, temperature_monthly, humidity_monthly, place_monthly = \
-        create_data_list(cur, 'DHT11', SQL_SELECT_MONTHLY_DATE, SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
+        create_data_list(cur, 'DHT11', SQL_SELECT_MONTHLY_DATE, SQL_SELECT_MONTHLY_DATA_DHT11, '%Y/%m/%d')
 
     conn.close()
 
@@ -287,6 +309,50 @@ def get_dht11():
     humidity_color = ['rgba(0, 67, 106, 0.5)', 'rgba(32, 125, 147, 0.5)', \
         'rgba(85, 186, 191, 0.5)', 'rgba(132, 236, 225, 0.5)', \
         'rgba(178, 255, 217, 0.5)']
+    
+    return render_template('dht11.html', \
+        label_daily = label_daily,        
+        temperature_daily = temperature_daily,
+        humidity_daily = humidity_daily,
+        place_daily = place_daily,
+        label_weekly = label_weekly,        
+        temperature_weekly = temperature_weekly,
+        humidity_weekly = humidity_weekly,
+        place_weekly = place_weekly,
+        label_monthly = label_monthly,
+        temperature_monthly = temperature_monthly,
+        humidity_monthly = humidity_monthly,
+        place_monthly = place_monthly,
+        temperature_color = temperature_color,
+        humidity_color = humidity_color,
+        )
+
+@app.route('/am2320', methods=["GET"])
+def get_am2320():
+    conn = sqlite3.connect('sensors.sqlite3')
+    cur = conn.cursor()
+
+    label_daily, temperature_daily, humidity_daily, place_daily = \
+        create_data_list(cur, 'AM2320', SQL_SELECT_DAILY_DATE, \
+            SQL_SELECT_DAILY_DATA_AM2320, '%H:%M')
+
+    label_weekly, temperature_weekly, humidity_weekly, place_weekly = \
+        create_data_list(cur, 'AM2320', SQL_SELECT_WEEKLY_DATE, \
+            SQL_SELECT_WEEKLY_DATA_AM2320, '%Y/%m/%d %H:%M')
+
+    label_monthly, temperature_monthly, humidity_monthly, place_monthly = \
+        create_data_list(cur, 'AM2320', SQL_SELECT_MONTHLY_DATE, \
+            SQL_SELECT_MONTHLY_DATA_AM2320, '%Y/%m/%d')
+
+    conn.close()
+
+    temperature_color = ['rgba(182, 15, 0, 0.5)', 'rgba(254, 78, 19, 0.5)', \
+        'rgba(255, 159, 75, 0.5)', 'rgba(255, 220, 131, 0.5)', \
+        'rgba(239, 255, 189, 0.5)']
+    humidity_color = ['rgba(0, 67, 106, 0.5)', 'rgba(32, 125, 147, 0.5)', \
+        'rgba(85, 186, 191, 0.5)', 'rgba(132, 236, 225, 0.5)', \
+        'rgba(178, 255, 217, 0.5)']
+    
     return render_template('dht11.html', \
         label_daily = label_daily,        
         temperature_daily = temperature_daily,
