@@ -50,55 +50,38 @@ SQL_INSERT_T_MASTER = 'INSERT INTO T_Master(time, sensorId, placeId, recordId) V
 # グラフを描くためのSQL
 SQL_SELECT_DAILY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
     GROUP BY datetime(time, 'localtime')"
-SQL_SELECT_DAILY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
-        (SELECT time, instr(recordId,',') AS idx, \
-            substr(recordId,1,instr(recordId,',')-1) AS fld, \
-            substr(recordId, instr(recordId,',')+1)||',' AS remain \
-        FROM T_Master UNION ALL SELECT KEY, instr(remain,',') AS idx, \
-                substr(remain,1,instr(remain,',')-1) AS fld, \
-                substr(remain, instr(remain,',')+1) AS remain \
-        FROM split WHERE remain != '') \
-    SELECT datetime(KEY, 'localtime') AS time, \
-        T_Record.placeId, T_Place.place, temperature, humidity FROM split \
-    INNER JOIN T_Record ON split.fld = T_Record.recordId \
-    INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
-    WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-24 hours') \
-    ORDER BY T_Record.placeId ASC, KEY ASC"
+SQL_SELECT_DAILY_DATA = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	temperature, humidity FROM T_Master \
+	INNER JOIN T_DHT11 ON T_Master.recordId = T_DHT11.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
+    
 SQL_SELECT_WEEKLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
     GROUP BY datetime(time, 'localtime')"
-SQL_SELECT_WEEKLY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
-        (SELECT time, instr(recordId,',') AS idx, \
-            substr(recordId,1,instr(recordId,',')-1) AS fld, \
-            substr(recordId, instr(recordId,',')+1)||',' AS remain \
-        FROM T_Master UNION ALL SELECT KEY, instr(remain,',') AS idx, \
-                substr(remain,1,instr(remain,',')-1) AS fld, \
-                substr(remain, instr(remain,',')+1) AS remain \
-        FROM split WHERE remain != '') \
-    SELECT datetime(KEY, 'localtime') AS time, \
-        T_Record.placeId, T_Place.place, temperature, humidity FROM split \
-    INNER JOIN T_Record ON split.fld = T_Record.recordId \
-    INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
-    WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-7 days') \
-    ORDER BY T_Record.placeId ASC, KEY ASC"
+SQL_SELECT_WEEKLY_DATA = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	temperature, humidity FROM T_Master \
+	INNER JOIN T_DHT11 ON T_Master.recordId = T_DHT11.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
 SQL_SELECT_MONTHLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
     GROUP BY datetime(time, 'localtime')"
-SQL_SELECT_MONTHLY_DATA = "WITH RECURSIVE split(KEY,idx,fld,remain) AS \
-        (SELECT time, instr(recordId,',') AS idx, \
-            substr(recordId,1,instr(recordId,',')-1) AS fld, \
-            substr(recordId, instr(recordId,',')+1)||',' AS remain \
-        FROM T_Master UNION ALL SELECT KEY, instr(remain,',') AS idx, \
-                substr(remain,1,instr(remain,',')-1) AS fld, \
-                substr(remain, instr(remain,',')+1) AS remain \
-        FROM split WHERE remain != '') \
-    SELECT datetime(KEY, 'localtime') AS time, \
-        T_Record.placeId, T_Place.place, temperature, humidity FROM split \
-    INNER JOIN T_Record ON split.fld = T_Record.recordId \
-    INNER JOIN T_Place ON T_Record.placeId = T_Place.placeId \
-    WHERE fld != '' AND datetime(KEY, 'localtime') > datetime('now', 'localtime', '-1 months') \
-    ORDER BY T_Record.placeId ASC, KEY ASC"
+SQL_SELECT_MONTHLY_DATA = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	temperature, humidity FROM T_Master \
+	INNER JOIN T_DHT11 ON T_Master.recordId = T_DHT11.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
 
 @app.route('/')
 def index():
@@ -226,9 +209,9 @@ def post_am2320():
     return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
         temperature:" + temperature + ", humidity:" + humidity
 
-def create_data_list(cur, date_sql, sql, x_axis_format):
+def create_data_list(cur, sensor, date_sql, sql, x_axis_format):
     dates_all = list()
-    for element in cur.execute(date_sql):
+    for element in cur.execute(date_sql, [sensor]):
         dates_all.append(element[0])
 
     placeId = -1
@@ -239,7 +222,7 @@ def create_data_list(cur, date_sql, sql, x_axis_format):
     humidities = None
     place_list = list()
     counter = 0
-    for element in cur.execute(sql):
+    for element in cur.execute(sql, [sensor]):
         if element[1] != placeId:
             counter = 0
             placeId = element[1]
@@ -284,17 +267,17 @@ def create_data_list(cur, date_sql, sql, x_axis_format):
 
 @app.route('/dht11', methods=["GET"])
 def get_dht11():
-    conn = sqlite3.connect('temperature.sqlite3')
+    conn = sqlite3.connect('sensors.sqlite3')
     cur = conn.cursor()
 
     label_daily, temperature_daily, humidity_daily, place_daily = \
-        create_data_list(cur, SQL_SELECT_DAILY_DATE, SQL_SELECT_DAILY_DATA, '%H:%M')
+        create_data_list(cur, 'DHT11', SQL_SELECT_DAILY_DATE, SQL_SELECT_DAILY_DATA, '%H:%M')
 
     label_weekly, temperature_weekly, humidity_weekly, place_weekly = \
-        create_data_list(cur, SQL_SELECT_WEEKLY_DATE, SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
+        create_data_list(cur, 'DHT11', SQL_SELECT_WEEKLY_DATE, SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
 
     label_monthly, temperature_monthly, humidity_monthly, place_monthly = \
-        create_data_list(cur, SQL_SELECT_MONTHLY_DATE, SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
+        create_data_list(cur, 'DHT11', SQL_SELECT_MONTHLY_DATE, SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
 
     conn.close()
 

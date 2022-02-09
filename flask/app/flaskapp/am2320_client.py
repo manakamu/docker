@@ -2,8 +2,8 @@ import requests
 import smbus
 import time
 
-URL = 'http://indigoblue.ddns.net:5000/api/post'
-PARAMS_FORMAT = '?place={}&temperature={}&humidity={}'
+URL = 'http://indigoblue.ddns.net:5000/api/am2320'
+PARAMS_FORMAT = '?sensor=AM2320&place={}&temperature={}&humidity={}'
 PLACE = 'BedRoom2'
 
 i2c = smbus.SMBus(1)

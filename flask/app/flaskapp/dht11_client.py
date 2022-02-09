@@ -3,8 +3,8 @@ import time
 import board
 import adafruit_dht
 
-URL = 'http://indigoblue.ddns.net:5000/api/post'
-PARAMS_FORMAT = '?place={}&temperature={}&humidity={}'
+URL = 'http://indigoblue.ddns.net:5000/api/dht11'
+PARAMS_FORMAT = '?sensor=DHT11&place={}&temperature={}&humidity={}'
 PLACE = 'BedRoom'
 
 dhtDevice = adafruit_dht.DHT11(board.D4)
