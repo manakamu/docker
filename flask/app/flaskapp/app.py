@@ -61,45 +61,23 @@ SQL_SELECT_WEEKLY_DATE = "SELECT datetime(time, 'localtime') FROM T_Master \
 	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
     GROUP BY datetime(time, 'localtime')"
 
-SQL_SELECT_DAILY_DATA_DHT11 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+SQL_SELECT_DAILY_DATA = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
 	temperature, humidity FROM T_Master \
-	INNER JOIN T_DHT11 ON T_Master.recordId = T_DHT11.recordId \
+	INNER JOIN {} ON T_Master.recordId = {}.recordId \
 	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
 	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
 	ORDER BY T_Master.placeId ASC, time ASC"
-SQL_SELECT_WEEKLY_DATA_DHT11 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+SQL_SELECT_WEEKLY_DATA = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
 	temperature, humidity FROM T_Master \
-	INNER JOIN T_DHT11 ON T_Master.recordId = T_DHT11.recordId \
+	INNER JOIN {} ON T_Master.recordId = {}.recordId \
 	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
 	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
 	ORDER BY T_Master.placeId ASC, time ASC"
-SQL_SELECT_MONTHLY_DATA_DHT11 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+SQL_SELECT_MONTHLY_DATA = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
 	temperature, humidity FROM T_Master \
-	INNER JOIN T_DHT11 ON T_Master.recordId = T_DHT11.recordId \
-	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
-    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
-	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
-	ORDER BY T_Master.placeId ASC, time ASC"
-
-SQL_SELECT_DAILY_DATA_AM2320 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
-	temperature, humidity FROM T_Master \
-	INNER JOIN T_AM2320 ON T_Master.recordId = T_AM2320.recordId \
-	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
-    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
-	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
-	ORDER BY T_Master.placeId ASC, time ASC"
-SQL_SELECT_WEEKLY_DATA_AM2320 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
-	temperature, humidity FROM T_Master \
-	INNER JOIN T_AM2320 ON T_Master.recordId = T_AM2320.recordId \
-	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
-    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
-	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
-	ORDER BY T_Master.placeId ASC, time ASC"
-SQL_SELECT_MONTHLY_DATA_AM2320 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
-	temperature, humidity FROM T_Master \
-	INNER JOIN T_AM2320 ON T_Master.recordId = T_AM2320.recordId \
+	INNER JOIN {} ON T_Master.recordId = {}.recordId \
 	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
     WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
 	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
@@ -231,7 +209,8 @@ def post_am2320():
     return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
         temperature:" + temperature + ", humidity:" + humidity
 
-def create_data_list(cur, sensor, date_sql, sql, x_axis_format):
+def create_data_list(cur, sensor, data_table, date_sql, sql, x_axis_format):
+    sql = sql.format(data_table, data_table)
     dates_all = list()
     for element in cur.execute(date_sql, [sensor]):
         dates_all.append(element[0])
@@ -293,13 +272,13 @@ def get_dht11():
     cur = conn.cursor()
 
     label_daily, temperature_daily, humidity_daily, place_daily = \
-        create_data_list(cur, 'DHT11', SQL_SELECT_DAILY_DATE, SQL_SELECT_DAILY_DATA_DHT11, '%H:%M')
+        create_data_list(cur, 'DHT11', 'T_DHT11', SQL_SELECT_DAILY_DATE, SQL_SELECT_DAILY_DATA, '%H:%M')
 
     label_weekly, temperature_weekly, humidity_weekly, place_weekly = \
-        create_data_list(cur, 'DHT11', SQL_SELECT_WEEKLY_DATE, SQL_SELECT_WEEKLY_DATA_DHT11, '%Y/%m/%d %H:%M')
+        create_data_list(cur, 'DHT11', 'T_DHT11', SQL_SELECT_WEEKLY_DATE, SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
 
     label_monthly, temperature_monthly, humidity_monthly, place_monthly = \
-        create_data_list(cur, 'DHT11', SQL_SELECT_MONTHLY_DATE, SQL_SELECT_MONTHLY_DATA_DHT11, '%Y/%m/%d')
+        create_data_list(cur, 'DHT11', 'T_DHT11', SQL_SELECT_MONTHLY_DATE, SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
 
     conn.close()
 
@@ -333,16 +312,16 @@ def get_am2320():
     cur = conn.cursor()
 
     label_daily, temperature_daily, humidity_daily, place_daily = \
-        create_data_list(cur, 'AM2320', SQL_SELECT_DAILY_DATE, \
-            SQL_SELECT_DAILY_DATA_AM2320, '%H:%M')
+        create_data_list(cur, 'AM2320', 'T_AM2320', SQL_SELECT_DAILY_DATE, \
+            SQL_SELECT_DAILY_DATA, '%H:%M')
 
     label_weekly, temperature_weekly, humidity_weekly, place_weekly = \
-        create_data_list(cur, 'AM2320', SQL_SELECT_WEEKLY_DATE, \
-            SQL_SELECT_WEEKLY_DATA_AM2320, '%Y/%m/%d %H:%M')
+        create_data_list(cur, 'AM2320', 'T_AM2320', SQL_SELECT_WEEKLY_DATE, \
+            SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
 
     label_monthly, temperature_monthly, humidity_monthly, place_monthly = \
-        create_data_list(cur, 'AM2320', SQL_SELECT_MONTHLY_DATE, \
-            SQL_SELECT_MONTHLY_DATA_AM2320, '%Y/%m/%d')
+        create_data_list(cur, 'AM2320', 'T_AM2320', SQL_SELECT_MONTHLY_DATE, \
+            SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
 
     conn.close()
 
