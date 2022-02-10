@@ -33,15 +33,10 @@ SQL_INSERT_T_SENSOR = 'INSERT INTO T_Sensor(sensor) \
     SELECT ? WHERE NOT EXISTS (SELECT 1 FROM T_Sensor WHERE sensor=?)'
 SQL_SELECT_SENSOR_ID = 'SELECT sensorId FROM T_Sensor WHERE sensor=?'
 
-# T_DHT11に関するクエリ
-SQL_INSERT_T_AM2320_RECORD = 'INSERT INTO T_AM2320(temperature, humidity) \
+# T_DHT11とAM2320に関するクエリ
+SQL_INSERT_T_RECORD_DHT11_AM2320 = 'INSERT INTO {}(temperature, humidity) \
     VALUES(?, ?)'
-SQL_SELECT_T_AM2320_RECOED ='SELECT LAST_INSERT_ROWID() FROM T_AM2320'
-
-# T_DHT11に関するクエリ
-SQL_INSERT_T_DHT11_RECORD = 'INSERT INTO T_DHT11(temperature, humidity) \
-    VALUES(?, ?)'
-SQL_SELECT_T_DHT11_RECOED ='SELECT LAST_INSERT_ROWID() FROM T_DHT11'
+SQL_SELECT_T_RECOED_DHT11_AM2320 ='SELECT LAST_INSERT_ROWID() FROM {}'
 
 # T_Masterに関するクエリ
 SQL_SELECT_T_MASTER = 'SELECT recordId FROM T_Master WHERE time=?'
@@ -120,15 +115,17 @@ def insert_sensor(conn, sensor):
 
     return sensorId
     
-def insert_dht11_record(conn, temperature, humidity):
+def insert_record_dht11_am2320_common(conn, table, temperature, humidity):
     cur = conn.cursor()
 
     # T_DHT11にデータを追加
     data = [temperature, humidity]
-    cur.execute(SQL_INSERT_T_DHT11_RECORD, data)
+    sql = SQL_INSERT_T_RECORD_DHT11_AM2320.format(table, table)
+    cur.execute(sql, data)
 
     # T_DHT11に追加したレコードのrecordIdを取得する
-    cur.execute(SQL_SELECT_T_DHT11_RECOED)
+    sql = SQL_SELECT_T_RECOED_DHT11_AM2320.format(table, table)
+    cur.execute(sql)
     recordId = 0
     for element in cur:
         recordId = element[0]
@@ -175,7 +172,7 @@ def post_dht11():
     cur = conn.cursor()
     sensorId = insert_sensor(conn, sensor)
     placeId = insert_place(conn, place)
-    recordId = insert_dht11_record(conn, temperature, humidity)
+    recordId = insert_record_dht11_am2320_common(conn, 'T_DHT11', temperature, humidity)
 
     insert_master(conn, date, sensorId, placeId, recordId)
 
@@ -199,7 +196,7 @@ def post_am2320():
     cur = conn.cursor()
     sensorId = insert_sensor(conn, sensor)
     placeId = insert_place(conn, place)
-    recordId = insert_am2330_record(conn, temperature, humidity)
+    recordId = insert_record_dht11_am2320_common(conn, 'T_AM2320', temperature, humidity)
 
     insert_master(conn, date, sensorId, placeId, recordId)
 
