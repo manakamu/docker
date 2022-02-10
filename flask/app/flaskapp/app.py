@@ -266,61 +266,20 @@ def create_data_list(cur, sensor, data_table, date_sql, sql, x_axis_format):
         counter += 1
     return date_list, temperature_list, humidity_list, place_list
 
-@app.route('/dht11', methods=["GET"])
-def get_dht11():
+def get_dht11_am2320_common(sensor, table):
     conn = sqlite3.connect('sensors.sqlite3')
     cur = conn.cursor()
 
     label_daily, temperature_daily, humidity_daily, place_daily = \
-        create_data_list(cur, 'DHT11', 'T_DHT11', SQL_SELECT_DAILY_DATE, SQL_SELECT_DAILY_DATA, '%H:%M')
-
-    label_weekly, temperature_weekly, humidity_weekly, place_weekly = \
-        create_data_list(cur, 'DHT11', 'T_DHT11', SQL_SELECT_WEEKLY_DATE, SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
-
-    label_monthly, temperature_monthly, humidity_monthly, place_monthly = \
-        create_data_list(cur, 'DHT11', 'T_DHT11', SQL_SELECT_MONTHLY_DATE, SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
-
-    conn.close()
-
-    temperature_color = ['rgba(182, 15, 0, 0.5)', 'rgba(254, 78, 19, 0.5)', \
-        'rgba(255, 159, 75, 0.5)', 'rgba(255, 220, 131, 0.5)', \
-        'rgba(239, 255, 189, 0.5)']
-    humidity_color = ['rgba(0, 67, 106, 0.5)', 'rgba(32, 125, 147, 0.5)', \
-        'rgba(85, 186, 191, 0.5)', 'rgba(132, 236, 225, 0.5)', \
-        'rgba(178, 255, 217, 0.5)']
-    
-    return render_template('dht11.html', \
-        label_daily = label_daily,        
-        temperature_daily = temperature_daily,
-        humidity_daily = humidity_daily,
-        place_daily = place_daily,
-        label_weekly = label_weekly,        
-        temperature_weekly = temperature_weekly,
-        humidity_weekly = humidity_weekly,
-        place_weekly = place_weekly,
-        label_monthly = label_monthly,
-        temperature_monthly = temperature_monthly,
-        humidity_monthly = humidity_monthly,
-        place_monthly = place_monthly,
-        temperature_color = temperature_color,
-        humidity_color = humidity_color,
-        )
-
-@app.route('/am2320', methods=["GET"])
-def get_am2320():
-    conn = sqlite3.connect('sensors.sqlite3')
-    cur = conn.cursor()
-
-    label_daily, temperature_daily, humidity_daily, place_daily = \
-        create_data_list(cur, 'AM2320', 'T_AM2320', SQL_SELECT_DAILY_DATE, \
+        create_data_list(cur, sensor, table, SQL_SELECT_DAILY_DATE, \
             SQL_SELECT_DAILY_DATA, '%H:%M')
 
     label_weekly, temperature_weekly, humidity_weekly, place_weekly = \
-        create_data_list(cur, 'AM2320', 'T_AM2320', SQL_SELECT_WEEKLY_DATE, \
+        create_data_list(cur, sensor, table, SQL_SELECT_WEEKLY_DATE, \
             SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
 
     label_monthly, temperature_monthly, humidity_monthly, place_monthly = \
-        create_data_list(cur, 'AM2320', 'T_AM2320', SQL_SELECT_MONTHLY_DATE, \
+        create_data_list(cur, sensor, table, SQL_SELECT_MONTHLY_DATE, \
             SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
 
     conn.close()
@@ -348,6 +307,14 @@ def get_am2320():
         temperature_color = temperature_color,
         humidity_color = humidity_color,
         )
+
+@app.route('/dht11', methods=["GET"])
+def get_dht11():
+    return get_dht11_am2320_common('DHT11', 'T_DHT11')
+
+@app.route('/am2320', methods=["GET"])
+def get_am2320():
+    return get_dht11_am2320_common('AM2320', 'T_AM2320')
 
 if __name__ == "__main__":
     app.run(debug=True)
