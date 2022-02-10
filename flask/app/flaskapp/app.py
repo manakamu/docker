@@ -118,12 +118,12 @@ def insert_sensor(conn, sensor):
 def insert_record_dht11_am2320_common(conn, table, temperature, humidity):
     cur = conn.cursor()
 
-    # T_DHT11にデータを追加
+    # T_DHT11 or T_AM2320にデータを追加
     data = [temperature, humidity]
     sql = SQL_INSERT_T_RECORD_DHT11_AM2320.format(table, table)
     cur.execute(sql, data)
 
-    # T_DHT11に追加したレコードのrecordIdを取得する
+    # T_DHT11 or T_AM2320に追加したレコードのrecordIdを取得する
     sql = SQL_SELECT_T_RECOED_DHT11_AM2320.format(table, table)
     cur.execute(sql)
     recordId = 0
@@ -143,26 +143,14 @@ def create_am2320_table(conn):
     conn.execute(SQL_CREATE_T_PLACE)
     conn.execute(SQL_CREATE_T_MASTER)
 
-def insert_am2330_record(conn, temperature, humidity):
-    cur = conn.cursor()
-
-    # T_AM2320にデータを追加
-    data = [temperature, humidity]
-    cur.execute(SQL_INSERT_T_AM2320_RECORD, data)
-
-    # T_AM2330に追加したレコードのrecordIdを取得する
-    cur.execute(SQL_SELECT_T_AM2320_RECOED)
-    recordId = 0
-    for element in cur:
-        recordId = element[0]
-
-    return recordId
-
 def api_post_dht11_am2320_common(table, date, sensor, place, temperature, humidity):
     conn = sqlite3.connect('sensors.sqlite3')
 
-    create_dht11_table(conn)
-
+    if sensor == 'DHT11':
+        create_dht11_table(conn)
+    elif sensor == 'AM2320':
+        create_am2320_table(conn)
+        
     cur = conn.cursor()
     sensorId = insert_sensor(conn, sensor)
     placeId = insert_place(conn, place)
