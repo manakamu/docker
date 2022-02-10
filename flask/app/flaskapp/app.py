@@ -1,10 +1,6 @@
-from encodings import utf_8
-from pyexpat.errors import XML_ERROR_FEATURE_REQUIRES_XML_DTD
 from flask import Flask, request, render_template, Response
 import datetime
 import sqlite3
-
-from sqlalchemy import null
 
 app = Flask(__name__)
 

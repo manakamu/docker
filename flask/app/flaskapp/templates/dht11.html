@@ -37,9 +37,11 @@ Temperature & Humidity
   var ctx = document.getElementById("temperatureDailyChart");
   var dailyTemperatureData = {
     labels: [
+    {% autoescape false %}
       {% for item in label_daily %}
-        '{{item.strip("'")}}',
+        '{{item}}',
       {% endfor %}
+    {% endautoescape %}
     ],
     datasets: [
       {% for temperature_list in temperature_daily %}
@@ -78,9 +80,11 @@ Temperature & Humidity
   var ctx = document.getElementById("humidityDailyChart");
   var dailytHumidityData = {
     labels: [
+    {% autoescape false %}
       {% for item in label_daily %}
-        '{{item.strip("'")}}',
+        '{{item}}',
       {% endfor %}
+    {% endautoescape %}
     ],
     datasets: [
       {% for humidity_list in humidity_daily %}
@@ -121,9 +125,11 @@ Temperature & Humidity
   var ctx = document.getElementById("temperatureWeeklyChart");
   var weeklyTemperatureData = {
     labels: [
+    {% autoescape false %}
       {% for item in label_weekly %}
-        '{{item.strip("'")}}',
+        '{{item}}',
       {% endfor %}
+    {% endautoescape %}
     ],
     datasets: [
       {% for temperature_list in temperature_weekly %}
@@ -163,9 +169,11 @@ Temperature & Humidity
   var ctx = document.getElementById("humidityWeeklyChart");
   var weeklyHumidityData = {
     labels: [
+    {% autoescape false %}
       {% for item in label_weekly %}
-        '{{item.strip("'")}}',
+        '{{item}}',
       {% endfor %}
+    {% endautoescape %}
     ],
     datasets: [
     {% for humidity_list in humidity_weekly %}
@@ -206,9 +214,11 @@ Temperature & Humidity
   var ctx = document.getElementById("temperatureMonthlyChart");
   var monthlyTemperatureData = {
     labels: [
+    {% autoescape false %}
       {% for item in label_monthly %}
-        '{{item.strip("'")}}',
+        '{{item}}',
       {% endfor %}
+    {% endautoescape %}
     ],
     datasets: [
       {% for temperature_list in temperature_monthly %}
@@ -248,9 +258,11 @@ Temperature & Humidity
   var ctx = document.getElementById("humidityMonthlyChart");
   var monthlyHumidityData = {
     labels: [
+    {% autoescape false %}
       {% for item in label_monthly %}
-        '{{item.strip("'")}}',
+        '{{item}}',
       {% endfor %}
+    {% endautoescape %}
     ],
     datasets: [
       {% for humidity_list in humidity_monthly %}
