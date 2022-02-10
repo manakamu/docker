@@ -158,13 +158,7 @@ def insert_am2330_record(conn, temperature, humidity):
 
     return recordId
 
-@app.route('/api/dht11', methods=["POST"])
-def post_dht11():
-    date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
-    sensor = request.args.get("sensor")
-    place = request.args.get("place")
-    temperature = request.args.get("temperature")
-    humidity = request.args.get("humidity")
+def api_post_dht11_am2320_common(table, date, sensor, place, temperature, humidity):
     conn = sqlite3.connect('sensors.sqlite3')
 
     create_dht11_table(conn)
@@ -172,12 +166,22 @@ def post_dht11():
     cur = conn.cursor()
     sensorId = insert_sensor(conn, sensor)
     placeId = insert_place(conn, place)
-    recordId = insert_record_dht11_am2320_common(conn, 'T_DHT11', temperature, humidity)
+    recordId = insert_record_dht11_am2320_common(conn, table, temperature, humidity)
 
     insert_master(conn, date, sensorId, placeId, recordId)
 
     conn.commit()
     conn.close()
+
+@app.route('/api/dht11', methods=["POST"])
+def post_dht11():
+    date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
+    sensor = request.args.get("sensor")
+    place = request.args.get("place")
+    temperature = request.args.get("temperature")
+    humidity = request.args.get("humidity")
+    
+    api_post_dht11_am2320_common('T_DHT11', date, sensor, place, temperature, humidity)
 
     return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
         temperature:" + temperature + ", humidity:" + humidity
@@ -189,19 +193,8 @@ def post_am2320():
     place = request.args.get("place")
     temperature = request.args.get("temperature")
     humidity = request.args.get("humidity")
-    conn = sqlite3.connect('sensors.sqlite3')
-
-    create_am2320_table(conn)
-
-    cur = conn.cursor()
-    sensorId = insert_sensor(conn, sensor)
-    placeId = insert_place(conn, place)
-    recordId = insert_record_dht11_am2320_common(conn, 'T_AM2320', temperature, humidity)
-
-    insert_master(conn, date, sensorId, placeId, recordId)
-
-    conn.commit()
-    conn.close()
+ 
+    api_post_dht11_am2320_common('T_AM2320', date, sensor, place, temperature, humidity)
 
     return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
         temperature:" + temperature + ", humidity:" + humidity
