@@ -150,7 +150,7 @@ def api_post_dht11_am2320_common(table, date, sensor, place, temperature, humidi
         create_dht11_table(conn)
     elif sensor == 'AM2320':
         create_am2320_table(conn)
-        
+
     cur = conn.cursor()
     sensorId = insert_sensor(conn, sensor)
     placeId = insert_place(conn, place)
@@ -202,38 +202,45 @@ def create_data_list(cur, sensor, data_table, date_sql, sql, x_axis_format):
             temperature_list.append(temperatures)
             humidity_list.append(humidities)
             place_list.append(element[2])
-            print(element[2])
         if counter >= len(dates_all):
             break
         current_date = datetime.datetime.strptime(dates_all[counter], '%Y-%m-%d %H:%M:%S')
         record_date = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
         if len(date_list) < len(dates_all):
             date_list.append(current_date.strftime(x_axis_format))
+        skip = 0
         if current_date == record_date:
             temperatures.append(element[3])
             humidities.append(element[4])
         else:
-            skip = 0
             for i, time in enumerate(dates_all, counter):
                 if len(dates_all) > i:
                     current_date = datetime.datetime.strptime( \
                         dates_all[i], '%Y-%m-%d %H:%M:%S')
-                    if len(date_list) < len(dates_all):
-                        date_list.append(current_date.strftime(x_axis_format))
+                    if current_date <= record_date:
+                        if len(date_list) < len(dates_all):
+                            date_list.append(current_date.strftime(x_axis_format))
 
-                    if current_date == record_date:
-                        temperatures.append(element[3])
-                        humidities.append(element[4])
-                        break
+                        if current_date == record_date:
+                            temperatures.append(element[3])
+                            humidities.append(element[4])
+                            skip += 1
+                            break
+                        else:
+                            # データが欠落しているため、同じデータで埋める
+                            temperatures.append(element[3])
+                            humidities.append(element[4])
+                            skip += 1
                     else:
-                        # データが欠落しているため、同じデータで埋める
-                        temperatures.append(element[3])
-                        humidities.append(element[4])
-                        skip += 1
+                        break
                 else:
                     break
+
+        if skip == 0:
+            counter += 1
+        else:
             counter += skip
-        counter += 1
+
     return date_list, temperature_list, humidity_list, place_list
 
 def get_dht11_am2320_common(sensor, table):
