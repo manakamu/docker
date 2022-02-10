@@ -2,7 +2,7 @@ import requests
 import smbus
 import time
 
-URL = 'http://indigoblue.ddns.net:5000/api/am2320'
+URL = 'http://indigoblue.ddns.net:5000/api/sensors'
 PARAMS_FORMAT = '?sensor=AM2320&place={}&temperature={}&humidity={}'
 PLACE = 'BedRoom2'
 

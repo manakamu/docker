@@ -1,5 +1,5 @@
 from pyexpat.errors import XML_ERROR_FEATURE_REQUIRES_XML_DTD
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, Response
 import datetime
 import sqlite3
 
@@ -173,7 +173,7 @@ def api_post_dht11_am2320_common(table, date, sensor, place, temperature, humidi
     conn.commit()
     conn.close()
 
-@app.route('/api/dht11', methods=["POST"])
+@app.route('/api/sensors', methods=["POST"])
 def post_dht11():
     date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
     sensor = request.args.get("sensor")
@@ -181,20 +181,12 @@ def post_dht11():
     temperature = request.args.get("temperature")
     humidity = request.args.get("humidity")
     
-    api_post_dht11_am2320_common('T_DHT11', date, sensor, place, temperature, humidity)
-
-    return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
-        temperature:" + temperature + ", humidity:" + humidity
-
-@app.route('/api/am2320', methods=["POST"])
-def post_am2320():
-    date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
-    sensor = request.args.get("sensor")
-    place = request.args.get("place")
-    temperature = request.args.get("temperature")
-    humidity = request.args.get("humidity")
- 
-    api_post_dht11_am2320_common('T_AM2320', date, sensor, place, temperature, humidity)
+    if sensor == 'DHT11':
+        api_post_dht11_am2320_common('T_DHT11', date, sensor, place, temperature, humidity)
+    elif sensor == 'AM2320':
+        api_post_dht11_am2320_common('T_AM2320', date, sensor, place, temperature, humidity)
+    else:
+        return Response(response='sensor:' + sensor, status=500)
 
     return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
         temperature:" + temperature + ", humidity:" + humidity

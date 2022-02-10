@@ -23,7 +23,7 @@
 import Adafruit_DHT
 import requests
 
-URL = 'http://indigoblue.ddns.net:5000/api/dht11'
+URL = 'http://indigoblue.ddns.net:5000/api/sensors'
 PARAMS_FORMAT = '?sensor=DHT11&place={}&temperature={}&humidity={}'
 PLACE = 'BedRoom'
 
