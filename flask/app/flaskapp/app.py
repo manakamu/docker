@@ -1,7 +1,10 @@
+from encodings import utf_8
 from pyexpat.errors import XML_ERROR_FEATURE_REQUIRES_XML_DTD
 from flask import Flask, request, render_template, Response
 import datetime
 import sqlite3
+
+from sqlalchemy import null
 
 app = Flask(__name__)
 
@@ -222,8 +225,8 @@ def create_data_list(cur, sensor, data_table, date_sql, sql, x_axis_format):
                             date_list.append(current_date.strftime(x_axis_format))
 
                         if current_date == record_date:
-                            temperatures.append(element[3])
-                            humidities.append(element[4])
+                            temperatures.append('null')
+                            humidities.append('null')
                             skip += 1
                             break
                         else:

@@ -45,7 +45,9 @@ Temperature & Humidity
       {% for temperature_list in temperature_daily %}
       {
         label: '{{place_daily[loop.index0]}}',
-        data: {{temperature_list}},
+        {% autoescape false %}
+        data: {{ temperature_list }},
+        {% endautoescape %}
         tension: 0.3,
         pointRadius: 0,
         {% if temperature_color|length > loop.index0 + 1 %}
@@ -84,7 +86,9 @@ Temperature & Humidity
       {% for humidity_list in humidity_daily %}
       {
         label: '{{place_daily[loop.index0]}}',
+        {% autoescape false %}
         data: {{humidity_list}},
+        {% endautoescape %}
         tension: 0.3,
         pointRadius: 0,
         {% if humidity_color|length > loop.index0 + 1 %}
@@ -125,7 +129,9 @@ Temperature & Humidity
       {% for temperature_list in temperature_weekly %}
       {
         label: '{{place_weekly[loop.index0]}}',
-        data: {{temperature_list}},
+        {% autoescape false %}
+        data: {{ temperature_list }},
+        {% endautoescape %}
         tension: 0.3,
         pointRadius: 0,
         {% if temperature_color|length > loop.index0 + 1 %}
@@ -165,7 +171,9 @@ Temperature & Humidity
     {% for humidity_list in humidity_weekly %}
       {
         label: '{{place_weekly[loop.index0]}}',
+        {% autoescape false %}
         data: {{humidity_list}},
+        {% endautoescape %}
         tension: 0.3,
         pointRadius: 0,
         {% if humidity_color|length > loop.index0 + 1 %}
@@ -206,7 +214,9 @@ Temperature & Humidity
       {% for temperature_list in temperature_monthly %}
       {
         label: '{{place_monthly[loop.index0]}}',
-        data: {{temperature_list}},
+        {% autoescape false %}
+        data: {{ temperature_list }},
+        {% endautoescape %}
         tension: 0.3,
         pointRadius: 0,
         {% if temperature_color|length > loop.index0 + 1 %}
@@ -246,7 +256,9 @@ Temperature & Humidity
       {% for humidity_list in humidity_monthly %}
       {
         label: '{{place_monthly[loop.index0]}}',
+        {% autoescape false %}
         data: {{humidity_list}},
+        {% endautoescape %}
         tension: 0.3,
         pointRadius: 0,
         {% if humidity_color|length > loop.index0 + 1 %}
