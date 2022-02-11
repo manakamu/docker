@@ -69,7 +69,62 @@ Temperature & Humidity
 {% endfor %}
 
 <h2>Weekly</h2>
-<canvas id="temperatureWeeklyChart"></canvas>
+{% for week in weekly %}
+<canvas id="weeklyChart{{loop.index0}}"></canvas>
+<script>
+  var graphScales = {
+    yAxes: [{
+      ticks: {
+        stepSize: 1,
+        callback: function(value, index, values){
+          return  value +  '{{week.unit}}'
+        }
+      }
+    }]
+  };
+  var ctx = document.getElementById("weeklyChart{{loop.index0}}");
+  var graphData = {
+    labels: [
+    {% autoescape false %}
+      {% for item in week.labels %}
+        '{{item}}',
+      {% endfor %}
+    {% endautoescape %}
+    ],
+    datasets: [
+      {% for data_list in week.data %}
+      {
+        label: '{{week.places[loop.index0]}}',
+        {% autoescape false %}
+        data: {{ data_list }},
+        {% endautoescape %}
+        tension: 0.3,
+        pointRadius: 0,
+        {% if week.colors|length > loop.index0 + 1 %}
+        borderColor: "{{week.colors[loop.index0]}}",
+        {% else %}
+        borderColor: "rgba(0,0,0,1)",
+        {% endif %}
+        backgroundColor: "rgba(0,0,0,0)"
+      },
+      {% endfor %}
+    ],
+  };
+  var graphOptions = {
+    title: {
+      display: true,
+      text: '{{week.graphTitle}}({{week.labels[0]}}～{{week.labels[-1]}})'
+    },
+    scales: graphScales,
+  };
+  var myLineChart = new Chart(ctx, {
+    type: 'line',
+    data: graphData,
+    options: graphOptions
+  });
+</script>
+{% endfor %}
+
 <script>
   var temperatureScales = {
     yAxes: [{
@@ -91,90 +146,6 @@ Temperature & Humidity
       }
     }]
   };
-  var ctx = document.getElementById("temperatureWeeklyChart");
-  var weeklyTemperatureData = {
-    labels: [
-    {% autoescape false %}
-      {% for item in label_weekly %}
-        '{{item}}',
-      {% endfor %}
-    {% endautoescape %}
-    ],
-    datasets: [
-      {% for temperature_list in temperature_weekly %}
-      {
-        label: '{{place_weekly[loop.index0]}}',
-        {% autoescape false %}
-        data: {{ temperature_list }},
-        {% endautoescape %}
-        tension: 0.3,
-        pointRadius: 0,
-        {% if temperature_color|length > loop.index0 + 1 %}
-        borderColor: "{{temperature_color[loop.index0]}}",
-        {% else %}
-        borderColor: "rgba(255,0,0,1)",
-        {% endif %}
-        backgroundColor: "rgba(0,0,0,0)"
-      },
-      {% endfor %}
-    ],
-  };
-  var weeklyTemperatureOptions = {
-    title: {
-      display: true,
-      text: '気温({{label_weekly[0]}}～{{label_weekly[-1]}})'
-    },
-    scales: temperatureScales,
-  };
-  var myLineChart = new Chart(ctx, {
-    type: 'line',
-    data: weeklyTemperatureData, 
-    options: weeklyTemperatureOptions
-  });
-</script>
-
-<canvas id="humidityWeeklyChart"></canvas>
-<script>
-  var ctx = document.getElementById("humidityWeeklyChart");
-  var weeklyHumidityData = {
-    labels: [
-    {% autoescape false %}
-      {% for item in label_weekly %}
-        '{{item}}',
-      {% endfor %}
-    {% endautoescape %}
-    ],
-    datasets: [
-    {% for humidity_list in humidity_weekly %}
-      {
-        label: '{{place_weekly[loop.index0]}}',
-        {% autoescape false %}
-        data: {{humidity_list}},
-        {% endautoescape %}
-        tension: 0.3,
-        pointRadius: 0,
-        {% if humidity_color|length > loop.index0 + 1 %}
-        borderColor: "{{humidity_color[loop.index0]}}",
-        {% else %}
-        borderColor: "rgba(0,0,255,1)",
-        {% endif %}
-        backgroundColor: "rgba(0,0,0,0)"
-      },
-      {% endfor %}
-    ],
-  };
-  var weeklyHumidityOptions = {
-    title: {
-      display: true,
-      text: '湿度({{label_weekly[0]}}～{{label_weekly[-1]}})'
-    },
-    scales: humidityScales,
-  };
-  var myLineChart = new Chart(ctx, {
-    type: 'line',
-    data: weeklyHumidityData,
-    options: weeklyHumidityOptions
-  });
 </script>
 
 <h2>Monthly</h2>

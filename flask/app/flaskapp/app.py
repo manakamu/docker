@@ -292,12 +292,23 @@ def get_dht11_am2320_common(sensor, table):
     daily_humidity.unit = '%'
     daily_humidity.graphTitle = '湿度'
     daily_humidity.colors = humidity_color
+    weekly_temperature = GraphData()
+    weekly_temperature.labels = label_weekly
+    weekly_temperature.data = temperature_weekly
+    weekly_temperature.places = place_weekly
+    weekly_temperature.unit = '℃'
+    weekly_temperature.graphTitle = '気温'
+    weekly_temperature.colors = temperature_color
+    weekly_humidity = GraphData()
+    weekly_humidity.labels = label_weekly
+    weekly_humidity.data = humidity_weekly
+    weekly_humidity.places = place_weekly
+    weekly_humidity.unit = '%'
+    weekly_humidity.graphTitle = '湿度'
+    weekly_humidity.colors = humidity_color
     return render_template('dht11.html', \
         daily = [daily_temperature, daily_humidity],
-        label_weekly = label_weekly,        
-        temperature_weekly = temperature_weekly,
-        humidity_weekly = humidity_weekly,
-        place_weekly = place_weekly,
+        weekly = [weekly_temperature, weekly_humidity],
         label_monthly = label_monthly,
         temperature_monthly = temperature_monthly,
         humidity_monthly = humidity_monthly,
