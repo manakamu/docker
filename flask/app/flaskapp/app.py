@@ -77,6 +77,25 @@ SQL_SELECT_MONTHLY_DATA = "SELECT datetime(time, 'localtime'), T_Master.placeId,
 	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
 	ORDER BY T_Master.placeId ASC, time ASC"
 
+class GraphData:
+    labels = None
+    data = None
+    places = None
+    unit = None
+    colors = None
+    graphTitle = None
+
+    def __init__(self):
+        pass
+
+    def __init__(self, labels, data, places, unit, graphTitle, colors):
+        self.labels = labels
+        self.data = data
+        self.places = places
+        self.unit = unit
+        self.colors = colors
+        self.graphTitle = graphTitle
+
 @app.route('/')
 def index():
     return '<h2>Hello Flask+uWSGI+Nginx</h2>'
@@ -178,17 +197,6 @@ def post_dht11():
     return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
         temperature:" + temperature + ", humidity:" + humidity
 
-class GraphData:
-    labels = None
-    data = None
-    places = None
-    unit = None
-    colors = None
-    graphTitle = None
-
-    def __init__(self):
-        pass
-
 def create_data_list(cur, sensor, data_table, date_sql, sql, x_axis_format):
     sql = sql.format(data_table, data_table)
     dates_all = list()
@@ -278,50 +286,22 @@ def get_dht11_am2320_common(sensor, table):
         'rgba(85, 186, 191, 0.5)', 'rgba(132, 236, 225, 0.5)', \
         'rgba(178, 255, 217, 0.5)']
     
-    daily_temperature = GraphData()
-    daily_temperature.labels = label_daily
-    daily_temperature.data = temperature_daily
-    daily_temperature.places = place_daily
-    daily_temperature.unit = '℃'
-    daily_temperature.graphTitle = '気温'
-    daily_temperature.colors = temperature_color
-    daily_humidity = GraphData()
-    daily_humidity.labels = label_daily
-    daily_humidity.data = humidity_daily
-    daily_humidity.places = place_daily
-    daily_humidity.unit = '%'
-    daily_humidity.graphTitle = '湿度'
-    daily_humidity.colors = humidity_color
-    weekly_temperature = GraphData()
-    weekly_temperature.labels = label_weekly
-    weekly_temperature.data = temperature_weekly
-    weekly_temperature.places = place_weekly
-    weekly_temperature.unit = '℃'
-    weekly_temperature.graphTitle = '気温'
-    weekly_temperature.colors = temperature_color
-    weekly_humidity = GraphData()
-    weekly_humidity.labels = label_weekly
-    weekly_humidity.data = humidity_weekly
-    weekly_humidity.places = place_weekly
-    weekly_humidity.unit = '%'
-    weekly_humidity.graphTitle = '湿度'
-    weekly_humidity.colors = humidity_color
-    monthly_temperature = GraphData()
-    monthly_temperature.labels = label_monthly
-    monthly_temperature.data = temperature_monthly
-    monthly_temperature.places = place_monthly
-    monthly_temperature.unit = '℃'
-    monthly_temperature.graphTitle = '気温'
-    monthly_temperature.colors = temperature_color
-    monthly_humidity = GraphData()
-    monthly_humidity.labels = label_monthly
-    monthly_humidity.data = humidity_monthly
-    monthly_humidity.places = place_monthly
-    monthly_humidity.unit = '%'
-    monthly_humidity.graphTitle = '湿度'
-    monthly_humidity.colors = humidity_color
+    daily_temperature = GraphData(label_daily, temperature_daily, place_daily, \
+        '℃', '気温', temperature_color)
+    daily_humidity = GraphData(label_daily, humidity_daily, place_daily, \
+        '%', '湿度', humidity_color)
+    weekly_temperature = GraphData(label_weekly, temperature_weekly, place_weekly, \
+        '℃', '気温', temperature_color)
+    weekly_humidity = GraphData(label_weekly, humidity_weekly, place_weekly, \
+        '%', '湿度', humidity_color)
+    monthly_temperature = GraphData(label_monthly, temperature_monthly, place_monthly, \
+        '℃', '気温', temperature_color)
+    monthly_humidity = GraphData(label_monthly, humidity_monthly, place_monthly, \
+        '%', '湿度', humidity_color)
 
     return render_template('dht11.html', \
+        page_title = 'Temperature & Humidity',
+        title = ['Daily', 'Weekly', 'Monthly'],
         datalist = [[daily_temperature, daily_humidity],
             [weekly_temperature, weekly_humidity],
             [monthly_temperature, monthly_humidity]],

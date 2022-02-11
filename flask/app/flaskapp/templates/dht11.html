@@ -5,15 +5,15 @@ DHT11
 {% endblock %}
 
 {% block headline %}
-Temperature & Humidity
+{{page_title}}
 {% endblock %}
 
 {% block content %}
-<h2>Daily</h2>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
 {% for list in datalist %}
   {% set outer_loop = loop %}
+  <h2>{{title[loop.index0]}}</h2>
   {% for element in list %}
   <canvas id="Chart{{outer_loop.index0}}-{{loop.index0}}"></canvas>
   <script>
