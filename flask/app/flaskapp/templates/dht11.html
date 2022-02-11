@@ -15,7 +15,7 @@ Temperature & Humidity
 {% for day in daily %}
 <canvas id="dailyChart{{loop.index0}}"></canvas>
 <script>
-  var temperatureScales = {
+  var graphScales = {
     yAxes: [{
       ticks: {
         stepSize: 1,
@@ -43,10 +43,10 @@ Temperature & Humidity
         {% endautoescape %}
         tension: 0.3,
         pointRadius: 0,
-        {% if temperature_color|length > loop.index0 + 1 %}
-        borderColor: "{{temperature_color[loop.index0]}}",
+        {% if day.colors|length > loop.index0 + 1 %}
+        borderColor: "{{day.colors[loop.index0]}}",
         {% else %}
-        borderColor: "rgba(255,0,0,1)",
+        borderColor: "rgba(0,0,0,1)",
         {% endif %}
         backgroundColor: "rgba(0,0,0,0)"
       },
@@ -58,7 +58,7 @@ Temperature & Humidity
       display: true,
       text: '{{day.graphTitle}}({{day.labels[0]}}～{{day.labels[-1]}})'
     },
-    scales: temperatureScales,
+    scales: graphScales,
   };
   var myLineChart = new Chart(ctx, {
     type: 'line',

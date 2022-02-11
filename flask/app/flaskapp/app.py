@@ -183,6 +183,7 @@ class GraphData:
     data = None
     places = None
     unit = None
+    colors = None
     graphTitle = None
 
     def __init__(self):
@@ -283,12 +284,14 @@ def get_dht11_am2320_common(sensor, table):
     daily_temperature.places = place_daily
     daily_temperature.unit = '℃'
     daily_temperature.graphTitle = '気温'
+    daily_temperature.colors = temperature_color
     daily_humidity = GraphData()
     daily_humidity.labels = label_daily
     daily_humidity.data = humidity_daily
     daily_humidity.places = place_daily
     daily_humidity.unit = '%'
     daily_humidity.graphTitle = '湿度'
+    daily_humidity.colors = humidity_color
     return render_template('dht11.html', \
         daily = [daily_temperature, daily_humidity],
         label_weekly = label_weekly,        
