@@ -11,6 +11,9 @@ SQL_CREATE_T_DHT11 = 'CREATE TABLE IF NOT EXISTS \
 SQL_CREATE_T_AM2320 = 'CREATE TABLE IF NOT EXISTS \
     T_AM2320(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
     temperature REAL, humidity REAL)'
+SQL_CREATE_T_BMP180 = 'CREATE TABLE IF NOT EXISTS \
+    T_BMP180(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
+    temperature REAL, humidity REAL, pressure REAL, altitude REAL)'
 SQL_CREATE_T_SENSOR = 'CREATE TABLE IF NOT EXISTS \
     T_Sensor(sensorId INTEGER PRIMARY KEY AUTOINCREMENT, sensor STRING)'
 SQL_CREATE_T_PLACE = 'CREATE TABLE IF NOT EXISTS \
@@ -32,10 +35,14 @@ SQL_INSERT_T_SENSOR = 'INSERT INTO T_Sensor(sensor) \
     SELECT ? WHERE NOT EXISTS (SELECT 1 FROM T_Sensor WHERE sensor=?)'
 SQL_SELECT_SENSOR_ID = 'SELECT sensorId FROM T_Sensor WHERE sensor=?'
 
-# T_DHT11とAM2320に関するクエリ
+# T_DHT11とT_AM2320に関するクエリ
 SQL_INSERT_T_RECORD_DHT11_AM2320 = 'INSERT INTO {}(temperature, humidity) \
     VALUES(?, ?)'
-SQL_SELECT_T_RECOED_DHT11_AM2320 ='SELECT LAST_INSERT_ROWID() FROM {}'
+SQL_SELECT_T_RECOED ='SELECT LAST_INSERT_ROWID() FROM {}'
+
+# T_BMP180に関するクエリ
+SQL_INSERT_T_RECORD_BMP180 = 'INSERT INTO {}(temperature, humidity, pressure, altitude) \
+    VALUES(?, ?)'
 
 # T_Masterに関するクエリ
 SQL_SELECT_T_MASTER = 'SELECT recordId FROM T_Master WHERE time=?'
@@ -142,7 +149,7 @@ def insert_record_dht11_am2320_common(conn, table, temperature, humidity):
     cur.execute(sql, data)
 
     # T_DHT11 or T_AM2320に追加したレコードのrecordIdを取得する
-    sql = SQL_SELECT_T_RECOED_DHT11_AM2320.format(table, table)
+    sql = SQL_SELECT_T_RECOED.format(table, table)
     cur.execute(sql)
     recordId = 0
     for element in cur:
@@ -179,6 +186,45 @@ def api_post_dht11_am2320_common(table, date, sensor, place, temperature, humidi
     conn.commit()
     conn.close()
 
+def create_bmp180_table(conn):
+    # テーブルがなければ作成する
+    conn.execute(SQL_CREATE_T_BMP180)
+    conn.execute(SQL_CREATE_T_SENSOR)
+    conn.execute(SQL_CREATE_T_PLACE)
+    conn.execute(SQL_CREATE_T_MASTER)
+
+def insert_record_bmp180(conn, table, temperature, humidity, pressure, altitude):
+    cur = conn.cursor()
+
+    # T_BMP180にデータを追加
+    data = [temperature, humidity, pressure, altitude]
+    sql = SQL_INSERT_T_RECORD_BMP180.format(table, table)
+    cur.execute(sql, data)
+
+    # T_BMP180に追加したレコードのrecordIdを取得する
+    sql = SQL_SELECT_T_RECOED.format(table, table)
+    cur.execute(sql)
+    recordId = 0
+    for element in cur:
+        recordId = element[0]
+
+    return recordId
+
+def api_post_bmp180(table, date, sensor, place, temperature, humidity, pressure):
+    conn = sqlite3.connect('sensors.sqlite3')
+
+    create_bmp180_table(conn)
+
+    cur = conn.cursor()
+    sensorId = insert_sensor(conn, sensor)
+    placeId = insert_place(conn, place)
+    recordId = insert_record_bmp180(conn, table, temperature, humidity, pressure)
+
+    insert_master(conn, date, sensorId, placeId, recordId)
+
+    conn.commit()
+    conn.close()
+
 @app.route('/api/sensors', methods=["POST"])
 def post_dht11():
     date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
@@ -186,11 +232,16 @@ def post_dht11():
     place = request.args.get("place")
     temperature = request.args.get("temperature")
     humidity = request.args.get("humidity")
+    pressure = request.args.get("pressure")
     
     if sensor == 'DHT11':
         api_post_dht11_am2320_common('T_DHT11', date, sensor, place, temperature, humidity)
     elif sensor == 'AM2320':
         api_post_dht11_am2320_common('T_AM2320', date, sensor, place, temperature, humidity)
+    elif sensor == 'BH1750FVI':
+        pass
+    elif sensor == 'BMP180':
+        api_post_bmp180('T_BMP180', date, sensor, place, temperature, humidity, pressure)
     else:
         return Response(response='sensor:' + sensor, status=500)
 
