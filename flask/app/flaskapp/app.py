@@ -296,7 +296,7 @@ def post_dht11():
     return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
         temperature:" + temperature + ", humidity:" + humidity
 
-def create_data_list(cur, sensor, data_table, date_sql, sql, x_axis_format):
+def create_data_list_dht11_am2320(cur, sensor, data_table, date_sql, sql, x_axis_format):
     sql = sql.format(data_table, data_table)
     dates_all = list()
     for element in cur.execute(date_sql, [sensor]):
@@ -365,15 +365,15 @@ def get_dht11_am2320_common(sensor, table):
     cur = conn.cursor()
 
     label_daily, temperature_daily, humidity_daily, place_daily = \
-        create_data_list(cur, sensor, table, SQL_SELECT_DAILY_DATE, \
+        create_data_list_dht11_am2320(cur, sensor, table, SQL_SELECT_DAILY_DATE, \
             SQL_SELECT_DAILY_DATA, '%H:%M')
 
     label_weekly, temperature_weekly, humidity_weekly, place_weekly = \
-        create_data_list(cur, sensor, table, SQL_SELECT_WEEKLY_DATE, \
+        create_data_list_dht11_am2320(cur, sensor, table, SQL_SELECT_WEEKLY_DATE, \
             SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
 
     label_monthly, temperature_monthly, humidity_monthly, place_monthly = \
-        create_data_list(cur, sensor, table, SQL_SELECT_MONTHLY_DATE, \
+        create_data_list_dht11_am2320(cur, sensor, table, SQL_SELECT_MONTHLY_DATE, \
             SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
 
     conn.close()
@@ -406,6 +406,67 @@ def get_dht11_am2320_common(sensor, table):
             [monthly_temperature, monthly_humidity]],
         )
 
+def create_data_list_bmp180(cur, sensor, data_table, date_sql, sql, x_axis_format):
+    pass
+
+def get_bmp180(sensor, table):
+    conn = sqlite3.connect('sensors.sqlite3')
+    cur = conn.cursor()
+
+    label_daily, temperature_daily, humidity_daily, pressure_daily, place_daily = \
+        create_data_list_bmp180(cur, sensor, table, SQL_SELECT_DAILY_DATE, \
+            SQL_SELECT_DAILY_DATA, '%H:%M')
+
+    label_weekly, temperature_weekly, humidity_weekly, pressure_weekly, place_weekly = \
+        create_data_list_bmp180(cur, sensor, table, SQL_SELECT_WEEKLY_DATE, \
+            SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
+
+    label_monthly, temperature_monthly, humidity_monthly, pressure_monthly, place_monthly = \
+        create_data_list_bmp180(cur, sensor, table, SQL_SELECT_MONTHLY_DATE, \
+            SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
+
+    conn.close()
+
+    temperature_color = ['rgba(182, 15, 0, 0.5)', 'rgba(254, 78, 19, 0.5)', \
+        'rgba(255, 159, 75, 0.5)', 'rgba(255, 220, 131, 0.5)', \
+        'rgba(239, 255, 189, 0.5)']
+    humidity_color = ['rgba(0, 67, 106, 0.5)', 'rgba(32, 125, 147, 0.5)', \
+        'rgba(85, 186, 191, 0.5)', 'rgba(132, 236, 225, 0.5)', \
+        'rgba(178, 255, 217, 0.5)']
+    pressure_color = ['rgba(0, 54, 30, 0.5)', 'rgba(0, 98, 67, 0.5)', \
+        'rgba(26, 145, 93, 0.5)', 'rgba(86, 194, 120, 0.5)', \
+        'rgba(138, 246, 151, 0.5)']
+
+    daily_temperature = GraphData(label_daily, temperature_daily, place_daily, \
+        '℃', '気温', temperature_color)
+    daily_humidity = GraphData(label_daily, humidity_daily, place_daily, \
+        '%', '湿度', humidity_color)
+    daily_pressure = GraphData(label_daily, pressure_daily, place_daily, \
+        'hPa', '気圧', pressure_color)
+    weekly_temperature = GraphData(label_weekly, temperature_weekly, place_weekly, \
+        '℃', '気温', temperature_color)
+    weekly_humidity = GraphData(label_weekly, humidity_weekly, place_weekly, \
+        '%', '湿度', humidity_color)
+    weekly_pressure = GraphData(label_weekly, pressure_weekly, place_weekly, \
+        'hPa', '気圧', pressure_color)
+    monthly_temperature = GraphData(label_monthly, temperature_monthly, place_monthly, \
+        '℃', '気温', temperature_color)
+    monthly_humidity = GraphData(label_monthly, humidity_monthly, place_monthly, \
+        '%', '湿度', humidity_color)
+    monthly_pressure = GraphData(label_monthly, pressure_monthly, place_monthly, \
+        'hPa', '気圧', pressure_color)
+
+    return render_template('graph.html', \
+        page_title = 'Temperature & Humidity',
+        title = ['Daily', 'Weekly', 'Monthly'],
+        datalist = [[daily_temperature, daily_humidity],
+            [weekly_temperature, weekly_humidity],
+            [monthly_temperature, monthly_humidity]],
+        )
+
+def get_bh1750fvi(sensor, table):
+    pass
+
 @app.route('/dht11', methods=["GET"])
 def get_dht11():
     return get_dht11_am2320_common('DHT11', 'T_DHT11')
@@ -413,6 +474,14 @@ def get_dht11():
 @app.route('/am2320', methods=["GET"])
 def get_am2320():
     return get_dht11_am2320_common('AM2320', 'T_AM2320')
+
+@app.route('/bmp180', methods=["GET"])
+def get_bmp180():
+    return get_bmp180('BMP180', 'T_BMP180')
+
+@app.route('/bh1750fvi', methods=["GET"])
+def get_bh1750fvi():
+    return get_bh1750fvi('BH1750FVI', 'T_BH1750FVI')
 
 if __name__ == "__main__":
     app.run(debug=True)
