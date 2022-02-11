@@ -12,7 +12,8 @@ Temperature & Humidity
 <h2>Daily</h2>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
-<canvas id="temperatureDailyChart"></canvas>
+{% for day in daily %}
+<canvas id="dailyChart{{loop.index0}}"></canvas>
 <script>
   var temperatureScales = {
     yAxes: [{
@@ -34,19 +35,20 @@ Temperature & Humidity
       }
     }]
   };
-  var ctx = document.getElementById("temperatureDailyChart");
+  var ctx = document.getElementById("dailyChart{{loop.index0}}");
   var dailyTemperatureData = {
     labels: [
     {% autoescape false %}
-      {% for item in label_daily %}
+      {% for item in day.labels %}
         '{{item}}',
       {% endfor %}
     {% endautoescape %}
     ],
     datasets: [
-      {% for temperature_list in temperature_daily %}
+      {% set outer_loop = loop %}
+      {% for temperature_list in day.data %}
       {
-        label: '{{place_daily[loop.index0]}}',
+        label: '{{day.places[loop.index0]}}',
         {% autoescape false %}
         data: {{ temperature_list }},
         {% endautoescape %}
@@ -65,7 +67,7 @@ Temperature & Humidity
   var dailyTemperatureOptions = {
     title: {
       display: true,
-      text: '気温({{label_daily[0]}}～{{label_daily[-1]}})'
+      text: '気温({{day.labels[0]}}～{{day.labels[-1]}})'
     },
     scales: temperatureScales,
   };
@@ -75,49 +77,7 @@ Temperature & Humidity
     options: dailyTemperatureOptions
   });
 </script>
-<canvas id="humidityDailyChart"></canvas>
-<script>
-  var ctx = document.getElementById("humidityDailyChart");
-  var dailytHumidityData = {
-    labels: [
-    {% autoescape false %}
-      {% for item in label_daily %}
-        '{{item}}',
-      {% endfor %}
-    {% endautoescape %}
-    ],
-    datasets: [
-      {% for humidity_list in humidity_daily %}
-      {
-        label: '{{place_daily[loop.index0]}}',
-        {% autoescape false %}
-        data: {{humidity_list}},
-        {% endautoescape %}
-        tension: 0.3,
-        pointRadius: 0,
-        {% if humidity_color|length > loop.index0 + 1 %}
-        borderColor: "{{humidity_color[loop.index0]}}",
-        {% else %}
-        borderColor: "rgba(0,0,255,1)",
-        {% endif %}
-        backgroundColor: "rgba(0,0,0,0)"
-      },
-      {% endfor %}
-    ],
-  };
-  var dailytHumidityOptions = {
-    title: {
-      display: true,
-      text: '湿度({{label_daily[0]}}～{{label_daily[-1]}})'
-    },
-    scales: humidityScales,
-  };
-  var myLineChart = new Chart(ctx, {
-    type: 'line',
-    data: dailytHumidityData,
-    options: dailytHumidityOptions
-  });
-</script>
+{% endfor %}
 
 <h2>Weekly</h2>
 <canvas id="temperatureWeeklyChart"></canvas>

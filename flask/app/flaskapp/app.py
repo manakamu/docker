@@ -177,6 +177,12 @@ def post_dht11():
 
     return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
         temperature:" + temperature + ", humidity:" + humidity
+class GraphData:
+    labels = None
+    data = None
+    places = None
+    def __init__(self):
+        pass
 
 def create_data_list(cur, sensor, data_table, date_sql, sql, x_axis_format):
     sql = sql.format(data_table, data_table)
@@ -267,11 +273,16 @@ def get_dht11_am2320_common(sensor, table):
         'rgba(85, 186, 191, 0.5)', 'rgba(132, 236, 225, 0.5)', \
         'rgba(178, 255, 217, 0.5)']
     
+    daily_temperature = GraphData()
+    daily_temperature.labels = label_daily
+    daily_temperature.data = temperature_daily
+    daily_temperature.places = place_daily
+    daily_humidity = GraphData()
+    daily_humidity.labels = label_daily
+    daily_humidity.data = humidity_daily
+    daily_humidity.places = place_daily
     return render_template('dht11.html', \
-        label_daily = label_daily,        
-        temperature_daily = temperature_daily,
-        humidity_daily = humidity_daily,
-        place_daily = place_daily,
+        daily = [daily_temperature, daily_humidity],
         label_weekly = label_weekly,        
         temperature_weekly = temperature_weekly,
         humidity_weekly = humidity_weekly,
