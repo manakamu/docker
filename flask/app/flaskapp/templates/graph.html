@@ -40,6 +40,7 @@ DHT11
         {% for data_list in element.data %}
         {
           label: '{{element.places[loop.index0]}}',
+          spanGaps: true,
           {% autoescape false %}
           data: {{ data_list }},
           {% endautoescape %}
