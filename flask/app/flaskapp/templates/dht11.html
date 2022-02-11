@@ -125,117 +125,62 @@ Temperature & Humidity
 </script>
 {% endfor %}
 
-<script>
-  var temperatureScales = {
-    yAxes: [{
-      ticks: {
-        stepSize: 1,
-        callback: function(value, index, values){
-          return  value +  '℃'
-        }
-      }
-    }]
-  };
-  var humidityScales = {
-    yAxes: [{
-      ticks: {
-        stepSize: 1,
-        callback: function(value, index, values){
-          return  value +  '%'
-        }
-      }
-    }]
-  };
-</script>
-
 <h2>Monthly</h2>
-<canvas id="temperatureMonthlyChart"></canvas>
+{% for month in monthly %}
+<canvas id="monthlyChart{{loop.index0}}"></canvas>
 <script>
-  var ctx = document.getElementById("temperatureMonthlyChart");
-  var monthlyTemperatureData = {
+  var graphScales = {
+    yAxes: [{
+      ticks: {
+        stepSize: 1,
+        callback: function(value, index, values){
+          return  value +  '{{month.unit}}'
+        }
+      }
+    }]
+  };
+  var ctx = document.getElementById("monthlyChart{{loop.index0}}");
+  var graphData = {
     labels: [
     {% autoescape false %}
-      {% for item in label_monthly %}
+      {% for item in month.labels %}
         '{{item}}',
       {% endfor %}
     {% endautoescape %}
     ],
     datasets: [
-      {% for temperature_list in temperature_monthly %}
+      {% for data_list in month.data %}
       {
-        label: '{{place_monthly[loop.index0]}}',
+        label: '{{month.places[loop.index0]}}',
         {% autoescape false %}
-        data: {{ temperature_list }},
+        data: {{ data_list }},
         {% endautoescape %}
         tension: 0.3,
         pointRadius: 0,
-        {% if temperature_color|length > loop.index0 + 1 %}
-        borderColor: "{{temperature_color[loop.index0]}}",
+        {% if month.colors|length > loop.index0 + 1 %}
+        borderColor: "{{month.colors[loop.index0]}}",
         {% else %}
-        borderColor: "rgba(255,0,0,1)",
+        borderColor: "rgba(0,0,0,1)",
         {% endif %}
         backgroundColor: "rgba(0,0,0,0)"
       },
       {% endfor %}
     ],
   };
-  var monthlyTemperatureOptions = {
+  var graphOptions = {
     title: {
       display: true,
-      text: '気温({{label_monthly[0]}}～{{label_monthly[-1]}})'
+      text: '{{month.graphTitle}}({{month.labels[0]}}～{{month.labels[-1]}})'
     },
-    scales: temperatureScales,
+    scales: graphScales,
   };
   var myLineChart = new Chart(ctx, {
     type: 'line',
-    data: monthlyTemperatureData,
-    options: monthlyTemperatureOptions
+    data: graphData,
+    options: graphOptions
   });
 </script>
-
-<canvas id="humidityMonthlyChart"></canvas>
-<script>
-  var ctx = document.getElementById("humidityMonthlyChart");
-  var monthlyHumidityData = {
-    labels: [
-    {% autoescape false %}
-      {% for item in label_monthly %}
-        '{{item}}',
-      {% endfor %}
-    {% endautoescape %}
-    ],
-    datasets: [
-      {% for humidity_list in humidity_monthly %}
-      {
-        label: '{{place_monthly[loop.index0]}}',
-        {% autoescape false %}
-        data: {{humidity_list}},
-        {% endautoescape %}
-        tension: 0.3,
-        pointRadius: 0,
-        {% if humidity_color|length > loop.index0 + 1 %}
-        borderColor: "{{humidity_color[loop.index0]}}",
-        {% else %}
-        borderColor: "rgba(0,0,255,1)",
-        {% endif %}
-        backgroundColor: "rgba(0,0,0,0)"
-      },
-      {% endfor %}
-    ],
-  };
-  var monthlyHumidityOptions = {
-    title: {
-      display: true,
-      text: '湿度({{label_monthly[0]}}～{{label_monthly[-1]}})'
-    },
-    scales: humidityScales,
-  };
-  var myLineChart = new Chart(ctx, {
-    type: 'line',
-    data: monthlyHumidityData,
-    options: monthlyHumidityOptions
-  });
-</script>
+{% endfor %}
 
 <h2>Yealy</h2>
 
