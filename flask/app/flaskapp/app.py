@@ -14,6 +14,9 @@ SQL_CREATE_T_AM2320 = 'CREATE TABLE IF NOT EXISTS \
 SQL_CREATE_T_BMP180 = 'CREATE TABLE IF NOT EXISTS \
     T_BMP180(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
     temperature REAL, humidity REAL, pressure REAL, altitude REAL)'
+SQL_CREATE_T_BH1750FVI = 'CREATE TABLE IF NOT EXISTS \
+    T_BH1750FVI(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
+    lux REAL, luminance REAL)'
 SQL_CREATE_T_SENSOR = 'CREATE TABLE IF NOT EXISTS \
     T_Sensor(sensorId INTEGER PRIMARY KEY AUTOINCREMENT, sensor STRING)'
 SQL_CREATE_T_PLACE = 'CREATE TABLE IF NOT EXISTS \
@@ -42,6 +45,10 @@ SQL_SELECT_T_RECOED ='SELECT LAST_INSERT_ROWID() FROM {}'
 
 # T_BMP180に関するクエリ
 SQL_INSERT_T_RECORD_BMP180 = 'INSERT INTO {}(temperature, humidity, pressure, altitude) \
+    VALUES(?, ?)'
+
+# T_BH1750FVIに関するクエリ
+SQL_INSERT_T_RECORD_BH1750FVI = 'INSERT INTO {}(lux, luminance) \
     VALUES(?, ?)'
 
 # T_Masterに関するクエリ
@@ -225,6 +232,45 @@ def api_post_bmp180(table, date, sensor, place, temperature, humidity, pressure)
     conn.commit()
     conn.close()
 
+def create_bh1750fvi_table(conn):
+    # テーブルがなければ作成する
+    conn.execute(SQL_CREATE_T_BH1750FVI)
+    conn.execute(SQL_CREATE_T_SENSOR)
+    conn.execute(SQL_CREATE_T_PLACE)
+    conn.execute(SQL_CREATE_T_MASTER)
+
+def insert_record_bh1750fvi(conn, table, lux, luminance):
+    cur = conn.cursor()
+
+    # T_BH1750FVIにデータを追加
+    data = [lux, luminance]
+    sql = SQL_INSERT_T_RECORD_BH1750FVI.format(table, table)
+    cur.execute(sql, data)
+
+    # T_BH1750FVIに追加したレコードのrecordIdを取得する
+    sql = SQL_SELECT_T_RECOED.format(table, table)
+    cur.execute(sql)
+    recordId = 0
+    for element in cur:
+        recordId = element[0]
+
+    return recordId
+
+def api_post_bh1750fvi(table, date, sensor, place, lux, luminance):
+    conn = sqlite3.connect('sensors.sqlite3')
+
+    create_bh1750fvi_table(conn)
+
+    cur = conn.cursor()
+    sensorId = insert_sensor(conn, sensor)
+    placeId = insert_place(conn, place)
+    recordId = insert_record_bh1750fvi(conn, table, lux, luminance)
+
+    insert_master(conn, date, sensorId, placeId, recordId)
+
+    conn.commit()
+    conn.close()
+
 @app.route('/api/sensors', methods=["POST"])
 def post_dht11():
     date = u"{0:%Y-%m-%d %H:%M}".format(datetime.datetime.utcnow())
@@ -233,13 +279,15 @@ def post_dht11():
     temperature = request.args.get("temperature")
     humidity = request.args.get("humidity")
     pressure = request.args.get("pressure")
-    
+    lux = request.args.get("lux")
+    luminance = request.args.get("luminance")
+
     if sensor == 'DHT11':
         api_post_dht11_am2320_common('T_DHT11', date, sensor, place, temperature, humidity)
     elif sensor == 'AM2320':
         api_post_dht11_am2320_common('T_AM2320', date, sensor, place, temperature, humidity)
     elif sensor == 'BH1750FVI':
-        pass
+        api_post_bh1750fvi('T_BH1750FVI', date, sensor, place, lux, luminance)
     elif sensor == 'BMP180':
         api_post_bmp180('T_BMP180', date, sensor, place, temperature, humidity, pressure)
     else:
@@ -350,7 +398,7 @@ def get_dht11_am2320_common(sensor, table):
     monthly_humidity = GraphData(label_monthly, humidity_monthly, place_monthly, \
         '%', '湿度', humidity_color)
 
-    return render_template('dht11.html', \
+    return render_template('graph.html', \
         page_title = 'Temperature & Humidity',
         title = ['Daily', 'Weekly', 'Monthly'],
         datalist = [[daily_temperature, daily_humidity],
