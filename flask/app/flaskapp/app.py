@@ -177,10 +177,14 @@ def post_dht11():
 
     return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
         temperature:" + temperature + ", humidity:" + humidity
+
 class GraphData:
     labels = None
     data = None
     places = None
+    unit = None
+    graphTitle = None
+
     def __init__(self):
         pass
 
@@ -277,10 +281,14 @@ def get_dht11_am2320_common(sensor, table):
     daily_temperature.labels = label_daily
     daily_temperature.data = temperature_daily
     daily_temperature.places = place_daily
+    daily_temperature.unit = '℃'
+    daily_temperature.graphTitle = '気温'
     daily_humidity = GraphData()
     daily_humidity.labels = label_daily
     daily_humidity.data = humidity_daily
     daily_humidity.places = place_daily
+    daily_humidity.unit = '%'
+    daily_humidity.graphTitle = '湿度'
     return render_template('dht11.html', \
         daily = [daily_temperature, daily_humidity],
         label_weekly = label_weekly,        
