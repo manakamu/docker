@@ -12,176 +12,63 @@ Temperature & Humidity
 <h2>Daily</h2>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
-{% for day in daily %}
-<canvas id="dailyChart{{loop.index0}}"></canvas>
-<script>
-  var graphScales = {
-    yAxes: [{
-      ticks: {
-        stepSize: 1,
-        callback: function(value, index, values){
-          return  value +  '{{day.unit}}'
+{% for list in datalist %}
+  {% set outer_loop = loop %}
+  {% for element in list %}
+  <canvas id="Chart{{outer_loop.index0}}-{{loop.index0}}"></canvas>
+  <script>
+    var graphScales = {
+      yAxes: [{
+        ticks: {
+          stepSize: 1,
+          callback: function(value, index, values){
+            return  value +  '{{element.unit}}'
+          }
         }
-      }
-    }]
-  };
-  var ctx = document.getElementById("dailyChart{{loop.index0}}");
-  var graphData = {
-    labels: [
-    {% autoescape false %}
-      {% for item in day.labels %}
-        '{{item}}',
-      {% endfor %}
-    {% endautoescape %}
-    ],
-    datasets: [
-      {% for data_list in day.data %}
-      {
-        label: '{{day.places[loop.index0]}}',
-        {% autoescape false %}
-        data: {{ data_list }},
-        {% endautoescape %}
-        tension: 0.3,
-        pointRadius: 0,
-        {% if day.colors|length > loop.index0 + 1 %}
-        borderColor: "{{day.colors[loop.index0]}}",
-        {% else %}
-        borderColor: "rgba(0,0,0,1)",
-        {% endif %}
-        backgroundColor: "rgba(0,0,0,0)"
+      }]
+    };
+    var ctx = document.getElementById("Chart{{outer_loop.index0}}-{{loop.index0}}");
+    var graphData = {
+      labels: [
+      {% autoescape false %}
+        {% for item in element.labels %}
+          '{{item}}',
+        {% endfor %}
+      {% endautoescape %}
+      ],
+      datasets: [
+        {% for data_list in element.data %}
+        {
+          label: '{{element.places[loop.index0]}}',
+          {% autoescape false %}
+          data: {{ data_list }},
+          {% endautoescape %}
+          tension: 0.3,
+          pointRadius: 0,
+          {% if element.colors|length > loop.index0 + 1 %}
+          borderColor: "{{element.colors[loop.index0]}}",
+          {% else %}
+          borderColor: "rgba(0,0,0,1)",
+          {% endif %}
+          backgroundColor: "rgba(0,0,0,0)"
+        },
+        {% endfor %}
+      ],
+    };
+    var graphOptions = {
+      title: {
+        display: true,
+        text: '{{element.graphTitle}}({{element.labels[0]}}～{{element.labels[-1]}})'
       },
-      {% endfor %}
-    ],
-  };
-  var graphOptions = {
-    title: {
-      display: true,
-      text: '{{day.graphTitle}}({{day.labels[0]}}～{{day.labels[-1]}})'
-    },
-    scales: graphScales,
-  };
-  var myLineChart = new Chart(ctx, {
-    type: 'line',
-    data: graphData,
-    options: graphOptions
-  });
-</script>
+      scales: graphScales,
+    };
+    var myLineChart = new Chart(ctx, {
+      type: 'line',
+      data: graphData,
+      options: graphOptions
+    });
+  </script>
+  {% endfor %}
 {% endfor %}
-
-<h2>Weekly</h2>
-{% for week in weekly %}
-<canvas id="weeklyChart{{loop.index0}}"></canvas>
-<script>
-  var graphScales = {
-    yAxes: [{
-      ticks: {
-        stepSize: 1,
-        callback: function(value, index, values){
-          return  value +  '{{week.unit}}'
-        }
-      }
-    }]
-  };
-  var ctx = document.getElementById("weeklyChart{{loop.index0}}");
-  var graphData = {
-    labels: [
-    {% autoescape false %}
-      {% for item in week.labels %}
-        '{{item}}',
-      {% endfor %}
-    {% endautoescape %}
-    ],
-    datasets: [
-      {% for data_list in week.data %}
-      {
-        label: '{{week.places[loop.index0]}}',
-        {% autoescape false %}
-        data: {{ data_list }},
-        {% endautoescape %}
-        tension: 0.3,
-        pointRadius: 0,
-        {% if week.colors|length > loop.index0 + 1 %}
-        borderColor: "{{week.colors[loop.index0]}}",
-        {% else %}
-        borderColor: "rgba(0,0,0,1)",
-        {% endif %}
-        backgroundColor: "rgba(0,0,0,0)"
-      },
-      {% endfor %}
-    ],
-  };
-  var graphOptions = {
-    title: {
-      display: true,
-      text: '{{week.graphTitle}}({{week.labels[0]}}～{{week.labels[-1]}})'
-    },
-    scales: graphScales,
-  };
-  var myLineChart = new Chart(ctx, {
-    type: 'line',
-    data: graphData,
-    options: graphOptions
-  });
-</script>
-{% endfor %}
-
-<h2>Monthly</h2>
-{% for month in monthly %}
-<canvas id="monthlyChart{{loop.index0}}"></canvas>
-<script>
-  var graphScales = {
-    yAxes: [{
-      ticks: {
-        stepSize: 1,
-        callback: function(value, index, values){
-          return  value +  '{{month.unit}}'
-        }
-      }
-    }]
-  };
-  var ctx = document.getElementById("monthlyChart{{loop.index0}}");
-  var graphData = {
-    labels: [
-    {% autoescape false %}
-      {% for item in month.labels %}
-        '{{item}}',
-      {% endfor %}
-    {% endautoescape %}
-    ],
-    datasets: [
-      {% for data_list in month.data %}
-      {
-        label: '{{month.places[loop.index0]}}',
-        {% autoescape false %}
-        data: {{ data_list }},
-        {% endautoescape %}
-        tension: 0.3,
-        pointRadius: 0,
-        {% if month.colors|length > loop.index0 + 1 %}
-        borderColor: "{{month.colors[loop.index0]}}",
-        {% else %}
-        borderColor: "rgba(0,0,0,1)",
-        {% endif %}
-        backgroundColor: "rgba(0,0,0,0)"
-      },
-      {% endfor %}
-    ],
-  };
-  var graphOptions = {
-    title: {
-      display: true,
-      text: '{{month.graphTitle}}({{month.labels[0]}}～{{month.labels[-1]}})'
-    },
-    scales: graphScales,
-  };
-  var myLineChart = new Chart(ctx, {
-    type: 'line',
-    data: graphData,
-    options: graphOptions
-  });
-</script>
-{% endfor %}
-
-<h2>Yealy</h2>
 
 {% endblock %}
