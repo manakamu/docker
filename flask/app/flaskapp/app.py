@@ -13,7 +13,7 @@ SQL_CREATE_T_AM2320 = 'CREATE TABLE IF NOT EXISTS \
     temperature REAL, humidity REAL)'
 SQL_CREATE_T_BMP180 = 'CREATE TABLE IF NOT EXISTS \
     T_BMP180(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
-    temperature REAL, humidity REAL, pressure REAL, altitude REAL)'
+    temperature REAL, pressure REAL, altitude REAL)'
 SQL_CREATE_T_BH1750FVI = 'CREATE TABLE IF NOT EXISTS \
     T_BH1750FVI(recordId INTEGER PRIMARY KEY AUTOINCREMENT, \
     lux REAL, luminance REAL)'
@@ -44,8 +44,8 @@ SQL_INSERT_T_RECORD_DHT11_AM2320 = 'INSERT INTO {}(temperature, humidity) \
 SQL_SELECT_T_RECOED ='SELECT LAST_INSERT_ROWID() FROM {}'
 
 # T_BMP180に関するクエリ
-SQL_INSERT_T_RECORD_BMP180 = 'INSERT INTO {}(temperature, humidity, pressure, altitude) \
-    VALUES(?, ?)'
+SQL_INSERT_T_RECORD_BMP180 = 'INSERT INTO {}(temperature, pressure, altitude) \
+    VALUES(?, ?, ?)'
 
 # T_BH1750FVIに関するクエリ
 SQL_INSERT_T_RECORD_BH1750FVI = 'INSERT INTO {}(lux, luminance) \
@@ -200,11 +200,11 @@ def create_bmp180_table(conn):
     conn.execute(SQL_CREATE_T_PLACE)
     conn.execute(SQL_CREATE_T_MASTER)
 
-def insert_record_bmp180(conn, table, temperature, humidity, pressure, altitude):
+def insert_record_bmp180(conn, table, temperature, pressure, altitude):
     cur = conn.cursor()
 
     # T_BMP180にデータを追加
-    data = [temperature, humidity, pressure, altitude]
+    data = [temperature, pressure, altitude]
     sql = SQL_INSERT_T_RECORD_BMP180.format(table, table)
     cur.execute(sql, data)
 
@@ -217,7 +217,7 @@ def insert_record_bmp180(conn, table, temperature, humidity, pressure, altitude)
 
     return recordId
 
-def api_post_bmp180(table, date, sensor, place, temperature, humidity, pressure):
+def api_post_bmp180(table, date, sensor, place, temperature, pressure, altitude):
     conn = sqlite3.connect('sensors.sqlite3')
 
     create_bmp180_table(conn)
@@ -225,7 +225,7 @@ def api_post_bmp180(table, date, sensor, place, temperature, humidity, pressure)
     cur = conn.cursor()
     sensorId = insert_sensor(conn, sensor)
     placeId = insert_place(conn, place)
-    recordId = insert_record_bmp180(conn, table, temperature, humidity, pressure)
+    recordId = insert_record_bmp180(conn, table, temperature, pressure, altitude)
 
     insert_master(conn, date, sensorId, placeId, recordId)
 
@@ -279,22 +279,29 @@ def post_dht11():
     temperature = request.args.get("temperature")
     humidity = request.args.get("humidity")
     pressure = request.args.get("pressure")
+    altitude = request.args.get("altitude")
     lux = request.args.get("lux")
     luminance = request.args.get("luminance")
 
     if sensor == 'DHT11':
         api_post_dht11_am2320_common('T_DHT11', date, sensor, place, temperature, humidity)
+        return "time:" + date + ", sensor:" + sensor + ", place:" + place + \
+            ",temperature:" + temperature + ", humidity:" + humidity
+
     elif sensor == 'AM2320':
         api_post_dht11_am2320_common('T_AM2320', date, sensor, place, temperature, humidity)
+        return "time:" + date + ", sensor:" + sensor + ", place:" + place + \
+            ",temperature:" + temperature + ", humidity:" + humidity
+
     elif sensor == 'BH1750FVI':
         api_post_bh1750fvi('T_BH1750FVI', date, sensor, place, lux, luminance)
     elif sensor == 'BMP180':
-        api_post_bmp180('T_BMP180', date, sensor, place, temperature, humidity, pressure)
-    else:
-        return Response(response='sensor:' + sensor, status=500)
+        api_post_bmp180('T_BMP180', date, sensor, place, temperature, pressure, altitude)
+        return "time:" + date + ", sensor:" + sensor + ", place:" + place + \
+            ",temperature:" + temperature + ", pressure:" + pressure + \
+            ", altitude:" + altitude
 
-    return "time:" + date + ", sensor:" + sensor + ", place:" + place + ", \
-        temperature:" + temperature + ", humidity:" + humidity
+    return Response(response='sensor:' + sensor, status=500)
 
 def create_data_list_dht11_am2320(cur, sensor, data_table, date_sql, sql, x_axis_format):
     sql = sql.format(data_table, data_table)
