@@ -4,7 +4,7 @@ import smbus
 import requests
 
 URL = 'http://indigoblue.ddns.net:5000/api/sensors'
-PARAMS_FORMAT = '?sensor=BH1750FVI&place={}&lux={}&luminance={}'
+PARAMS_FORMAT = '?sensor=BH1750FVI&place={}&lux={}&luminance={:.2f}'
 PLACE = 'DiningRoom'
 
 def readLux():

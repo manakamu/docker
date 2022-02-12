@@ -28,7 +28,7 @@ import Adafruit_BMP.BMP085 as BMP085
 import requests
 
 URL = 'http://indigoblue.ddns.net:5000/api/sensors'
-PARAMS_FORMAT = '?sensor=BMP180&place={}&temperature={}&pressure={}&altitude={}'
+PARAMS_FORMAT = '?sensor=BMP180&place={}&temperature={:.2f}&pressure={:.2f}&altitude={:.2f}'
 PLACE = 'DiningRoom'
 
 # Default constructor will pick a default I2C bus.
