@@ -287,14 +287,14 @@ def post_dht11():
         api_post_dht11_am2320_common('T_DHT11', date, sensor, place, temperature, humidity)
         return "time:" + date + ", sensor:" + sensor + ", place:" + place + \
             ",temperature:" + temperature + ", humidity:" + humidity
-
     elif sensor == 'AM2320':
         api_post_dht11_am2320_common('T_AM2320', date, sensor, place, temperature, humidity)
         return "time:" + date + ", sensor:" + sensor + ", place:" + place + \
             ",temperature:" + temperature + ", humidity:" + humidity
-
     elif sensor == 'BH1750FVI':
         api_post_bh1750fvi('T_BH1750FVI', date, sensor, place, lux, luminance)
+        return "time:" + date + ", sensor:" + sensor + ", place:" + place + \
+            ",lux:" + lux + ", luminance:" + luminance
     elif sensor == 'BMP180':
         api_post_bmp180('T_BMP180', date, sensor, place, temperature, pressure, altitude)
         return "time:" + date + ", sensor:" + sensor + ", place:" + place + \
