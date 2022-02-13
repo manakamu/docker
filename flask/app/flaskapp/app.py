@@ -682,21 +682,19 @@ def get_bh1750fvi(sensor, table):
             [monthly_lux, monthly_luminance]],
         )
 
-@app.route('/dht11', methods=["GET"])
-def get_dht11():
-    return get_dht11_am2320_common('DHT11', 'T_DHT11')
-
-@app.route('/am2320', methods=["GET"])
-def get_am2320():
-    return get_dht11_am2320_common('AM2320', 'T_AM2320')
-
-@app.route('/bmp180', methods=["GET"])
-def get_bmp180_():
-    return get_bmp180('BMP180', 'T_BMP180')
-
-@app.route('/bh1750fvi', methods=["GET"])
-def get_bh1750fvi_():
-    return get_bh1750fvi('BH1750FVI', 'T_BH1750FVI')
+@app.route('/room', methods=['GET', 'POST'])
+def get_room():
+    sensor = request.args.get("sensor")
+    if sensor == 'AM2320' or sensor == None:
+        return get_dht11_am2320_common('AM2320', 'T_AM2320')
+    elif sensor == 'DHT11':
+        return get_dht11_am2320_common('DHT11', 'T_DHT11')
+    elif sensor == 'BMP180':
+        return get_bmp180('BMP180', 'T_BMP180')
+    elif sensor == 'BH1750FVI':
+        return get_bh1750fvi('BH1750FVI', 'T_BH1750FVI')
+    else:
+        return Response(response='Unknown sensor.', status=404)
 
 if __name__ == "__main__":
     app.run(debug=True)
