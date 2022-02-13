@@ -91,6 +91,29 @@ SQL_SELECT_MONTHLY_DATA = "SELECT datetime(time, 'localtime'), T_Master.placeId,
 	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
 	ORDER BY T_Master.placeId ASC, time ASC"
 
+# BMP180
+SQL_SELECT_DAILY_DATA_BMP180 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	temperature, pressure FROM T_Master \
+	INNER JOIN {} ON T_Master.recordId = {}.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
+SQL_SELECT_WEEKLY_DATA_BMP180 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	temperature, pressure FROM T_Master \
+	INNER JOIN {} ON T_Master.recordId = {}.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
+SQL_SELECT_MONTHLY_DATA_BMP180 = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	temperature, pressure FROM T_Master \
+	INNER JOIN {} ON T_Master.recordId = {}.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
+
 class GraphData:
     labels = None
     data = None
@@ -414,23 +437,83 @@ def get_dht11_am2320_common(sensor, table):
         )
 
 def create_data_list_bmp180(cur, sensor, data_table, date_sql, sql, x_axis_format):
-    pass
+    sql = sql.format(data_table, data_table)
+    dates_all = list()
+    for element in cur.execute(date_sql, [sensor]):
+        dates_all.append(element[0])
+
+    placeId = -1
+    date_list = list()
+    temperature_list = list()
+    pressure_list = list()
+    temperatures = None
+    pressures = None
+    place_list = list()
+    counter = 0
+    for element in cur.execute(sql, [sensor]):
+        if element[1] != placeId:
+            counter = 0
+            placeId = element[1]
+            temperatures = list()
+            pressures = list()
+            temperature_list.append(temperatures)
+            pressure_list.append(pressures)
+            place_list.append(element[2])
+        if counter >= len(dates_all):
+            break
+        current_date = datetime.datetime.strptime(dates_all[counter], '%Y-%m-%d %H:%M:%S')
+        record_date = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
+        if len(date_list) < len(dates_all):
+            date_list.append(current_date.strftime(x_axis_format))
+        skip = 0
+        if current_date == record_date:
+            temperatures.append(element[3])
+            pressures.append(element[4])
+        else:
+            for i, time in enumerate(dates_all, counter):
+                if len(dates_all) > i:
+                    current_date = datetime.datetime.strptime( \
+                        dates_all[i], '%Y-%m-%d %H:%M:%S')
+                    if current_date <= record_date:
+                        if len(date_list) < len(dates_all):
+                            date_list.append(current_date.strftime(x_axis_format))
+
+                        if current_date == record_date:
+                            temperatures.append(element[3])
+                            pressures.append(element[4])
+                            skip += 1
+                            break
+                        else:
+                            temperatures.append('null')
+                            pressures.append('null')
+                            skip += 1
+                    else:
+                        break
+                else:
+                    break
+
+        if skip == 0:
+            counter += 1
+        else:
+            counter += skip
+
+    return date_list, temperature_list, pressure_list, place_list
 
 def get_bmp180(sensor, table):
     conn = sqlite3.connect('sensors.sqlite3')
     cur = conn.cursor()
 
-    label_daily, temperature_daily, humidity_daily, pressure_daily, place_daily = \
+    label_daily, temperature_daily, pressure_daily, place_daily = \
         create_data_list_bmp180(cur, sensor, table, SQL_SELECT_DAILY_DATE, \
-            SQL_SELECT_DAILY_DATA, '%H:%M')
+            SQL_SELECT_DAILY_DATA_BMP180, '%H:%M')
 
-    label_weekly, temperature_weekly, humidity_weekly, pressure_weekly, place_weekly = \
+    label_weekly, temperature_weekly, pressure_weekly, place_weekly = \
         create_data_list_bmp180(cur, sensor, table, SQL_SELECT_WEEKLY_DATE, \
-            SQL_SELECT_WEEKLY_DATA, '%Y/%m/%d %H:%M')
+            SQL_SELECT_WEEKLY_DATA_BMP180, '%Y/%m/%d %H:%M')
 
-    label_monthly, temperature_monthly, humidity_monthly, pressure_monthly, place_monthly = \
+    label_monthly, temperature_monthly, pressure_monthly, place_monthly = \
         create_data_list_bmp180(cur, sensor, table, SQL_SELECT_MONTHLY_DATE, \
-            SQL_SELECT_MONTHLY_DATA, '%Y/%m/%d')
+            SQL_SELECT_MONTHLY_DATA_BMP180, '%Y/%m/%d')
 
     conn.close()
 
@@ -446,29 +529,23 @@ def get_bmp180(sensor, table):
 
     daily_temperature = GraphData(label_daily, temperature_daily, place_daily, \
         '℃', '気温', temperature_color)
-    daily_humidity = GraphData(label_daily, humidity_daily, place_daily, \
-        '%', '湿度', humidity_color)
     daily_pressure = GraphData(label_daily, pressure_daily, place_daily, \
         'hPa', '気圧', pressure_color)
     weekly_temperature = GraphData(label_weekly, temperature_weekly, place_weekly, \
         '℃', '気温', temperature_color)
-    weekly_humidity = GraphData(label_weekly, humidity_weekly, place_weekly, \
-        '%', '湿度', humidity_color)
     weekly_pressure = GraphData(label_weekly, pressure_weekly, place_weekly, \
         'hPa', '気圧', pressure_color)
     monthly_temperature = GraphData(label_monthly, temperature_monthly, place_monthly, \
         '℃', '気温', temperature_color)
-    monthly_humidity = GraphData(label_monthly, humidity_monthly, place_monthly, \
-        '%', '湿度', humidity_color)
     monthly_pressure = GraphData(label_monthly, pressure_monthly, place_monthly, \
         'hPa', '気圧', pressure_color)
 
     return render_template('graph.html', \
-        page_title = 'Temperature & Humidity',
+        page_title = 'Temperature & Pressure',
         title = ['Daily', 'Weekly', 'Monthly'],
-        datalist = [[daily_temperature, daily_humidity],
-            [weekly_temperature, weekly_humidity],
-            [monthly_temperature, monthly_humidity]],
+        datalist = [[daily_temperature, daily_pressure],
+            [weekly_temperature, weekly_pressure],
+            [monthly_temperature, monthly_pressure]],
         )
 
 def get_bh1750fvi(sensor, table):
@@ -483,11 +560,11 @@ def get_am2320():
     return get_dht11_am2320_common('AM2320', 'T_AM2320')
 
 @app.route('/bmp180', methods=["GET"])
-def get_bmp180():
+def get_bmp180_():
     return get_bmp180('BMP180', 'T_BMP180')
 
 @app.route('/bh1750fvi', methods=["GET"])
-def get_bh1750fvi():
+def get_bh1750fvi_():
     return get_bh1750fvi('BH1750FVI', 'T_BH1750FVI')
 
 if __name__ == "__main__":
