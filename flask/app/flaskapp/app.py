@@ -114,6 +114,29 @@ SQL_SELECT_MONTHLY_DATA_BMP180 = "SELECT datetime(time, 'localtime'), T_Master.p
 	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
 	ORDER BY T_Master.placeId ASC, time ASC"
 
+# BH1750FVI
+SQL_SELECT_DAILY_DATA_BH1750FVI = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	lux, luminance FROM T_Master \
+	INNER JOIN {} ON T_Master.recordId = {}.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-24 hours') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
+SQL_SELECT_WEEKLY_DATA_BH1750FVI = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	lux, luminance FROM T_Master \
+	INNER JOIN {} ON T_Master.recordId = {}.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-7 days') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
+SQL_SELECT_MONTHLY_DATA_BH1750FVI = "SELECT datetime(time, 'localtime'), T_Master.placeId, place, \
+	lux, luminance FROM T_Master \
+	INNER JOIN {} ON T_Master.recordId = {}.recordId \
+	INNER JOIN T_Place ON T_Master.placeId = T_Place.placeId \
+    WHERE datetime(time, 'localtime') > datetime('now', 'localtime', '-1 months') \
+	AND sensorId = (SELECT sensorId FROM T_Sensor WHERE sensor = ?) \
+	ORDER BY T_Master.placeId ASC, time ASC"
+
 class GraphData:
     labels = None
     data = None
@@ -369,14 +392,13 @@ def create_data_list_dht11_am2320(cur, sensor, data_table, date_sql, sql, x_axis
                             date_list.append(current_date.strftime(x_axis_format))
 
                         if current_date == record_date:
-                            temperatures.append('null')
-                            humidities.append('null')
+                            temperatures.append(element[3])
+                            humidities.append(element[4])
                             skip += 1
                             break
                         else:
-                            # データが欠落しているため、同じデータで埋める
-                            temperatures.append(element[3])
-                            humidities.append(element[4])
+                            temperatures.append('null')
+                            humidities.append('null')
                             skip += 1
                     else:
                         break
@@ -548,8 +570,117 @@ def get_bmp180(sensor, table):
             [monthly_temperature, monthly_pressure]],
         )
 
+def create_data_list_bh1750fvi(cur, sensor, data_table, date_sql, sql, x_axis_format):
+    sql = sql.format(data_table, data_table)
+    dates_all = list()
+    for element in cur.execute(date_sql, [sensor]):
+        dates_all.append(element[0])
+
+    placeId = -1
+    date_list = list()
+    lux_list = list()
+    luminance_list = list()
+    luxes = None
+    luminances = None
+    place_list = list()
+    counter = 0
+    for element in cur.execute(sql, [sensor]):
+        if element[1] != placeId:
+            counter = 0
+            placeId = element[1]
+            luxes = list()
+            luminances = list()
+            lux_list.append(luxes)
+            luminance_list.append(luminances)
+            place_list.append(element[2])
+        if counter >= len(dates_all):
+            break
+        current_date = datetime.datetime.strptime(dates_all[counter], '%Y-%m-%d %H:%M:%S')
+        record_date = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
+        if len(date_list) < len(dates_all):
+            date_list.append(current_date.strftime(x_axis_format))
+        skip = 0
+        if current_date == record_date:
+            luxes.append(element[3])
+            luminances.append(element[4])
+        else:
+            for i, time in enumerate(dates_all, counter):
+                if len(dates_all) > i:
+                    current_date = datetime.datetime.strptime( \
+                        dates_all[i], '%Y-%m-%d %H:%M:%S')
+                    if current_date <= record_date:
+                        if len(date_list) < len(dates_all):
+                            date_list.append(current_date.strftime(x_axis_format))
+
+                        if current_date == record_date:
+                            luxes.append(element[3])
+                            luminances.append(element[4])
+                            skip += 1
+                            break
+                        else:
+                            luxes.append('null')
+                            luminances.append('null')
+                            skip += 1
+                    else:
+                        break
+                else:
+                    break
+
+        if skip == 0:
+            counter += 1
+        else:
+            counter += skip
+
+    return date_list, lux_list, luminance_list, place_list
+
 def get_bh1750fvi(sensor, table):
-    pass
+    conn = sqlite3.connect('sensors.sqlite3')
+    cur = conn.cursor()
+
+    label_daily, lux_daily, luminance_daily, place_daily = \
+        create_data_list_bh1750fvi(cur, sensor, table, SQL_SELECT_DAILY_DATE, \
+            SQL_SELECT_DAILY_DATA_BH1750FVI, '%H:%M')
+
+    label_weekly, lux_weekly, luminance_weekly, place_weekly = \
+        create_data_list_bh1750fvi(cur, sensor, table, SQL_SELECT_WEEKLY_DATE, \
+            SQL_SELECT_WEEKLY_DATA_BH1750FVI, '%Y/%m/%d %H:%M')
+
+    label_monthly, lux_monthly, luminance_monthly, place_monthly = \
+        create_data_list_bh1750fvi(cur, sensor, table, SQL_SELECT_MONTHLY_DATE, \
+            SQL_SELECT_MONTHLY_DATA_BH1750FVI, '%Y/%m/%d')
+
+    conn.close()
+
+    temperature_color = ['rgba(182, 15, 0, 0.5)', 'rgba(254, 78, 19, 0.5)', \
+        'rgba(255, 159, 75, 0.5)', 'rgba(255, 220, 131, 0.5)', \
+        'rgba(239, 255, 189, 0.5)']
+    humidity_color = ['rgba(0, 67, 106, 0.5)', 'rgba(32, 125, 147, 0.5)', \
+        'rgba(85, 186, 191, 0.5)', 'rgba(132, 236, 225, 0.5)', \
+        'rgba(178, 255, 217, 0.5)']
+    pressure_color = ['rgba(0, 54, 30, 0.5)', 'rgba(0, 98, 67, 0.5)', \
+        'rgba(26, 145, 93, 0.5)', 'rgba(86, 194, 120, 0.5)', \
+        'rgba(138, 246, 151, 0.5)']
+
+    daily_lux = GraphData(label_daily, lux_daily, place_daily, \
+        'lux', '照度', temperature_color)
+    daily_luminance = GraphData(label_daily, luminance_daily, place_daily, \
+        'cd', '輝度', pressure_color)
+    weekly_lux = GraphData(label_weekly, lux_weekly, place_weekly, \
+        'lux', '照度', temperature_color)
+    weekly_luminance = GraphData(label_weekly, luminance_weekly, place_weekly, \
+        'cd', '輝度', pressure_color)
+    monthly_lux = GraphData(label_monthly, lux_monthly, place_monthly, \
+        'lux', '照度', temperature_color)
+    monthly_luminance = GraphData(label_monthly, luminance_monthly, place_monthly, \
+        'cd', '輝度', pressure_color)
+
+    return render_template('graph.html', \
+        page_title = 'Lux & Luminance',
+        title = ['Daily', 'Weekly', 'Monthly'],
+        datalist = [[daily_lux, daily_luminance],
+            [weekly_lux, weekly_luminance],
+            [monthly_lux, monthly_luminance]],
+        )
 
 @app.route('/dht11', methods=["GET"])
 def get_dht11():
