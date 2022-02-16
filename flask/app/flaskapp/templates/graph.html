@@ -20,7 +20,15 @@ DHT11
     var graphScales = {
       yAxes: [{
         ticks: {
+          {% if element.unit == '℃' %}
           stepSize: 1,
+          {% elif element.unit == '%' %}
+          stepSize: 5,
+          {% elif element.unit == 'lux' %}
+          stepSize: 200,
+          {% else %}
+          stepSize: 100,
+          {% endif %}
           callback: function(value, index, values){
             return  value +  '{{element.unit}}'
           }
