@@ -9,14 +9,16 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-  <div class="btn-group" role="group" aria-label="Basic example">
-    <button type="button" class="btn btn-info"><a href="/room?sensor=AM2320">AM2320</a></button>
-    <button type="button" class="btn btn-info"><a href="/room?sensor=DHT11">DHT11</a></button>
-    <button type="button" class="btn btn-info"><a href="/room?sensor=BMP180">BMP180</a></button>
-    <button type="button" class="btn btn-info"><a href="/room?sensor=BH1750FVI">BH1750FVI</a></button>
+  <div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button"
+        id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">{{sensor}}</button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+      <li><a class="dropdown-item" href="/room?sensor=AM2320">AM2320</a></li>
+      <li><a class="dropdown-item" href="/room?sensor=DHT11">DHT11</a></li>
+      <li><a class="dropdown-item" href="/room?sensor=BMP180">BMP180</a></li>
+      <li><a class="dropdown-item" href="/room?sensor=BH1750FVI">BH1750FVI</a></li>
+    </ul>
   </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
 {% for list in datalist %}
   {% set outer_loop = loop %}
@@ -89,6 +91,5 @@
   </script>
   {% endfor %}
 {% endfor %}
-</div>
 
 {% endblock %}
