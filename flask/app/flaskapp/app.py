@@ -451,6 +451,7 @@ def get_dht11_am2320_common(sensor, table):
         '%', '湿度', humidity_color)
 
     return render_template('graph.html', \
+        sensor = sensor,
         page_title = 'Temperature & Humidity',
         title = ['Daily', 'Weekly', 'Monthly'],
         datalist = [[daily_temperature, daily_humidity],
@@ -563,6 +564,7 @@ def get_bmp180(sensor, table):
         'hPa', '気圧', pressure_color)
 
     return render_template('graph.html', \
+        sensor = sensor,
         page_title = 'Temperature & Pressure',
         title = ['Daily', 'Weekly', 'Monthly'],
         datalist = [[daily_temperature, daily_pressure],
@@ -664,17 +666,18 @@ def get_bh1750fvi(sensor, table):
     daily_lux = GraphData(label_daily, lux_daily, place_daily, \
         'lux', '照度', temperature_color)
     daily_luminance = GraphData(label_daily, luminance_daily, place_daily, \
-        'cd', '輝度', pressure_color)
+        '', '輝度', pressure_color)
     weekly_lux = GraphData(label_weekly, lux_weekly, place_weekly, \
         'lux', '照度', temperature_color)
     weekly_luminance = GraphData(label_weekly, luminance_weekly, place_weekly, \
-        'cd', '輝度', pressure_color)
+        '', '輝度', pressure_color)
     monthly_lux = GraphData(label_monthly, lux_monthly, place_monthly, \
         'lux', '照度', temperature_color)
     monthly_luminance = GraphData(label_monthly, luminance_monthly, place_monthly, \
-        'cd', '輝度', pressure_color)
+        '', '輝度', pressure_color)
 
     return render_template('graph.html', \
+        sensor = sensor,
         page_title = 'Lux & Luminance',
         title = ['Daily', 'Weekly', 'Monthly'],
         datalist = [[daily_lux, daily_luminance],
