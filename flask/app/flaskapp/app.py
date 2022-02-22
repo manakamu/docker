@@ -376,10 +376,12 @@ def create_data_list_dht11_am2320(cur, sensor, data_table, date_sql, sql, x_axis
             break
         current_date = datetime.datetime.strptime(dates_all[counter], '%Y-%m-%d %H:%M:%S')
         record_date = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
-        if len(date_list) < len(dates_all):
-            date_list.append(current_date.strftime(x_axis_format))
+        
         skip = 0
         if current_date == record_date:
+            if len(date_list) < len(dates_all):
+                date_list.append(current_date.strftime(x_axis_format))
+
             temperatures.append(element[3])
             humidities.append(element[4])
         else:
@@ -486,10 +488,11 @@ def create_data_list_bmp180(cur, sensor, data_table, date_sql, sql, x_axis_forma
             break
         current_date = datetime.datetime.strptime(dates_all[counter], '%Y-%m-%d %H:%M:%S')
         record_date = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
-        if len(date_list) < len(dates_all):
-            date_list.append(current_date.strftime(x_axis_format))
+        
         skip = 0
         if current_date == record_date:
+            if len(date_list) < len(dates_all):
+                date_list.append(current_date.strftime(x_axis_format))
             temperatures.append(element[3])
             pressures.append(element[4])
         else:
@@ -599,10 +602,12 @@ def create_data_list_bh1750fvi(cur, sensor, data_table, date_sql, sql, x_axis_fo
             break
         current_date = datetime.datetime.strptime(dates_all[counter], '%Y-%m-%d %H:%M:%S')
         record_date = datetime.datetime.strptime(element[0], '%Y-%m-%d %H:%M:%S')
-        if len(date_list) < len(dates_all):
-            date_list.append(current_date.strftime(x_axis_format))
+
         skip = 0
         if current_date == record_date:
+            if len(date_list) < len(dates_all):
+                date_list.append(current_date.strftime(x_axis_format))
+
             luxes.append(element[3])
             luminances.append(element[4])
         else:
