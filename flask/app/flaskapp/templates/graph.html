@@ -35,6 +35,8 @@
           stepSize: 5,
           {% elif element.unit == 'lux' %}
           stepSize: 200,
+          {% elif element.unit == 'hPa' %}
+          stepSize: 5,
           {% else %}
           stepSize: 100,
           {% endif %}
@@ -42,9 +44,6 @@
             return  value +  '{{element.unit}}'
           }
         },
-        {% if element.unit == 'lux' %}
-        type: 'logarithmic',
-        {% endif %}
       }]
     };
     var ctx = document.getElementById("Chart{{outer_loop.index0}}-{{loop.index0}}");

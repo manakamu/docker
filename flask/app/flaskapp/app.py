@@ -584,9 +584,7 @@ def create_data_list_bh1750fvi(cur, sensor, data_table, date_sql, sql, x_axis_fo
     placeId = -1
     date_list = list()
     lux_list = list()
-    luminance_list = list()
     luxes = None
-    luminances = None
     place_list = list()
     counter = 0
     for element in cur.execute(sql, [sensor]):
@@ -594,9 +592,7 @@ def create_data_list_bh1750fvi(cur, sensor, data_table, date_sql, sql, x_axis_fo
             counter = 0
             placeId = element[1]
             luxes = list()
-            luminances = list()
             lux_list.append(luxes)
-            luminance_list.append(luminances)
             place_list.append(element[2])
         if counter >= len(dates_all):
             break
@@ -609,7 +605,6 @@ def create_data_list_bh1750fvi(cur, sensor, data_table, date_sql, sql, x_axis_fo
                 date_list.append(current_date.strftime(x_axis_format))
 
             luxes.append(element[3])
-            luminances.append(element[4])
         else:
             for i, time in enumerate(dates_all, counter):
                 if len(dates_all) > i:
@@ -621,12 +616,10 @@ def create_data_list_bh1750fvi(cur, sensor, data_table, date_sql, sql, x_axis_fo
 
                         if current_date == record_date:
                             luxes.append(element[3])
-                            luminances.append(element[4])
                             skip += 1
                             break
                         else:
                             luxes.append('null')
-                            luminances.append('null')
                             skip += 1
                     else:
                         break
@@ -638,21 +631,21 @@ def create_data_list_bh1750fvi(cur, sensor, data_table, date_sql, sql, x_axis_fo
         else:
             counter += skip
 
-    return date_list, lux_list, luminance_list, place_list
+    return date_list, lux_list, place_list
 
 def get_bh1750fvi(sensor, table):
     conn = sqlite3.connect('sensors.sqlite3')
     cur = conn.cursor()
 
-    label_daily, lux_daily, luminance_daily, place_daily = \
+    label_daily, lux_daily, place_daily = \
         create_data_list_bh1750fvi(cur, sensor, table, SQL_SELECT_DAILY_DATE, \
             SQL_SELECT_DAILY_DATA_BH1750FVI, '%H:%M')
 
-    label_weekly, lux_weekly, luminance_weekly, place_weekly = \
+    label_weekly, lux_weekly, place_weekly = \
         create_data_list_bh1750fvi(cur, sensor, table, SQL_SELECT_WEEKLY_DATE, \
             SQL_SELECT_WEEKLY_DATA_BH1750FVI, '%Y/%m/%d %H:%M')
 
-    label_monthly, lux_monthly, luminance_monthly, place_monthly = \
+    label_monthly, lux_monthly, place_monthly = \
         create_data_list_bh1750fvi(cur, sensor, table, SQL_SELECT_MONTHLY_DATE, \
             SQL_SELECT_MONTHLY_DATA_BH1750FVI, '%Y/%m/%d')
 
@@ -670,24 +663,18 @@ def get_bh1750fvi(sensor, table):
 
     daily_lux = GraphData(label_daily, lux_daily, place_daily, \
         'lux', '照度', temperature_color)
-    daily_luminance = GraphData(label_daily, luminance_daily, place_daily, \
-        '', '輝度', pressure_color)
     weekly_lux = GraphData(label_weekly, lux_weekly, place_weekly, \
         'lux', '照度', temperature_color)
-    weekly_luminance = GraphData(label_weekly, luminance_weekly, place_weekly, \
-        '', '輝度', pressure_color)
     monthly_lux = GraphData(label_monthly, lux_monthly, place_monthly, \
         'lux', '照度', temperature_color)
-    monthly_luminance = GraphData(label_monthly, luminance_monthly, place_monthly, \
-        '', '輝度', pressure_color)
-
+ 
     return render_template('graph.html', \
         sensor = sensor,
         page_title = 'Lux & Luminance',
         title = ['Daily', 'Weekly', 'Monthly'],
-        datalist = [[daily_lux, daily_luminance],
-            [weekly_lux, weekly_luminance],
-            [monthly_lux, monthly_luminance]],
+        datalist = [[daily_lux],
+            [weekly_lux],
+            [monthly_lux]],
         )
 
 @app.route('/room', methods=['GET', 'POST'])
