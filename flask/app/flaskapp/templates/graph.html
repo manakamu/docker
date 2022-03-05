@@ -22,7 +22,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
 {% for list in datalist %}
   {% set outer_loop = loop %}
-  <h2>{{title[loop.index0]}}</h2>
+  <p class="h2">{{title[loop.index0]}}</p>
   {% for element in list %}
   <canvas id="Chart{{outer_loop.index0}}-{{loop.index0}}"></canvas>
   <script>
@@ -30,13 +30,13 @@
       yAxes: [{
         ticks: {
           {% if element.unit == '℃' %}
-          stepSize: 1,
+          stepSize: 2,
           {% elif element.unit == '%' %}
-          stepSize: 5,
+          stepSize: 10,
           {% elif element.unit == 'lux' %}
-          stepSize: 200,
+          stepSize: 500,
           {% elif element.unit == 'hPa' %}
-          stepSize: 5,
+          stepSize: 10,
           {% else %}
           stepSize: 100,
           {% endif %}
