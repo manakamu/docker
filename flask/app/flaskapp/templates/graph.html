@@ -27,8 +27,14 @@
   <canvas id="Chart{{outer_loop.index0}}-{{loop.index0}}"></canvas>
   <script>
     var graphScales = {
+      xAxes: [{
+        ticks: {
+          fontSize : 10,
+        },
+      }],
       yAxes: [{
         ticks: {
+          fontSize : 10,
           {% if element.unit == '℃' %}
           stepSize: 2,
           {% elif element.unit == '%' %}
@@ -46,6 +52,7 @@
         },
       }]
     };
+    //Chart.defaults.global.defaultFontSize = 10
     var ctx = document.getElementById("Chart{{outer_loop.index0}}-{{loop.index0}}");
     var graphData = {
       labels: [
