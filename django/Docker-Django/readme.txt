@@ -1,3 +1,6 @@
+■コンテナへ接続
+docker exec -it hoge_ponsuke /bin/bash
+
 ■新コンテナの起動
 docker-compose up -d --build
 
