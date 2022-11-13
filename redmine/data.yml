@@ -1487,7 +1487,7 @@ settings:
     - '2021-05-26 13:34:26.703260'
   - - 6
     - host_name
-    - indigoblue.ddns.net:8080
+    - indigoblue.ddns.net/redmine
     - '2021-05-26 13:34:26.707285'
   - - 7
     - protocol

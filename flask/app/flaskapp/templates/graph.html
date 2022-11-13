@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}
+{{sensor}}
+{% endblock %}
+
+{% block headline %}
+{{page_title}}
+{% endblock %}
+
+{% block content %}
+  <div class="dropdown">
+    <button class="btn btn-primary dropdown-toggle" type="button"
+        id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">{{sensor}}</button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+      <li><a class="dropdown-item" href="/room?sensor=AM2320">AM2320</a></li>
+      <li><a class="dropdown-item" href="/room?sensor=DHT11">DHT11</a></li>
+      <li><a class="dropdown-item" href="/room?sensor=BMP180">BMP180</a></li>
+      <li><a class="dropdown-item" href="/room?sensor=BH1750FVI">BH1750FVI</a></li>
+    </ul>
+  </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+{% for list in datalist %}
+  {% set outer_loop = loop %}
+  <p class="h2">{{title[loop.index0]}}</p>
+  {% for element in list %}
+  <canvas id="Chart{{outer_loop.index0}}-{{loop.index0}}"></canvas>
+  <script>
+    var graphScales = {
+      xAxes: [{
+        ticks: {
+          fontSize : 10,
+        },
+      }],
+      yAxes: [{
+        ticks: {
+          fontSize : 10,
+          {% if element.unit == '℃' %}
+          stepSize: 2,
+          {% elif element.unit == '%' %}
+          stepSize: 10,
+          {% elif element.unit == 'lux' %}
+          stepSize: 500,
+          {% elif element.unit == 'hPa' %}
+          stepSize: 10,
+          {% else %}
+          stepSize: 100,
+          {% endif %}
+          callback: function(value, index, values){
+            return  value +  '{{element.unit}}'
+          }
+        },
+      }]
+    };
+    //Chart.defaults.global.defaultFontSize = 10
+    var ctx = document.getElementById("Chart{{outer_loop.index0}}-{{loop.index0}}");
+    var graphData = {
+      labels: [
+      {% autoescape false %}
+        {% for item in element.labels %}
+          '{{item}}',
+        {% endfor %}
+      {% endautoescape %}
+      ],
+      datasets: [
+        {% for data_list in element.data %}
+        {
+          label: '{{element.places[loop.index0]}}',
+          spanGaps: true,
+          {% autoescape false %}
+          data: {{ data_list }},
+          {% endautoescape %}
+          tension: 0.3,
+          pointRadius: 0,
+          {% if element.colors|length > loop.index0 + 1 %}
+          borderColor: "{{element.colors[loop.index0]}}",
+          {% else %}
+          borderColor: "rgba(0,0,0,1)",
+          {% endif %}
+          backgroundColor: "rgba(0,0,0,0)"
+        },
+        {% endfor %}
+      ],
+    };
+    var graphOptions = {
+      title: {
+        display: true,
+        text: '{{element.graphTitle}}({{element.labels[0]}}～{{element.labels[-1]}})'
+      },
+      scales: graphScales,
+    };
+    var myLineChart = new Chart(ctx, {
+      type: 'line',
+      data: graphData,
+      options: graphOptions
+    });
+  </script>
+  {% endfor %}
+{% endfor %}
+
+{% endblock %}
