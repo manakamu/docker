@@ -37,8 +37,10 @@ services:
       - image_volume:/usr/src/app/web/static/img/pole
       - nginx_log_volume:/var/log/nginx
       - ./:/share_dir
-      - ssl_volume:/etc/letsencrypt
+#      - ssl_volume:/etc/letsencrypt
       - ./nginx_ssl/ssl.conf:/etc/nginx/conf.d/ssl.conf
+      - ./nginx_ssl/fullchain.pem:/etc/nginx/conf.d/fullchain.pem
+      - ./nginx_ssl/privkey.pem:/etc/nginx/conf.d/privkey.pem
     ports:
       - 80:80
       - 443:443

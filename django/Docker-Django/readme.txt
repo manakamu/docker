@@ -23,3 +23,9 @@ sudo docker cp my.cnf <コンテナID>:/etc/my.cnf
 
 ■コンテナからホストへのコピー
 sudo docker cp <コンテナID>:/etc/my.cnf my.cnf
+
+■Volumeのリスト
+docker volume list
+
+■プロセスの一覧
+docker ps
