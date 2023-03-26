@@ -8,6 +8,8 @@ DEBUG = False
 #ALLOWED_HOSTS = [os.environ.get('ALLOWED_HOSTS')]
 ALLOWED_HOSTS = ['*']
 
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
+
 # 静的ファイルを配置する場所
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
