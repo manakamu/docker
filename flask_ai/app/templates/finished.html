@@ -14,7 +14,8 @@
 				<div class="p-2">
 					<input value="顔検出" id="detect" type="button" class="btn btn-primary" />
 					<input value="紗羅検出" id="recognition" type="button" class="btn btn-primary" />
-					<span id="ElapsedTime"></span>
+					<span id="ElapsedTime" style="visibility: hidden;">0秒</span>
+					<span class="spinner-border text-primary" role="status" id="spinner" style="visibility: hidden;" ></span>
 				</div>
 			</div>
 		</header>
@@ -51,10 +52,19 @@
 		function startTimer() {
 			elapsedTime = 0;   // カウンタのリセット
 			timerId = setInterval('showElapsedTime()',1000);   // タイマーをセット(1000ms間隔)
+			$("#ElapsedTime").css({
+				"visibility":"visible", 
+			});
+			$("#spinner").css({
+				"visibility":"visible", 
+			});
 		}
 
 		function stopTimer() {
 			clearInterval( timerId );   // タイマーのクリア
+			$("#spinner").css({
+				"visibility":"hidden", 
+			});
 		}
 
 		function showElapsedTime() {
