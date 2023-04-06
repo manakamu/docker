@@ -2,6 +2,7 @@ from flask import Flask, url_for
 from markupsafe import escape
 from flask import request
 from flask import render_template
+from flask import jsonify
 import datetime
 from pathlib import Path
 #クライアントの命名したファイル名を利用するためのsecure_filename()
@@ -34,18 +35,27 @@ def upload_file():
         fname = now.strftime('%Y%m%d%H%M%S') + ext
 
         # uploadsフォルダは外部公開できない
-        file.save('./uploads/' + secure_filename(fname))
-        path = os.path.join('uploads', fname)
-        # 外部公開できるstaticフォルダに保存する
-        out_filepath = os.path.join(os.path.join('static', 'IMG'), 'out.jpg')
-        face_detect(path, out_filepath)
-        face_recognition(path)
+        saveFilePath = os.path.join(os.path.join('static', 'IMG'), secure_filename(fname))
+        file.save(saveFilePath)
+        # path = os.path.join('uploads', fname)
+        # # 外部公開できるstaticフォルダに保存する
+        # out_filepath = os.path.join(os.path.join('static', 'IMG'), 'out.jpg')
+        # face_detect(path, out_filepath)
+        # face_recognition(path)
 
         #アップロードしてサーバーにファイルが保存されたらfinishedを表示
-        return render_template('finished.html', filepath = out_filepath)
+        return render_template('finished.html', filepath = saveFilePath)
     else:
     	#GETでアクセスされた時、uploadsを表示
     	return render_template('upload.html')
+
+@app.route('/detect', methods=['POST', 'GET'])
+def detect_file():
+    filePath = os.path.join(os.path.join('static', 'IMG'), Path(request.json).name)
+    out_filepath = os.path.join(os.path.join('static', 'IMG'), 'out.jpg')
+    face_detect(filePath, out_filepath)
+
+    return jsonify('\\' + out_filepath)
 
 def face_detect(inPath, outPath):
     model = get_model("resnet50_2020-07-20", max_size=2048)
@@ -92,6 +102,10 @@ def face_recognition(inFile):
 
     snapshot = tracemalloc.take_snapshot()
     top_stats = snapshot.statistics('lineno')
+
+    for probs, indices in zip(batch_probs, batch_indices):
+        for k in range(3):
+            print(f"Top-{k + 1} {indices[k]} {probs[k]:.2%}")
 
     print("[ Top 10 ]")
     for stat in top_stats[:10]:

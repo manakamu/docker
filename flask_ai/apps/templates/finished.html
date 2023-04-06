@@ -6,14 +6,33 @@
 			<!-- 物体検知フォームを追加する -->
 			<div class="d-flex flex-row-reverse">
 				<div class="p-2">
-					<form action="" method="POST">
-						<input value="検出" type="submit" class="btn btn-primary" />
-					</form>
+					<input value="検出" id="detect" type="button" class="btn btn-primary" />
 				</div>
 			</div>
 		</header>
 		<section>
-			<img src="{{ filepath }}" alt="アップロード画像" />
+			<img src="{{ filepath }}" alt="アップロード画像" id="uploadedImage"/>
 		</section>
 	</div>
+	<script src="{{ url_for('static', filename='vendor/js/jquery-3.6.4.min.js') }}"></script>
+	<script>
+		$('#detect').click(function(){
+			$filePath = $("#uploadedImage").attr('src')
+			$.ajax({
+				url: "/detect",
+				type:'POST',
+				dataType: "json",
+				data: JSON.stringify($filePath),
+				contentType: 'application/json',
+				cache: false,
+			}).done(function(data, textStatus, jqXHR) {
+					// 成功したとき
+					//var data_json = JSON.parse(data);
+					$("#uploadedImage").attr('src', data)
+			}).fail(function(jqXHR, textStatus, errorThrown ) {
+				// エラー処理
+				print(errorThrown);
+			})
+		});
+	</script>
 {% endblock %}
