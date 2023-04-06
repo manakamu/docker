@@ -34,7 +34,7 @@ def upload_file():
         fname = now.strftime('%Y%m%d%H%M%S') + ext
 
         # uploadsフォルダは外部公開できない
-        saveFilePath = os.path.join(os.path.join('static', 'IMG'), secure_filename(fname))
+        saveFilePath = os.path.join(os.path.join('static', 'img'), secure_filename(fname))
         file.save(saveFilePath)
         # path = os.path.join('uploads', fname)
         # # 外部公開できるstaticフォルダに保存する
