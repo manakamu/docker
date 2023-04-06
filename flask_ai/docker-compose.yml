@@ -5,6 +5,7 @@ services:
     volumes:
       - ./app:/app
       - socket:/tmp
+      - ./:/app/static/img
     command: uwsgi --ini /app/app.ini
     restart: always
 
