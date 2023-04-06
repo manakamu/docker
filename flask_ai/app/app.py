@@ -9,7 +9,6 @@ from pathlib import Path
 from werkzeug.utils import secure_filename
 
 import cv2
-from matplotlib import pyplot as plt
 from retinaface.pre_trained_models import get_model
 from retinaface.utils import vis_annotations
 import os

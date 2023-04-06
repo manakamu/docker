@@ -1,0 +1,6 @@
+flask==2.0.1
+opencv-python==4.5.2.54
+opencv-python-headless==4.5.2.54
+retinaface-pytorch==0.0.7
+uWSGI==2.0.19.1
+Werkzeug==2.2.3
