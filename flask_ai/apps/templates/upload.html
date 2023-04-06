@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+  	<h1>アップロードフォーム</h1>
+  	<form method="POST" action="/upload" enctype="multipart/form-data">
+      <div class="input-group">
+		<input placeholder="データ" name="the_file" type="file"/>
+	    <input value="送信" type="submit" class="btn btn-primary" />
+	  </div>
+  	</form>
+</div>
+
+{% endblock %}
