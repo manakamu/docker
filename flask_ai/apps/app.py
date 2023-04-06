@@ -68,10 +68,7 @@ def face_recognition(inFile):
 
     # デバイスを選択する。
     device = get_device(use_gpu=True)
-
     model_detect.to(device)
-    # 推論モード
-    model_detect.eval()
 
     transform = transforms.Compose(
         [
@@ -86,6 +83,8 @@ def face_recognition(inFile):
     img = Image.open(inFile)
     inputs = transform(img)
     inputs = inputs.unsqueeze(0).to(device)
+    # 推論モード
+    model_detect.eval()
     outputs = model_detect(inputs)
 
     batch_probs = F.softmax(outputs, dim=1)

@@ -1,5 +1,19 @@
 {% extends "base.html" %}
 {% block content %}
 	<h1>アップロード完了</h1>
-	<img src = {{ filepath }} >
+	<div class="card col-md-7 dt-image-content">
+		<header class="d-flex justify-content-between">
+			<!-- 物体検知フォームを追加する -->
+			<div class="d-flex flex-row-reverse">
+				<div class="p-2">
+					<form action="" method="POST">
+						<input value="検出" type="submit" class="btn btn-primary" />
+					</form>
+				</div>
+			</div>
+		</header>
+		<section>
+			<img src="{{ filepath }}" alt="アップロード画像" />
+		</section>
+	</div>
 {% endblock %}
