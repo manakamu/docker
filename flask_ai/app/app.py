@@ -33,14 +33,8 @@ def upload_file():
         now = datetime.datetime.now()
         fname = now.strftime('%Y%m%d%H%M%S') + ext
 
-        # uploadsフォルダは外部公開できない
         saveFilePath = os.path.join(os.path.join('static', 'img'), secure_filename(fname))
         file.save(saveFilePath)
-        # path = os.path.join('uploads', fname)
-        # # 外部公開できるstaticフォルダに保存する
-        # out_filepath = os.path.join(os.path.join('static', 'IMG'), 'out.jpg')
-        # face_detect(path, out_filepath)
-        # face_recognition(path)
 
         #アップロードしてサーバーにファイルが保存されたらfinishedを表示
         return render_template('finished.html', filepath = saveFilePath)
@@ -50,7 +44,9 @@ def upload_file():
 
 @app.route('/detect', methods=['POST', 'GET'])
 def detect_file():
-    filePath = os.path.join(os.path.join('static', 'IMG'), Path(request.json).name)
+    # Linuxだとフルパスでないと動作しないようなので
+    appPath = os.path.dirname(app.__file__)
+    filePath = os.path.join(appPath, os.path.join(os.path.join('static', 'IMG'), Path(request.json).name))
     out_filepath = os.path.join(os.path.join('static', 'IMG'), 'out.jpg')
     face_detect(filePath, out_filepath)
 

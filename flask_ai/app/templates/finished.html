@@ -40,7 +40,7 @@
 					$("#uploadedImage").attr('src', data)
 			}).fail(function(jqXHR, textStatus, errorThrown ) {
 				// エラー処理
-				print(errorThrown);
+				alert(errorThrown);
 			}).always(function( jqXHR, textStatus, errorThrown ) {
 				stopTimer();
 			})
