@@ -46,9 +46,9 @@ def upload_file():
 def detect_file():
     # Linuxだとフルパスでないと動作しないようなので
     appPath = os.path.dirname(__file__)
-    filePath = os.path.join(appPath, os.path.join(os.path.join('static', 'IMG'), Path(request.json).name))
+    filePath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), Path(request.json).name))
     print(filePath)
-    out_filepath = os.path.join(os.path.join('static', 'IMG'), 'out.jpg')
+    out_filepath = os.path.join(os.path.join('static', 'img'), 'out.jpg')
     face_detect(filePath, out_filepath)
 
     return jsonify('\\' + out_filepath)
