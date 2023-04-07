@@ -19,13 +19,13 @@ from torchvision import transforms
 import torch.nn as nn
 from torch.nn import functional as F
 from PIL import Image
-import tracemalloc
+import json
 
 app = Flask(__name__)
 #app.config["SECRET_ KEY"] = "2AZSMss3p5QPbcY2hBsJ"
 app.secret_key =  "2AZSMss3p5QPbcY2hBsJ"
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webpp', 'bmp'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp'}
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -75,20 +75,30 @@ def face_detect(inPath, outPath):
     model = get_model("resnet50_2020-07-20", max_size=2048)
     model.eval()
 
-    image = cv2.imread(inPath)
-    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    results = model.predict_jsons(image)
+    results, image = find_faces(inPath)
     image_out = draw_res(image,results)
     cv2.imwrite(outPath, image_out)
 
-def face_recognition(inFile):
-    tracemalloc.start()
+def find_faces(inPath):
+    model = get_model("resnet50_2020-07-20", max_size=2048)
+    model.eval()
+
+    image = cv2.imread(inPath)
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    results = model.predict_jsons(image)
+    return results, image
+
+@app.route('/face_recognition', methods=['POST', 'GET'])
+def face_recognition():
+    # Linuxだとフルパスでないと動作しないようなので
+    appPath = os.path.dirname(__file__)
+    filePath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), Path(request.json).name))
 
     model_detect = torchvision.models.resnet18(pretrained=True)
     num_ftrs = model_detect.fc.in_features
-    model_detect.fc = nn.Linear(num_ftrs, 3)
+    model_detect.fc = nn.Linear(num_ftrs, 4) # 4分類
 
-    model_detect.load_state_dict(torch.load(os.path.join('static', 'model_gpu.pth')))
+    model_detect.load_state_dict(torch.load(os.path.join(appPath, 'model_gpu.pth')))
 
     # デバイスを選択する。
     device = get_device(use_gpu=True)
@@ -104,26 +114,63 @@ def face_recognition(inFile):
             ),  # 標準化する。
         ]
     )
-    img = Image.open(inFile)
-    inputs = transform(img)
-    inputs = inputs.unsqueeze(0).to(device)
-    # 推論モード
-    model_detect.eval()
-    outputs = model_detect(inputs)
+    
+    # クラス名一覧を取得する。
+    class_names = get_classes()
 
-    batch_probs = F.softmax(outputs, dim=1)
-    batch_probs, batch_indices = batch_probs.sort(dim=1, descending=True)
+    # 顔を抽出
+    results, image = find_faces(filePath)
+ 
+    image_out = image.copy()
+    height, width, channels = image_out.shape[:3]
+    for rect in results:
+        fname = "out.jpg"
+        outPath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), fname))
+        bbox = rect['bbox']
+        if len(results) > 2:
+            face = image[bbox[1] : bbox[3], bbox[0] : bbox[2]] #縦位置上：下, 横位置左：右
+            cv2.imwrite(outPath, face)
+        else:
+            cv2.imwrite(outPath, image_out)
 
-    snapshot = tracemalloc.take_snapshot()
-    top_stats = snapshot.statistics('lineno')
+        img = Image.open(outPath)
+        inputs = transform(img)
+        inputs = inputs.unsqueeze(0).to(device)
+        # 推論モード
+        model_detect.eval()
+        outputs = model_detect(inputs)
 
-    for probs, indices in zip(batch_probs, batch_indices):
-        for k in range(3):
-            print(f"Top-{k + 1} {indices[k]} {probs[k]:.2%}")
+        batch_probs = F.softmax(outputs, dim=1)
+        batch_probs, batch_indices = batch_probs.sort(dim=1, descending=True)
 
-    print("[ Top 10 ]")
-    for stat in top_stats[:10]:
-        print(stat)
+        fontScale = 1.0
+        if width > 2048:
+            fontScale = 10.0
+        if width > 1024:
+            fontScale = 5.0
+        for probs, indices in zip(batch_probs, batch_indices):
+            for k in range(len(class_names)):
+                print(f"Top-{k + 1} {indices[k]} {probs[k]:.2%} {class_names[indices[k]]}")
+                if class_names[indices[k]] == 'Sara':
+                    color = (0, 255, 0)
+                    probability = probs[k].item()
+                    if (0.6 <= probability and probability < 0.8) :
+                        color = (0, 255, 255)
+                    elif probability < 0.6:
+                        color = (0, 0, 255)
+                    cv2.rectangle(image_out,(bbox[0],bbox[1]),(bbox[2],bbox[3]),color,thickness=10)
+                    cv2.putText(image_out,
+                        text=f'{class_names[indices[k]]}:{probability:.2%}',
+                        org=(bbox[0], bbox[1]),
+                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                        fontScale=1.0,
+                        color=(255, 255, 255),
+                        thickness=1,
+                        lineType=cv2.LINE_4)
+
+    out_filepath = os.path.join(os.path.join('static', 'img'), 'out.jpg')
+    cv2.imwrite(out_filepath, image_out)
+    return jsonify('\\' + out_filepath)
 
 def draw_res(image,results):
     for r in results:
@@ -139,3 +186,14 @@ def get_device(use_gpu):
         return torch.device("cuda")
     else:
         return torch.device("cpu")
+
+def get_classes():
+    appPath = os.path.dirname(__file__)
+    filePath = os.path.join(appPath, 'class_name.json') 
+
+    # クラス一覧を読み込む。
+    with open(filePath) as f:
+        data = json.load(f)
+        class_names = [x["name"] for x in data]
+
+    return class_names

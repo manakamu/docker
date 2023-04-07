@@ -12,8 +12,8 @@
 			<!-- 物体検知フォームを追加する -->
 			<div class="d-flex flex-row-reverse">
 				<div class="p-2">
-					<input value="顔検出" id="detect" type="button" class="btn btn-primary" />
-					<input value="紗羅検出" id="recognition" type="button" class="btn btn-primary" />
+					<input value="顔検出" id="face_detect" type="button" class="btn btn-primary" />
+					<input value="紗羅検出" id="face_recognition" type="button" class="btn btn-primary" />
 					<span id="ElapsedTime" style="visibility: hidden;">0秒</span>
 					<span class="spinner-border text-primary" role="status" id="spinner" style="visibility: hidden;" ></span>
 				</div>
@@ -25,11 +25,32 @@
 	</div>
 	<script src="{{ url_for('static', filename='vendor/js/jquery-3.6.4.min.js') }}"></script>
 	<script>
-		$('#detect').click(function(){
+		$('#face_detect').click(function(){
 			$filePath = $("#uploadedImage").attr('src')
 			startTimer();
 			$.ajax({
 				url: "/detect",
+				type:'POST',
+				dataType: "json",
+				data: JSON.stringify($filePath),
+				contentType: 'application/json',
+				cache: false,
+			}).done(function(data, textStatus, jqXHR) {
+					// 成功したとき
+					//var data_json = JSON.parse(data);
+					$("#uploadedImage").attr('src', data)
+			}).fail(function(jqXHR, textStatus, errorThrown ) {
+				// エラー処理
+				alert(errorThrown);
+			}).always(function( jqXHR, textStatus, errorThrown ) {
+				stopTimer();
+			})
+		});
+		$('#face_recognition').click(function(){
+			$filePath = $("#uploadedImage").attr('src')
+			startTimer();
+			$.ajax({
+				url: "/face_recognition",
 				type:'POST',
 				dataType: "json",
 				data: JSON.stringify($filePath),
