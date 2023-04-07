@@ -1,6 +1,6 @@
 from flask import Flask, url_for
 from markupsafe import escape
-from flask import request
+from flask import request, flash, redirect
 from flask import render_template
 from flask import jsonify
 import datetime
@@ -22,22 +22,40 @@ from PIL import Image
 import tracemalloc
 
 app = Flask(__name__)
-app.config["SECRET_ KEY"] = "2AZSMss3p5QPbcY2hBsJ"
+#app.config["SECRET_ KEY"] = "2AZSMss3p5QPbcY2hBsJ"
+app.secret_key =  "2AZSMss3p5QPbcY2hBsJ"
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webpp', 'bmp'}
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/upload', methods=['POST', 'GET'])
 def upload_file():
     if request.method == 'POST':
-        file = request.files["the_file"]
-        # 保存時のファイル名を現在時刻に変更する
-        ext = Path(file.filename).suffix
-        now = datetime.datetime.now()
-        fname = now.strftime('%Y%m%d%H%M%S') + ext
+        # check if the post request has the file part
+        if 'the_file' not in request.files:
+            flash('No file part')
+            return redirect(request.url)
+        file = request.files['the_file']
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if file and allowed_file(file.filename):
+            # 保存時のファイル名を現在時刻に変更する
+            ext = Path(file.filename).suffix
+            now = datetime.datetime.now()
+            fname = now.strftime('%Y%m%d%H%M%S') + ext
 
-        saveFilePath = os.path.join(os.path.join('static', 'img'), secure_filename(fname))
-        file.save(saveFilePath)
+            saveFilePath = os.path.join(os.path.join('static', 'img'), secure_filename(fname))
+            file.save(saveFilePath)
 
-        #アップロードしてサーバーにファイルが保存されたらfinishedを表示
-        return render_template('finished.html', filepath = saveFilePath)
+            #アップロードしてサーバーにファイルが保存されたらfinishedを表示
+            return render_template('finished.html', filepath = saveFilePath)
+        return
     else:
     	#GETでアクセスされた時、uploadsを表示
     	return render_template('upload.html')
