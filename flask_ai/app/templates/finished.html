@@ -12,6 +12,7 @@
 			<!-- 物体検知フォームを追加する -->
 			<div class="d-flex flex-row-reverse">
 				<div class="p-2">
+					<input value="物体検出" id="object_detect" type="button" class="btn btn-primary" />
 					<input value="顔検出" id="face_detect" type="button" class="btn btn-primary" />
 					<input value="紗羅検出" id="face_recognition" type="button" class="btn btn-primary" />
 					<span id="ElapsedTime" style="display: none;">0秒</span>
@@ -26,7 +27,8 @@
 	</div>
 	<script src="{{ url_for('static', filename='vendor/js/jquery-3.6.4.min.js') }}"></script>
 	<script>
-		$('#face_detect').click(function(){
+		function getImageFilePath()
+		{
 			$filePath = $("#uploadedImage").attr('src')
 			$orginalFilePath = $('#originalImage');
 			if($orginalFilePath.is(':empty'))
@@ -37,6 +39,12 @@
 			{
 				$filePath = $("originalImage").html
 			}
+
+			return $filePath
+		}
+
+		$('#face_detect').click(function(){
+			$filePath = getImageFilePath()
 
 			startTimer();
 			$.ajax({
@@ -58,16 +66,7 @@
 			})
 		});
 		$('#face_recognition').click(function(){
-			$filePath = $("#uploadedImage").attr('src')
-			$orginalFilePath = $('#originalImage');
-			if($orginalFilePath.is(':empty'))
-			{
-				$("originalImage").html = $filePath
-			}
-			else
-			{
-				$filePath = $("originalImage").html
-			}
+			$filePath = getImageFilePath()
 
 			startTimer();
 			$.ajax({
