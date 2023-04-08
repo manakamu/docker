@@ -20,6 +20,7 @@ import torch.nn as nn
 from torch.nn import functional as F
 from PIL import Image
 import json
+import pandas
 
 app = Flask(__name__)
 #app.config["SECRET_ KEY"] = "2AZSMss3p5QPbcY2hBsJ"
@@ -165,54 +166,63 @@ def face_recognition():
     # クラス名一覧を取得する。
     class_names = get_classes()
 
-    # 顔を抽出
-    results, image = find_faces(filePath)
- 
-    image_out = image.copy()
-    height, width, channels = image_out.shape[:3]
-    for rect in results:
-        fname = "out.jpg"
-        outPath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), fname))
-        bbox = rect['bbox']
-        if len(results) > 2:
-            face = image[bbox[1] : bbox[3], bbox[0] : bbox[2]] #縦位置上：下, 横位置左：右
-            cv2.imwrite(outPath, face)
-        else:
-            cv2.imwrite(outPath, image_out)
+    # 人を抽出
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    model.to(device)
 
-        img = Image.open(outPath)
-        inputs = transform(img)
-        inputs = inputs.unsqueeze(0).to(device)
-        # 推論モード
-        model_detect.eval()
-        outputs = model_detect(inputs)
+    # 推論
+    results = model(filePath)
 
-        batch_probs = F.softmax(outputs, dim=1)
-        batch_probs, batch_indices = batch_probs.sort(dim=1, descending=True)
+    # 分類結果をDataFrame形式で取得できる
+    df = results.pandas().xyxy[0] # .xyxy[0]
+    print(df)
+    print(len(df))
+    im_rgb = cv2.cvtColor(results.ims[0], cv2.COLOR_RGB2BGR)
+    for i in range(len(df)):
+        name = df.loc[i, "name"]
+        if  name == "person":
+            fname = "out.jpg"
+            outPath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), fname))
+            xmin = df.loc[i, "xmin"].astype(int)
+            ymin = df.loc[i, "ymin"].astype(int)
+            xmax = df.loc[i, "xmax"].astype(int)
+            ymax = df.loc[i, "ymax"].astype(int)
+            person = im_rgb[ymin : ymax, xmin : xmax] #縦位置上：下, 横位置左：右
+            cv2.imwrite(outPath, person)
+
+            img = Image.open(outPath)
+            inputs = transform(img)
+            inputs = inputs.unsqueeze(0).to(device)
+            # 推論モード
+            model_detect.eval()
+            outputs = model_detect(inputs)
+
+            batch_probs = F.softmax(outputs, dim=1)
+            batch_probs, batch_indices = batch_probs.sort(dim=1, descending=True)
 
 
-        for probs, indices in zip(batch_probs, batch_indices):
-            for k in range(len(class_names)):
-                print(f"Top-{k + 1} {indices[k]} {probs[k]:.2%} {class_names[indices[k]]}")
-                if class_names[indices[k]] == 'Sara':
-                    color = (0, 255, 0)
-                    probability = probs[k].item()
-                    if (0.6 <= probability and probability < 0.8) :
-                        color = (0, 255, 255)
-                    elif probability < 0.6:
-                        color = (0, 0, 255)
-                    cv2.rectangle(image_out,(bbox[0],bbox[1]),(bbox[2],bbox[3]),color,thickness=10)
-                    cv2.putText(image_out,
-                        text=f'{class_names[indices[k]]}:{probability:.2%}',
-                        org=(bbox[0], bbox[1]),
-                        fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                        fontScale=1.0,
-                        color=(255, 255, 255),
-                        thickness=1,
-                        lineType=cv2.LINE_4)
+            for probs, indices in zip(batch_probs, batch_indices):
+                for k in range(len(class_names)):
+                    print(f"Top-{k + 1} {indices[k]} {probs[k]:.2%} {class_names[indices[k]]}")
+                    if class_names[indices[k]] == 'Sara':
+                        color = (0, 255, 0)
+                        probability = probs[k].item()
+                        if (0.6 <= probability and probability < 0.8) :
+                            color = (0, 255, 255)
+                        elif probability < 0.6:
+                            color = (0, 0, 255)
+                        cv2.rectangle(im_rgb,(xmin, ymin),(xmax, ymax),color,thickness=10)
+                        cv2.putText(im_rgb,
+                            text=f'{class_names[indices[k]]}:{probability:.2%}',
+                            org=(xmin, ymin),
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+                            fontScale=1.0,
+                            color=(255, 0, 0),
+                            thickness=2,
+                            lineType=cv2.LINE_4)
 
     out_filepath = os.path.join(os.path.join('static', 'img'), 'out.jpg')
-    cv2.imwrite(out_filepath, image_out)
+    cv2.imwrite(out_filepath, im_rgb)
     return jsonify('\\' + out_filepath)
 
 def draw_res(image,results):
