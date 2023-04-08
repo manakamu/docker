@@ -14,19 +14,30 @@
 				<div class="p-2">
 					<input value="顔検出" id="face_detect" type="button" class="btn btn-primary" />
 					<input value="紗羅検出" id="face_recognition" type="button" class="btn btn-primary" />
-					<span id="ElapsedTime" style="visibility: hidden;">0秒</span>
+					<span id="ElapsedTime" style="display: none;">0秒</span>
 					<span class="spinner-border text-primary" role="status" id="spinner" style="visibility: hidden;" ></span>
 				</div>
 			</div>
 		</header>
 		<section>
 			<img src="{{ filepath }}" alt="アップロード画像" id="uploadedImage"/>
+			<span id="originalImage" style="visibility: hidden;"></span>
 		</section>
 	</div>
 	<script src="{{ url_for('static', filename='vendor/js/jquery-3.6.4.min.js') }}"></script>
 	<script>
 		$('#face_detect').click(function(){
 			$filePath = $("#uploadedImage").attr('src')
+			$orginalFilePath = $('#originalImage');
+			if($orginalFilePath.is(':empty'))
+			{
+				$("originalImage").html = $filePath
+			}
+			else
+			{
+				$filePath = $("originalImage").html
+			}
+
 			startTimer();
 			$.ajax({
 				url: "/detect",
@@ -48,6 +59,16 @@
 		});
 		$('#face_recognition').click(function(){
 			$filePath = $("#uploadedImage").attr('src')
+			$orginalFilePath = $('#originalImage');
+			if($orginalFilePath.is(':empty'))
+			{
+				$("originalImage").html = $filePath
+			}
+			else
+			{
+				$filePath = $("originalImage").html
+			}
+
 			startTimer();
 			$.ajax({
 				url: "/face_recognition",
@@ -74,7 +95,7 @@
 			elapsedTime = 0;   // カウンタのリセット
 			timerId = setInterval('showElapsedTime()',1000);   // タイマーをセット(1000ms間隔)
 			$("#ElapsedTime").css({
-				"visibility":"visible", 
+				"display":"inline", 
 			});
 			$("#spinner").css({
 				"visibility":"visible", 
