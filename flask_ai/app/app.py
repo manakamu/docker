@@ -60,15 +60,37 @@ def upload_file():
     	#GETでアクセスされた時、uploadsを表示
     	return render_template('upload.html')
 
+def resize_image(filePath):
+    # 対象画像読み込み
+    img = cv2.imread(filePath,cv2.IMREAD_COLOR)
+
+    # 画像の大きさを取得
+    height, width, channels = img.shape[:3]
+    if width > 1024 or height > 1024:
+        appPath = os.path.dirname(__file__)
+        re_h = re_w = 1024/max(height,width)
+        img2 = cv2.resize(img, dsize=None, fx=re_h , fy=re_w)
+        tmpFilePath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), "tmp.jpg"))
+        cv2.imwrite(tmpFilePath, img2)
+        return tmpFilePath
+    
+    return filePath
+        
 @app.route('/object_detect', methods=['POST', 'GET'])
 def object_detection():
     # Linuxだとフルパスでないと動作しないようなので
     appPath = os.path.dirname(__file__)
     filePath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), Path(request.json).name))
     print(filePath)
+    
+    # 入力画像の大きさが大きいと失敗するようなのでリサイズする
+    filePath = resize_image(filePath)
+
     out_filepath = os.path.join(os.path.join('static', 'img'), 'out.jpg')
 
+    device = get_device(use_gpu=True)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+    model.to(device)
 
     # 推論
     results = model(filePath)
@@ -115,6 +137,9 @@ def face_recognition():
     # Linuxだとフルパスでないと動作しないようなので
     appPath = os.path.dirname(__file__)
     filePath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), Path(request.json).name))
+
+    # 入力画像が大きければリサイズする
+    filePath = resize_image(filePath)
 
     model_detect = torchvision.models.resnet18(pretrained=True)
     num_ftrs = model_detect.fc.in_features
@@ -165,11 +190,7 @@ def face_recognition():
         batch_probs = F.softmax(outputs, dim=1)
         batch_probs, batch_indices = batch_probs.sort(dim=1, descending=True)
 
-        fontScale = 1.0
-        if width > 2048:
-            fontScale = 10.0
-        if width > 1024:
-            fontScale = 5.0
+
         for probs, indices in zip(batch_probs, batch_indices):
             for k in range(len(class_names)):
                 print(f"Top-{k + 1} {indices[k]} {probs[k]:.2%} {class_names[indices[k]]}")
