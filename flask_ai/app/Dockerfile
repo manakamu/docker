@@ -8,11 +8,13 @@ RUN cp /usr/share/zoneinfo/Japan /etc/localtime
 COPY ./requirements.txt ./
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install -y libgl1-mesa-dev less
+RUN apt-get install -y libgl1-mesa-dev less git
 
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-RUN pip install -r ./app/yolov5/requirements.txt
+RUN git clone https://github.com/ultralytics/yolov5
+RUN cd yolov5
+RUN pip install -r requirements.txt
