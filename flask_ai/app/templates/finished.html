@@ -22,26 +22,49 @@
 		</header>
 		<section>
 			<img src="{{ filepath }}" alt="アップロード画像" id="uploadedImage"/>
-			<span id="originalImage" style="visibility: hidden;"></span>
+			<p id="originalImage" style="visibility: hidden;"></p>
 		</section>
 	</div>
 	<script src="{{ url_for('static', filename='vendor/js/jquery-3.6.4.min.js') }}"></script>
 	<script>
 		function getImageFilePath()
 		{
-			$filePath = $("#uploadedImage").attr('src')
-			$orginalFilePath = $('#originalImage');
-			if($orginalFilePath.is(':empty'))
+			filePath = $("#uploadedImage").attr('src')
+			originalFilePath = $("#originalImage").text(); 
+			if(!originalFilePath.length)
 			{
-				$("originalImage").html = $filePath
+				$("#originalImage").text(filePath)
 			}
 			else
 			{
-				$filePath = $("originalImage").html
+				filePath = $("#originalImage").text()
 			}
 
-			return $filePath
+			return filePath
 		}
+
+		$('#object_detect').click(function(){
+			$filePath = getImageFilePath()
+
+			startTimer();
+			$.ajax({
+				url: "/object_detect",
+				type:'POST',
+				dataType: "json",
+				data: JSON.stringify($filePath),
+				contentType: 'application/json',
+				cache: false,
+			}).done(function(data, textStatus, jqXHR) {
+					// 成功したとき
+					//var data_json = JSON.parse(data);
+					$("#uploadedImage").attr('src', data)
+			}).fail(function(jqXHR, textStatus, errorThrown ) {
+				// エラー処理
+				alert(errorThrown);
+			}).always(function( jqXHR, textStatus, errorThrown ) {
+				stopTimer();
+			})
+		});
 
 		$('#face_detect').click(function(){
 			$filePath = getImageFilePath()
@@ -65,6 +88,7 @@
 				stopTimer();
 			})
 		});
+		
 		$('#face_recognition').click(function(){
 			$filePath = getImageFilePath()
 
