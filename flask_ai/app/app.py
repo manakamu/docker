@@ -60,6 +60,28 @@ def upload_file():
     	#GETでアクセスされた時、uploadsを表示
     	return render_template('upload.html')
 
+@app.route('/object_detect', methods=['POST', 'GET'])
+def object_detection():
+    # Linuxだとフルパスでないと動作しないようなので
+    appPath = os.path.dirname(__file__)
+    filePath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), Path(request.json).name))
+    print(filePath)
+    out_filepath = os.path.join(os.path.join('static', 'img'), 'out.jpg')
+
+    model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
+
+    # 推論
+    results = model(filePath)
+
+    # 分類結果をDataFrame形式で取得できる
+    df = results.pandas().xywh[0] # .xyxy[0]
+    results.render() # 画面にボンディングボックスを表示する
+    im_rgb = cv2.cvtColor(results.ims[0], cv2.COLOR_RGB2BGR)
+    cv2.imwrite(out_filepath, im_rgb)
+    #results.save(out_filepath)
+
+    return jsonify('\\' + out_filepath)
+
 @app.route('/detect', methods=['POST', 'GET'])
 def detect_file():
     # Linuxだとフルパスでないと動作しないようなので

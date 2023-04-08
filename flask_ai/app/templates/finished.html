@@ -57,7 +57,8 @@
 			}).done(function(data, textStatus, jqXHR) {
 					// 成功したとき
 					//var data_json = JSON.parse(data);
-					$("#uploadedImage").attr('src', data)
+					//$("#uploadedImage").attr('src', data)
+					$("#uploadedImage").attr("src", data + `?v=${new Date().getTime()}`);
 			}).fail(function(jqXHR, textStatus, errorThrown ) {
 				// エラー処理
 				alert(errorThrown);
@@ -80,7 +81,8 @@
 			}).done(function(data, textStatus, jqXHR) {
 					// 成功したとき
 					//var data_json = JSON.parse(data);
-					$("#uploadedImage").attr('src', data)
+					//$("#uploadedImage").attr('src', data)
+					$("#uploadedImage").attr("src", data + `?v=${new Date().getTime()}`);
 			}).fail(function(jqXHR, textStatus, errorThrown ) {
 				// エラー処理
 				alert(errorThrown);
@@ -103,7 +105,8 @@
 			}).done(function(data, textStatus, jqXHR) {
 					// 成功したとき
 					//var data_json = JSON.parse(data);
-					$("#uploadedImage").attr('src', data)
+					//$("#uploadedImage").attr('src', data)
+					$("#uploadedImage").attr("src", data + `?v=${new Date().getTime()}`);
 			}).fail(function(jqXHR, textStatus, errorThrown ) {
 				// エラー処理
 				alert(errorThrown);
