@@ -146,11 +146,11 @@ def face_recognition():
     num_ftrs = model_detect.fc.in_features
     model_detect.fc = nn.Linear(num_ftrs, 4) # 4分類
 
-    model_detect.load_state_dict(torch.load(os.path.join(appPath, 'model_gpu.pth')))
-
     # デバイスを選択する。
     device = get_device(use_gpu=True)
     model_detect.to(device)
+    
+    model_detect.load_state_dict(torch.load(os.path.join(appPath, 'model_gpu.pth'), map_location=device))
 
     transform = transforms.Compose(
         [
