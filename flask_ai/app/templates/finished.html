@@ -15,6 +15,7 @@
 					<input value="物体検出" id="object_detect" type="button" class="btn btn-primary" />
 					<input value="顔検出" id="face_detect" type="button" class="btn btn-primary" />
 					<input value="紗羅検出" id="face_recognition" type="button" class="btn btn-primary" />
+					<button id="reset" class="btn btn-primary" >リセット</button>
 					<span id="ElapsedTime" style="display: none;">0秒</span>
 					<span class="spinner-border text-primary" role="status" id="spinner" style="visibility: hidden;" ></span>
 				</div>
@@ -43,8 +44,26 @@
 			return filePath
 		}
 
+		function disableButtons(disable)
+		{
+			$("#object_detect").prop('disabled', disable)
+			$("#face_detect").prop('disabled', disable)
+			$("#face_recognition").prop('disabled', disable)
+			$("#reset").prop('disabled', disable)
+		}
+
+		$('#reset').click(function(){
+			originalFilePath = $("#originalImage").text(); 
+			if(originalFilePath.length)
+			{
+				filePath = $("#originalImage").text()
+				$("#uploadedImage").attr("src", filePath + `?v=${new Date().getTime()}`);
+			}
+		});
+
 		$('#object_detect').click(function(){
 			$filePath = getImageFilePath()
+			disableButtons(true)
 
 			startTimer();
 			$.ajax({
@@ -64,11 +83,13 @@
 				alert(errorThrown);
 			}).always(function( jqXHR, textStatus, errorThrown ) {
 				stopTimer();
+				disableButtons(false)
 			})
 		});
 
 		$('#face_detect').click(function(){
 			$filePath = getImageFilePath()
+			disableButtons(true)
 
 			startTimer();
 			$.ajax({
@@ -88,11 +109,13 @@
 				alert(errorThrown);
 			}).always(function( jqXHR, textStatus, errorThrown ) {
 				stopTimer();
+				disableButtons(false)
 			})
 		});
 		
 		$('#face_recognition').click(function(){
 			$filePath = getImageFilePath()
+			disableButtons(true)
 
 			startTimer();
 			$.ajax({
@@ -112,6 +135,7 @@
 				alert(errorThrown);
 			}).always(function( jqXHR, textStatus, errorThrown ) {
 				stopTimer();
+				disableButtons(false)
 			})
 		});
 
