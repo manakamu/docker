@@ -16,5 +16,4 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 RUN git clone https://github.com/ultralytics/yolov5
-RUN cd yolov5
-RUN pip install -r requirements.txt
+RUN pip install -r ./yolov5/requirements.txt
