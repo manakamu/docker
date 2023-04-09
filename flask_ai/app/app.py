@@ -200,7 +200,10 @@ def face_recognition():
             batch_probs = F.softmax(outputs, dim=1)
             batch_probs, batch_indices = batch_probs.sort(dim=1, descending=True)
 
-
+            text = ''
+            fontFace = cv2.FONT_HERSHEY_SIMPLEX
+            fontScale = 1.0
+            thickness = 2
             for probs, indices in zip(batch_probs, batch_indices):
                 for k in range(len(class_names)):
                     print(f"Top-{k + 1} {indices[k]} {probs[k]:.2%} {class_names[indices[k]]}")
@@ -211,14 +214,23 @@ def face_recognition():
                             color = (0, 255, 255)
                         elif probability < 0.6:
                             color = (0, 0, 255)
+                        # 矩形描画
                         cv2.rectangle(im_rgb,(xmin, ymin),(xmax, ymax),color,thickness=10)
+                        # 文字の幅、高さ取得
+                        text = f'{class_names[indices[k]]}:{probability:.2%}'
+                        (w, h), b = cv2.getTextSize(text = text,
+                                fontFace = fontFace,
+                                fontScale = fontScale,
+                                thickness = thickness)
+                        # 文字描画
+                        cv2.rectangle(im_rgb,(xmin, ymin),(xmin + w, ymin + h),(234, 202, 10),thickness=-1)
                         cv2.putText(im_rgb,
-                            text=f'{class_names[indices[k]]}:{probability:.2%}',
-                            org=(xmin, ymin),
-                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                            fontScale=1.0,
-                            color=(255, 0, 0),
-                            thickness=2,
+                            text=text,
+                            org=(xmin, ymin + h),
+                            fontFace=fontFace,
+                            fontScale=fontScale,
+                            color=(255, 255, 255),
+                            thickness=thickness,
                             lineType=cv2.LINE_4)
 
     out_filepath = os.path.join(os.path.join('static/ai', 'img'), 'out.jpg')
