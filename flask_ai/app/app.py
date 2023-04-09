@@ -51,7 +51,7 @@ def upload_file():
             now = datetime.datetime.now()
             fname = now.strftime('%Y%m%d%H%M%S') + ext
 
-            saveFilePath = os.path.join(os.path.join('static', 'img'), secure_filename(fname))
+            saveFilePath = os.path.join(os.path.join('static/ai', 'img'), secure_filename(fname))
             file.save(saveFilePath)
 
             #アップロードしてサーバーにファイルが保存されたらfinishedを表示
@@ -71,7 +71,7 @@ def resize_image(filePath):
         appPath = os.path.dirname(__file__)
         re_h = re_w = 1024/max(height,width)
         img2 = cv2.resize(img, dsize=None, fx=re_h , fy=re_w)
-        tmpFilePath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), "tmp.jpg"))
+        tmpFilePath = os.path.join(appPath, os.path.join(os.path.join('static/ai', 'img'), "tmp.jpg"))
         cv2.imwrite(tmpFilePath, img2)
         return tmpFilePath
     
@@ -81,13 +81,13 @@ def resize_image(filePath):
 def object_detection():
     # Linuxだとフルパスでないと動作しないようなので
     appPath = os.path.dirname(__file__)
-    filePath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), Path(request.json).name))
+    filePath = os.path.join(appPath, os.path.join(os.path.join('static/ai', 'img'), Path(request.json).name))
     print(filePath)
     
     # 入力画像の大きさが大きいと失敗するようなのでリサイズする
     filePath = resize_image(filePath)
 
-    out_filepath = os.path.join(os.path.join('static', 'img'), 'out.jpg')
+    out_filepath = os.path.join(os.path.join('static/ai', 'img'), 'out.jpg')
 
     device = get_device(use_gpu=True)
     model = torch.hub.load('ultralytics/yolov5', 'yolov5s')
@@ -109,9 +109,9 @@ def object_detection():
 def detect_file():
     # Linuxだとフルパスでないと動作しないようなので
     appPath = os.path.dirname(__file__)
-    filePath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), Path(request.json).name))
+    filePath = os.path.join(appPath, os.path.join(os.path.join('static/ai', 'img'), Path(request.json).name))
     print(filePath)
-    out_filepath = os.path.join(os.path.join('static', 'img'), 'out.jpg')
+    out_filepath = os.path.join(os.path.join('static/ai', 'img'), 'out.jpg')
     face_detect(filePath, out_filepath)
 
     return jsonify('\\' + out_filepath)
@@ -137,7 +137,7 @@ def find_faces(inPath):
 def face_recognition():
     # Linuxだとフルパスでないと動作しないようなので
     appPath = os.path.dirname(__file__)
-    filePath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), Path(request.json).name))
+    filePath = os.path.join(appPath, os.path.join(os.path.join('static/ai', 'img'), Path(request.json).name))
 
     # 入力画像が大きければリサイズする
     filePath = resize_image(filePath)
@@ -182,7 +182,7 @@ def face_recognition():
         name = df.loc[i, "name"]
         if  name == "person":
             fname = "out.jpg"
-            outPath = os.path.join(appPath, os.path.join(os.path.join('static', 'img'), fname))
+            outPath = os.path.join(appPath, os.path.join(os.path.join('static/ai', 'img'), fname))
             xmin = df.loc[i, "xmin"].astype(int)
             ymin = df.loc[i, "ymin"].astype(int)
             xmax = df.loc[i, "xmax"].astype(int)
@@ -221,7 +221,7 @@ def face_recognition():
                             thickness=2,
                             lineType=cv2.LINE_4)
 
-    out_filepath = os.path.join(os.path.join('static', 'img'), 'out.jpg')
+    out_filepath = os.path.join(os.path.join('static/ai', 'img'), 'out.jpg')
     cv2.imwrite(out_filepath, im_rgb)
     return jsonify('\\' + out_filepath)
 
